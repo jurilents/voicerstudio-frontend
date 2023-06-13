@@ -8,7 +8,8 @@
     "build": "react-scripts build"
   },
   "dependencies": {
-    "@ffmpeg/ffmpeg": "^0.10.1",
+    "@ffmpeg/core": "^0.8.5",
+    "@ffmpeg/ffmpeg": "^0.9.8",
     "@forlagshuset/simple-fs": "^0.5.0",
     "bootstrap": "^5.3.0",
     "core-js": "^3.18.0",
@@ -23,7 +24,7 @@
     "react-dom": "^17.0.2",
     "react-i18nify": "^4.2.1",
     "react-notification-system": "^0.4.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^5.0.1",
     "react-textarea-autosize": "^8.3.3",
     "react-virtualized": "^9.22.3",
     "styled-components": "^5.3.1",

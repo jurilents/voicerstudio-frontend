@@ -87,29 +87,6 @@ const Timeline = styled.div`
       }
     }
 
-    .active-speaker {
-      .sub-item {
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.3);
-        }
-
-        &.sub-highlight {
-          background-color: rgba(33, 150, 243, 0.5);
-          border: 1px solid rgba(33, 150, 243, 0.5);
-        }
-
-        &.sub-illegal {
-          background-color: rgba(199, 81, 35, 0.5);
-        }
-
-        .sub-handle {
-          &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-          }
-        }
-      }
-    }
-
     .sub-duration {
       opacity: 0.5;
       position: absolute;
@@ -119,6 +96,29 @@ const Timeline = styled.div`
       width: 100%;
       text-align: center;
       font-size: 12px;
+    }
+  }
+
+  .active-speaker {
+    .sub-item {
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+
+      &.sub-highlight {
+        background-color: rgba(33, 150, 243, 0.5);
+        border: 1px solid rgba(33, 150, 243, 0.5);
+      }
+
+      &.sub-illegal {
+        background-color: rgba(199, 81, 35, 0.5);
+      }
+
+      .sub-handle {
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
     }
   }
 `;
@@ -173,6 +173,8 @@ export default React.memo(function(
     const currentSub = currentSubs.find(
       (item) => item.startTime <= currentTime && item.endTime > currentTime,
     ) || {};
+
+    console.log('active-speaker', settings.currentSpeaker);
 
     const onMouseDown = (sub, event, type) => {
       if (sub.speaker !== settings.currentSpeaker) {
@@ -373,7 +375,7 @@ export default React.memo(function(
             );
           })}
         </div>
-        <div ref={$subsRef2} className={settings.currentSpeaker === 1 ? 'subs2 active-speaker' : 'subs2'}>
+        <div ref={$subsRef2} className={settings.currentSpeaker === 2 ? 'subs2 active-speaker' : 'subs2'}>
           {currentSubs.filter(sub => sub.speaker === 2).map((sub, key) => {
             return (
               <div

@@ -228,7 +228,7 @@ export default function Subtitles(
           {speakers.map((item) => (
             <li key={item.id}>
               <button className={item.id === settings.currentSpeaker ? 'btn active' : 'btn'}
-                      onClick={() => setSettings({ ...settings, currentSpeaker: item.id })}>
+                      onClick={(() => setSettings({ ...settings, currentSpeaker: item.id }))}>
                 {item.id} {item.name} - {settings.currentSpeaker}
               </button>
             </li>

@@ -9,7 +9,7 @@ export default class Sub {
     this.start = obj.start;
     this.end = obj.end;
     this.text = obj.text;
-    this.text2 = obj.text2;
+    this.note = obj.note;
   }
 
   get check() {
