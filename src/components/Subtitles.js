@@ -144,13 +144,13 @@ export default function Subtitles(
     player,
     updateSub,
     speakers,
-    currentSpeaker,
-    setCurrentSpeaker,
+    settings,
+    setSettings,
   }) {
   const [height, setHeight] = useState(100);
 
   const resize = useCallback(() => {
-    setHeight(document.body.clientHeight - 170);
+    setHeight(document.body.clientHeight - 250);
   }, [setHeight]);
 
   useEffect(() => {
@@ -164,18 +164,6 @@ export default function Subtitles(
 
   return (
     <Style className='subtitles'>
-      <div className='speakers-wrapper'>
-        <ul>
-          {speakers.map((item) => (
-            <li key={item.id}>
-              <button className={item.id === currentSpeaker ? 'btn active' : 'btn'}
-                      onClick={() => setCurrentSpeaker(item.id)}>
-                {item.name}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
       <Table
         headerHeight={40}
         width={500}
@@ -202,13 +190,13 @@ export default function Subtitles(
             >
               <div className='item'>
                 <div className='item-bar item-index'>
-                  <span>123</span>
+                  <span>{props.index + 1}</span>
                 </div>
                 <div className='item-bar item-timing'>
-                  <input type='text' value='00:00:30.33' onClick={() => {
+                  <input type='text' value='00:00:30.33' onChange={() => {
                   }} />
                   <input className='timing-duration' type='text' value='00:40.01' disabled={true} />
-                  <input type='text' value='00:01:10.32' onClick={() => {
+                  <input type='text' value='00:01:10.32' onChange={() => {
                   }} />
                 </div>
                 <textarea
@@ -235,6 +223,18 @@ export default function Subtitles(
           );
         }}
       ></Table>
+      <div className='speakers-wrapper'>
+        <ul>
+          {speakers.map((item) => (
+            <li key={item.id}>
+              <button className={item.id === settings.currentSpeaker ? 'btn active' : 'btn'}
+                      onClick={() => setSettings({ ...settings, currentSpeaker: item.id })}>
+                {item.id} {item.name} - {settings.currentSpeaker}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </Style>
   );
 }

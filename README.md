@@ -1,4 +1,4 @@
-# SubPlayer
+# Voicer Studio
 
 > SubPlayer is an online subtitle editor
 

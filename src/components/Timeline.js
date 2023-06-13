@@ -53,19 +53,6 @@ const Timeline = styled.div`
     background-color: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.2);
 
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.3);
-    }
-
-    &.sub-highlight {
-      background-color: rgba(33, 150, 243, 0.5);
-      border: 1px solid rgba(33, 150, 243, 0.5);
-    }
-
-    &.sub-illegal {
-      background-color: rgba(199, 81, 35, 0.5);
-    }
-
     .sub-handle {
       position: absolute;
       top: 0;
@@ -74,10 +61,6 @@ const Timeline = styled.div`
       height: 100%;
       cursor: col-resize;
       user-select: none;
-
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-      }
     }
 
     .sub-text {
@@ -100,6 +83,29 @@ const Timeline = styled.div`
 
         &.bilingual {
           transform: scale(0.8);
+        }
+      }
+    }
+
+    .active-speaker {
+      .sub-item {
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        &.sub-highlight {
+          background-color: rgba(33, 150, 243, 0.5);
+          border: 1px solid rgba(33, 150, 243, 0.5);
+        }
+
+        &.sub-illegal {
+          background-color: rgba(199, 81, 35, 0.5);
+        }
+
+        .sub-handle {
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+          }
         }
       }
     }
@@ -148,6 +154,7 @@ export default React.memo(function(
     {
       player,
       subtitle,
+      setSubtitle,
       render,
       currentTime,
       checkSub,
@@ -155,24 +162,30 @@ export default React.memo(function(
       hasSub,
       updateSub,
       mergeSub,
+      settings,
     },
   ) {
     const $blockRef = React.createRef();
-    const $subsRef = React.createRef();
+    const $subsRef1 = React.createRef();
+    const $subsRef2 = React.createRef();
     const currentSubs = getCurrentSubs(subtitle, render.beginTime, render.duration);
     const gridGap = document.body.clientWidth / render.gridNum;
-    const currentIndex = currentSubs.findIndex(
+    const currentSub = currentSubs.find(
       (item) => item.startTime <= currentTime && item.endTime > currentTime,
-    );
+    ) || {};
 
     const onMouseDown = (sub, event, type) => {
+      if (sub.speaker !== settings.currentSpeaker) {
+        return;
+      }
       lastSub = sub;
       if (event.button !== 0) return;
       isDroging = true;
       lastType = type;
       lastX = event.pageX;
       lastIndex = currentSubs.indexOf(sub);
-      lastTarget = $subsRef.current.children[lastIndex];
+      const $subsRef = lastSub.speaker === 1 ? $subsRef1 : $subsRef2;
+      lastTarget = Array.from($subsRef.current.children).find(x => x.id === lastSub.id);
       lastWidth = parseFloat(lastTarget.style.width);
     };
 
@@ -219,33 +232,33 @@ export default React.memo(function(
         const width = (endTime - startTime) * 10 * gridGap;
 
         if ((previou && endTime < previou.startTime) || (next && startTime > next.endTime)) {
-          //
-        } else {
-          if (lastType === 'left') {
-            if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
-              const start = DT.d2t(startTime);
-              updateSub(lastSub, { start });
-            } else {
-              lastTarget.style.width = `${width}px`;
-            }
-          } else if (lastType === 'right') {
-            if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
-              const end = DT.d2t(endTime);
-              updateSub(lastSub, { end });
-            } else {
-              lastTarget.style.width = `${width}px`;
-            }
+          setSubtitle(subtitle.sort((a, b) => parseFloat(a.startTime) - parseFloat(b.startTime)));
+        }
+
+        if (lastType === 'left') {
+          if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
+            const start = DT.d2t(startTime);
+            updateSub(lastSub, { start });
           } else {
-            if (startTime > 0 && endTime > 0 && endTime - startTime >= 0.2) {
-              const start = DT.d2t(startTime);
-              const end = DT.d2t(endTime);
-              updateSub(lastSub, {
-                start,
-                end,
-              });
-            } else {
-              lastTarget.style.width = `${width}px`;
-            }
+            lastTarget.style.width = `${width}px`;
+          }
+        } else if (lastType === 'right') {
+          if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
+            const end = DT.d2t(endTime);
+            updateSub(lastSub, { end });
+          } else {
+            lastTarget.style.width = `${width}px`;
+          }
+        } else {
+          if (startTime > 0 && endTime > 0 && endTime - startTime >= 0.2) {
+            const start = DT.d2t(startTime);
+            const end = DT.d2t(endTime);
+            updateSub(lastSub, {
+              start,
+              end,
+            });
+          } else {
+            lastTarget.style.width = `${width}px`;
           }
         }
 
@@ -257,7 +270,7 @@ export default React.memo(function(
       lastWidth = 0;
       lastDiffX = 0;
       isDroging = false;
-    }, [gridGap, hasSub, subtitle, updateSub]);
+    }, [gridGap, hasSub, subtitle, setSubtitle, updateSub]);
 
     const onKeyDown = useCallback(
       (event) => {
@@ -304,13 +317,14 @@ export default React.memo(function(
 
     return (
       <Timeline ref={$blockRef}>
-        <div ref={$subsRef}>
+        <div ref={$subsRef1} className={settings.currentSpeaker === 1 ? 'active-speaker' : ''}>
           {currentSubs.filter(sub => sub.speaker === 1).map((sub, key) => {
             return (
               <div
+                id={sub.id}
                 className={[
                   'sub-item',
-                  key === currentIndex ? 'sub-highlight' : '',
+                  sub.id === currentSub.id ? 'sub-highlight' : '',
                   checkSub(sub) ? 'sub-illegal' : '',
                 ].join(' ').trim()}
                 key={key}
@@ -359,13 +373,14 @@ export default React.memo(function(
             );
           })}
         </div>
-        <div ref={$subsRef} className='subs2'>
+        <div ref={$subsRef2} className={settings.currentSpeaker === 1 ? 'subs2 active-speaker' : 'subs2'}>
           {currentSubs.filter(sub => sub.speaker === 2).map((sub, key) => {
             return (
               <div
+                id={sub.id}
                 className={[
                   'sub-item',
-                  key === currentIndex ? 'sub-highlight' : '',
+                  sub.id === currentSub.id ? 'sub-highlight' : '',
                   checkSub(sub) ? 'sub-illegal' : '',
                 ].join(' ').trim()}
                 key={key}

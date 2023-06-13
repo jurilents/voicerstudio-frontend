@@ -1,9 +1,10 @@
 import clamp from 'lodash/clamp';
 import DT from 'duration-time-conversion';
+import { v4 as uuidv4 } from 'uuid';
 
 export default class Sub {
   constructor(obj) {
-    console.log('restore', obj);
+    this.id = 'sub_' + uuidv4();
     this.speaker = obj.speaker;
     this.start = obj.start;
     this.end = obj.end;

@@ -160,25 +160,58 @@ const Style = styled.div`
       transition: all 0.2s ease 0s;
     }
   }
+
+  .btn.active {
+    background-color: #3f51b5;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 10px;
+    gap: 10px;
+
+    .btn {
+      font-size: 20px;
+      max-width: 50px;
+
+      &:active:hover {
+        background-color: #c22213;
+      }
+    }
+
+    .separator {
+      display: block;
+      background-color: white;
+      opacity: 30%;
+      width: 2px;
+      min-height: 25px;
+      border-radius: 5px;
+    }
+  }
 `;
 
 FFmpeg.createFFmpeg({ log: true }).load();
 const fs = new SimpleFS.FileSystem();
 
-export default function Header({
-                                 player,
-                                 waveform,
-                                 newSub,
-                                 undoSubs,
-                                 clearSubs,
-                                 language,
-                                 subtitle,
-                                 setLoading,
-                                 formatSub,
-                                 setSubtitle,
-                                 setProcessing,
-                                 notify,
-                               }) {
+export default function Header(
+  {
+    player,
+    waveform,
+    newSub,
+    undoSubs,
+    clearSubs,
+    language,
+    subtitle,
+    setLoading,
+    formatSub,
+    setSubtitle,
+    setProcessing,
+    notify,
+    settings,
+    setSettings,
+  }) {
   const [translate, setTranslate] = useState('en');
   const [videoFile, setVideoFile] = useState(null);
 
@@ -456,6 +489,24 @@ export default function Header({
           <span>
               <Translate value='HOTKEY_02' />
           </span>
+        </div>
+        <div className='hotkey'>
+          <input type='range' min={1} max={10} value={1} onChange={()=>{console.log('test')}} />
+        </div>
+        <div className='actions'>
+          <div className={'btn noselect' + (settings.scrollable ? ' active' : '')}
+               onClick={() => setSettings({ ...settings, scrollable: !settings.scrollable })}>
+            🔒
+          </div>
+          <div className={'btn noselect' + (settings.magnet ? ' active' : '')}
+               onClick={() => setSettings({ ...settings, magnet: !settings.magnet })}>
+            🧲
+          </div>
+          <div className='separator'></div>
+          <div className={'btn noselect' + (settings.magnet ? ' record' : '')}
+               onClick={() => setSettings({ ...settings, magnet: !settings.magnet })}>
+            ⏺️
+          </div>
         </div>
       </div>
     </Style>

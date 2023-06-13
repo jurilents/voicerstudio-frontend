@@ -5,10 +5,10 @@
   "scripts": {
     "start": "BROWSER=none react-scripts start",
     "start:windows": "set BROWSER=none && react-scripts start",
-    "build": "react-scripts build && rm -rf docs && mv build docs"
+    "build": "react-scripts build"
   },
   "dependencies": {
-    "@ffmpeg/ffmpeg": "^0.9.8",
+    "@ffmpeg/ffmpeg": "^0.10.1",
     "@forlagshuset/simple-fs": "^0.5.0",
     "bootstrap": "^5.3.0",
     "core-js": "^3.18.0",
@@ -27,7 +27,14 @@
     "react-textarea-autosize": "^8.3.3",
     "react-virtualized": "^9.22.3",
     "styled-components": "^5.3.1",
+    "uuid": "^9.0.0",
     "wfplayer": "^2.1.0"
+  },
+  "devDependencies": {
+    "http-proxy-middleware": "^2.0.6"
+  },
+  "overrides": {
+    "react-error-overlay": "6.0.9"
   },
   "eslintConfig": {
     "extends": [
@@ -51,8 +58,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "http-proxy-middleware": "^2.0.6"
   }
 }

@@ -1,7 +1,7 @@
 import { createGlobalStyle } from 'styled-components';
 
 export default createGlobalStyle`
-  @import '/node_modules/bootstrap/dist/css/bootstrap.min.css';
+  //@import '/node_modules/bootstrap/dist/css/bootstrap.min.css';
 
   html,
   body,
@@ -56,5 +56,11 @@ export default createGlobalStyle`
     &:hover {
       opacity: 1;
     }
+  }
+
+  .noselect {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
   }
 `;
