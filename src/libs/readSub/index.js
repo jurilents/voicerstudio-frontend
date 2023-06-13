@@ -1,6 +1,6 @@
 import DT from 'duration-time-conversion';
 import { getExt } from '../../utils';
-import Sub from '../Sub';
+import Sub from '../../models/Sub';
 import ass2vtt from './ass2vtt';
 import srt2vtt from './srt2vtt';
 

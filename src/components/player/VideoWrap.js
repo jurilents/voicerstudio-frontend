@@ -27,5 +27,5 @@ export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
         }
     }, [$video]);
 
-    return <video onClick={onClick} src='/sample.mp4?t=1' ref={$video} controls={true} />;
+    return <video onClick={onClick} src='/sample.mp4?t=1' ref={$video} />;
 }, () => true);

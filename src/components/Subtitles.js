@@ -9,6 +9,10 @@ const Style = styled.div`
   //box-shadow: 0px 5px 25px 5px rgb(0 0 0 / 80%);
   background-color: rgb(0 0 0 / 100%);
 
+  .ReactVirtualized__Table__row:nth-child(2n) {
+    background-color: rgba(12, 12, 12, 0.5);
+  }
+
   .speakers-wrapper {
     ul {
       list-style: none;
@@ -23,12 +27,18 @@ const Style = styled.div`
     }
 
     .btn {
-      background-color: #009688;
+      border: 2px solid #009688;
+      background: transparent;
       padding-left: 20px;
       padding-right: 20px;
-      opacity: 50%;
+      opacity: 90%;
 
       &.active {
+        background-color: rgba(0, 150, 136, 0.9);
+      }
+
+      &:hover {
+        background-color: #009688;
         opacity: 100%;
       }
     }
@@ -87,6 +97,13 @@ const Style = styled.div`
           }
         }
 
+        .item-index {
+          margin: 5px 3px 5px 0;
+          padding-right: 3px;
+          border-right: 1px solid #838383;
+          font-size: 10px;
+        }
+
         .item-timing {
           width: 80px;
           font-size: 11px;
@@ -119,90 +136,105 @@ const Style = styled.div`
   }
 `;
 
-export default function Subtitles({ currentIndex, subtitle, checkSub, player, updateSub }) {
-    const [height, setHeight] = useState(100);
+export default function Subtitles(
+  {
+    currentIndex,
+    subtitle,
+    checkSub,
+    player,
+    updateSub,
+    speakers,
+    currentSpeaker,
+    setCurrentSpeaker,
+  }) {
+  const [height, setHeight] = useState(100);
 
-    const resize = useCallback(() => {
-        setHeight(document.body.clientHeight - 170);
-    }, [setHeight]);
+  const resize = useCallback(() => {
+    setHeight(document.body.clientHeight - 170);
+  }, [setHeight]);
 
-    useEffect(() => {
-        resize();
-        if (!resize.init) {
-            resize.init = true;
-            const debounceResize = debounce(resize, 500);
-            window.addEventListener('resize', debounceResize);
-        }
-    }, [resize]);
+  useEffect(() => {
+    resize();
+    if (!resize.init) {
+      resize.init = true;
+      const debounceResize = debounce(resize, 500);
+      window.addEventListener('resize', debounceResize);
+    }
+  }, [resize]);
 
-    return (
-        <Style className='subtitles'>
-            <div className="speakers-wrapper">
-                <ul>
-                    <li>
-                        <button className='btn active'>Speaker 1</button>
-                    </li>
-                    <li>
-                        <button className='btn'>Speaker 2</button>
-                    </li>
-                </ul>
+  return (
+    <Style className='subtitles'>
+      <div className='speakers-wrapper'>
+        <ul>
+          {speakers.map((item) => (
+            <li key={item.id}>
+              <button className={item.id === currentSpeaker ? 'btn active' : 'btn'}
+                      onClick={() => setCurrentSpeaker(item.id)}>
+                {item.name}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <Table
+        headerHeight={40}
+        width={500}
+        height={height}
+        rowHeight={80}
+        scrollToIndex={currentIndex}
+        rowCount={subtitle.length}
+        rowGetter={({ index }) => subtitle[index]}
+        headerRowRenderer={() => null}
+        rowRenderer={(props) => {
+          return (
+            <div
+              key={props.key}
+              className={props.className}
+              style={props.style}
+              onClick={() => {
+                if (player) {
+                  player.pause();
+                  if (player.duration >= props.rowData.startTime) {
+                    player.currentTime = props.rowData.startTime + 0.001;
+                  }
+                }
+              }}
+            >
+              <div className='item'>
+                <div className='item-bar item-index'>
+                  <span>123</span>
+                </div>
+                <div className='item-bar item-timing'>
+                  <input type='text' value='00:00:30.33' onClick={() => {
+                  }} />
+                  <input className='timing-duration' type='text' value='00:40.01' disabled={true} />
+                  <input type='text' value='00:01:10.32' onClick={() => {
+                  }} />
+                </div>
+                <textarea
+                  maxLength={200}
+                  spellCheck={false}
+                  className={[
+                    'textarea',
+                    currentIndex === props.index ? 'highlight' : '',
+                    checkSub(props.rowData) ? 'illegal' : '',
+                  ].join(' ').trim()}
+                  value={unescape(props.rowData.text)}
+                  onChange={(event) => {
+                    updateSub(props.rowData, {
+                      text: event.target.value,
+                    });
+                  }}
+                />
+                <div className='item-bar item-actions'>
+                  <button className='generateVoice'>⏺</button>
+                  <button className='playVoice'>⏯</button>
+                </div>
+              </div>
             </div>
-            <Table
-                headerHeight={40}
-                width={500}
-                height={height}
-                rowHeight={80}
-                scrollToIndex={currentIndex}
-                rowCount={subtitle.length}
-                rowGetter={({ index }) => subtitle[index]}
-                headerRowRenderer={() => null}
-                rowRenderer={(props) => {
-                    return (
-                        <div
-                            key={props.key}
-                            className={props.className}
-                            style={props.style}
-                            onClick={() => {
-                                if (player) {
-                                    player.pause();
-                                    if (player.duration >= props.rowData.startTime) {
-                                        player.currentTime = props.rowData.startTime + 0.001;
-                                    }
-                                }
-                            }}
-                        >
-                            <div className='item'>
-                                <div className='item-bar item-timing'>
-                                    <input type='text' value='00:00:30.33' />
-                                    <input className='timing-duration' type='text' value='00:40.01' disabled={true} />
-                                    <input type='text' value='00:01:10.32' />
-                                </div>
-                                <textarea
-                                    maxLength={200}
-                                    spellCheck={false}
-                                    className={[
-                                        'textarea',
-                                        currentIndex === props.index ? 'highlight' : '',
-                                        checkSub(props.rowData) ? 'illegal' : '',
-                                    ]
-                                        .join(' ')
-                                        .trim()}
-                                    value={unescape(props.rowData.text)}
-                                    onChange={(event) => {
-                                        updateSub(props.rowData, {
-                                            text: event.target.value,
-                                        });
-                                    }}
-                                />
-                                <div className='item-bar item-actions'>
-                                    <button className="generateVoice">⏺</button>
-                                    <button className="playVoice">⏯</button>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                }}
-            ></Table>
-        </Style>
-    );
+          );
+        }}
+      ></Table>
+    </Style>
+  );
 }

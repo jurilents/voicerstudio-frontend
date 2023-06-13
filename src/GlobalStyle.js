@@ -1,6 +1,8 @@
 import { createGlobalStyle } from 'styled-components';
 
 export default createGlobalStyle`
+  @import '/node_modules/bootstrap/dist/css/bootstrap.min.css';
+
   html,
   body,
   #root {
