@@ -3,18 +3,22 @@
   "version": "4.0.0",
   "private": true,
   "scripts": {
-    "start": "BROWSER=none react-scripts start",
-    "start:windows": "set BROWSER=none && react-scripts start",
-    "build": "react-scripts build"
+    "start": "BROWSER=none env-cmd -f .env react-scripts start",
+    "start:prod": "BROWSER=none env-cmd -f .env.production react-scripts start",
+    "start:windows": "set BROWSER=none && env-cmd -f .env react-scripts start",
+    "build:dev": "env-cmd -f .env react-scripts build",
+    "build:prod": "env-cmd -f .env.production react-scripts build"
   },
   "dependencies": {
     "@ffmpeg/core": "^0.8.5",
     "@ffmpeg/ffmpeg": "^0.9.8",
     "@forlagshuset/simple-fs": "^0.5.0",
+    "axios": "^1.4.0",
     "bootstrap": "^5.3.0",
     "core-js": "^3.18.0",
     "date-fns": "^2.30.0",
     "duration-time-conversion": "^1.0.5",
+    "env-cmd": "^10.1.0",
     "lodash": "^4.17.21",
     "normalize.css": "^8.0.1",
     "option-validator": "^2.0.6",

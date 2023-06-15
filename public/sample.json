@@ -1,8 +1,8 @@
 [
   {
-    "start": "00:00:00.306",
-    "end": "00:00:00.844",
-    "text": "Sample subtitle",
-    "note": ""
+    "start": "00:00:00.000",
+    "end": "00:00:05.000",
+    "text": "Text to speech",
+    "note": "Заметка"
   }
 ]

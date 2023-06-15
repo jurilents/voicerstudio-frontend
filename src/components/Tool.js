@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import languages from '../libs/languages';
 import { t, Translate } from 'react-i18nify';
 import React, { useCallback, useState } from 'react';
-import { download, getExt } from '../utils';
+import { download, getExt, getWaveformZoomSteps } from '../utils';
 import { file2sub, sub2srt, sub2txt, sub2vtt } from '../libs/readSub';
 import sub2ass from '../libs/readSub/sub2ass';
 import googleTranslate from '../libs/googleTranslate';
@@ -23,10 +23,15 @@ const Style = styled.div`
     display: flex;
     justify-content: space-between;
     padding: 10px;
+    gap: 10px;
     border-bottom: 1px solid rgb(255 255 255 / 20%);
 
     .btn {
       background-color: #3f51b5;
+    }
+
+    .secondary {
+      background-color: #009688;
     }
 
     .file {
@@ -57,11 +62,6 @@ const Style = styled.div`
     justify-content: space-between;
     padding: 10px;
     border-bottom: 1px solid rgb(255 255 255 / 20%);
-
-    .btn {
-      width: 31%;
-      background-color: #009688;
-    }
   }
 
   .operate {
@@ -434,42 +434,40 @@ export default function Header(
     <Style className='tool'>
       <div className='top'>
         <div className='import'>
+          <div className='btn secondary' onClick={() => downloadSub('json')}>
+            <Translate value='EXPORT_JSON' />
+          </div>
+          <div className='btn secondary' onClick={() => downloadSub('srt')}>
+            <Translate value='EXPORT_SRT' />
+          </div>
           <div className='btn'>
             <Translate value='OPEN_VIDEO' />
             <input className='file' type='file' onChange={onVideoChange} onClick={onInputClick} />
           </div>
         </div>
-        {window.crossOriginIsolated ? (
-          <div className='burn' onClick={burnSubtitles}>
-            <div className='btn'>
-              <Translate value='EXPORT_VIDEO' />
-            </div>
-          </div>
-        ) : null}
-        <div className='export'>
-          <div className='btn' onClick={() => downloadSub('json')}>
-            <Translate value='EXPORT_JSON' />
-          </div>
-          <div className='btn' onClick={() => downloadSub('srt')}>
-            <Translate value='EXPORT_SRT' />
-          </div>
-        </div>
-        <div className='operate'>
-          <div
-            className='btn'
-            onClick={() => {
-              if (window.confirm(t('CLEAR_TIP')) === true) {
-                clearSubs();
-                window.location.reload();
-              }
-            }}
-          >
-            <Translate value='CLEAR' />
-          </div>
-          <div className='btn' onClick={undoSubs}>
-            <Translate value='UNDO' />
-          </div>
-        </div>
+        {/*{window.crossOriginIsolated ? (*/}
+        {/*  <div className='burn' onClick={burnSubtitles}>*/}
+        {/*    <div className='btn'>*/}
+        {/*      <Translate value='EXPORT_VIDEO' />*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+        {/*) : null}*/}
+        {/*<div className='operate'>*/}
+        {/*  <div*/}
+        {/*    className='btn'*/}
+        {/*    onClick={() => {*/}
+        {/*      if (window.confirm(t('CLEAR_TIP')) === true) {*/}
+        {/*        clearSubs();*/}
+        {/*        window.location.reload();*/}
+        {/*      }*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <Translate value='CLEAR' />*/}
+        {/*  </div>*/}
+        {/*  <div className='btn' onClick={undoSubs}>*/}
+        {/*    <Translate value='UNDO' />*/}
+        {/*  </div>*/}
+        {/*</div>*/}
         <div className='translate'>
           <select value={translate} onChange={(event) => setTranslate(event.target.value)}>
             {(languages[language] || languages.en).map((item) => (
@@ -482,16 +480,19 @@ export default function Header(
             <Translate value='TRANSLATE' />
           </div>
         </div>
+        {/*<div className='hotkey'>*/}
+        {/*  <span>*/}
+        {/*      <Translate value='HOTKEY_01' />*/}
+        {/*  </span>*/}
+        {/*  <span>*/}
+        {/*      <Translate value='HOTKEY_02' />*/}
+        {/*  </span>*/}
+        {/*</div>*/}
         <div className='hotkey'>
-          <span>
-              <Translate value='HOTKEY_01' />
-          </span>
-          <span>
-              <Translate value='HOTKEY_02' />
-          </span>
-        </div>
-        <div className='hotkey'>
-          <input type='range' min={1} max={10} value={1} onChange={()=>{console.log('test')}} />
+          <input type='range' min={1} max={getWaveformZoomSteps(waveform)} value={settings.zoom}
+                 onChange={(e) => {
+                   setSettings({ ...settings, zoom: e.target.value });
+                 }} />
         </div>
         <div className='actions'>
           <div className={'btn noselect' + (settings.scrollable ? ' active' : '')}

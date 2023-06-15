@@ -15,6 +15,7 @@ import Header from './components/header/Header';
 import Speaker from './models/Speaker';
 import { isEmpty } from 'lodash';
 import Settings from './models/Settings';
+import { languagesApi } from './api/axios';
 
 const Style = styled.div`
   height: 100%;
@@ -28,6 +29,7 @@ const Style = styled.div`
 
     .player {
       flex: 1;
+      height: auto;
     }
 
     .subtitles {
@@ -319,6 +321,7 @@ export default function App({ defaultLang }) {
         currentSpeaker: 1,
         scrollable: true,
         magnet: false,
+        zoom: 1,
       }));
     }
 
@@ -339,11 +342,22 @@ export default function App({ defaultLang }) {
 
   useEffect(() => {
     if (waveform && !isEmpty(settings)) {
+      console.log('wa', +(settings.zoom || 1) * 10);
       waveform.setOptions({
         scrollable: settings.scrollable || false,
+        duration: +(settings.zoom || 1) * 10,
       });
     }
   }, [waveform, settings]);
+
+  useEffect(() => {
+    async function test() {
+      const langs = await languagesApi.getAll('test');
+      console.log('langs', langs);
+    }
+
+    test();
+  });
 
   const props = {
     player,

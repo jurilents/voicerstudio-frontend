@@ -36,6 +36,7 @@ const Timeline = styled.div`
   }
 
   .sub-item {
+    opacity: 60%;
     position: absolute;
     top: 30%;
     left: 0;
@@ -101,6 +102,8 @@ const Timeline = styled.div`
 
   .active-speaker {
     .sub-item {
+      opacity: 100%;
+
       &:hover {
         background-color: rgba(255, 255, 255, 0.3);
       }
@@ -173,8 +176,6 @@ export default React.memo(function(
     const currentSub = currentSubs.find(
       (item) => item.startTime <= currentTime && item.endTime > currentTime,
     ) || {};
-
-    console.log('active-speaker', settings.currentSpeaker);
 
     const onMouseDown = (sub, event, type) => {
       if (sub.speaker !== settings.currentSpeaker) {

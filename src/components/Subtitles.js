@@ -162,6 +162,8 @@ export default function Subtitles(
     }
   }, [resize]);
 
+  const currentSpeakerSubs = subtitle.filter(x => x.speaker === settings.currentSpeaker);
+
   return (
     <Style className='subtitles'>
       <Table
@@ -170,8 +172,8 @@ export default function Subtitles(
         height={height}
         rowHeight={80}
         scrollToIndex={currentIndex}
-        rowCount={subtitle.length}
-        rowGetter={({ index }) => subtitle[index]}
+        rowCount={currentSpeakerSubs.length}
+        rowGetter={({ index }) => currentSpeakerSubs[index]}
         headerRowRenderer={() => null}
         rowRenderer={(props) => {
           return (
@@ -200,7 +202,7 @@ export default function Subtitles(
                   }} />
                 </div>
                 <textarea
-                  maxLength={200}
+                  maxLength={400}
                   spellCheck={false}
                   className={[
                     'textarea',
@@ -211,6 +213,21 @@ export default function Subtitles(
                   onChange={(event) => {
                     updateSub(props.rowData, {
                       text: event.target.value,
+                    });
+                  }}
+                />
+                <textarea
+                  maxLength={400}
+                  spellCheck={false}
+                  className={[
+                    'textarea',
+                    currentIndex === props.index ? 'highlight' : '',
+                    checkSub(props.rowData) ? 'illegal' : '',
+                  ].join(' ').trim()}
+                  value={unescape(props.rowData.note)}
+                  onChange={(event) => {
+                    updateSub(props.rowData, {
+                      note: event.target.value,
                     });
                   }}
                 />
