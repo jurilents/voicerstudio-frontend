@@ -4,7 +4,7 @@ import DT from 'duration-time-conversion';
 import isEqual from 'lodash/isEqual';
 import styled from 'styled-components';
 import Tool from './components/Tool';
-import Subtitles from './components/Subtitles';
+import Subtitles from './components/sidebar/Subtitles';
 import Player from './components/player/Player';
 import Footer from './components/footer/Footer';
 import Loading from './components/Loading';
@@ -15,6 +15,7 @@ import Header from './components/header/Header';
 import Speaker from './models/Speaker';
 import { isEmpty } from 'lodash';
 import Settings from './models/Settings';
+import Speakers from './components/sidebar/Speakers';
 import { languagesApi } from './api/axios';
 
 const Style = styled.div`
@@ -33,8 +34,14 @@ const Style = styled.div`
     }
 
     .subtitles {
-      width: 500px;
+      width: 600px;
       overflow: hidden;
+      position: relative;
+      //box-shadow: 0px 5px 25px 5px rgb(0 0 0 / 80%);
+      background-color: rgba(0, 0, 0, 50%);
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
     }
 
     .tool {
@@ -68,9 +75,11 @@ export default function App({ defaultLang }) {
   const [subtitle, setSubtitleOriginal] = useState([]);
   const [waveform, setWaveform] = useState(null);
   const [playing, setPlaying] = useState(false);
+  const [recording, setRecording] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState(-1);
-  const [settings, setSettingsOriginal] = useState({});
+  const [settings, setSettingsOriginal] = useState(new Settings({}));
+  const [langs, setLangs] = useState([]);
+  const [currentLang, setCurrentLang] = useState(null);
 
   const newSub = useCallback((item) => {
     if (!item.speaker) {
@@ -131,14 +140,13 @@ export default function App({ defaultLang }) {
   );
 
   const setSettings = useCallback(
-    (newSettings) => {
+    (settingsPatch) => {
+      const newSettings = new Settings({ ...settings, ...settingsPatch });
       if (!isEqual(newSettings, settings)) {
         window.localStorage.setItem('settings', JSON.stringify(newSettings));
         setSettingsOriginal(newSettings);
       }
-    },
-    [settings, setSettingsOriginal],
-  );
+    }, [settings, setSettingsOriginal]);
 
   const undoSubs = useCallback(() => {
     const subs = subtitleHistory.current.pop();
@@ -300,9 +308,9 @@ export default function App({ defaultLang }) {
   }, [onKeyDown]);
 
   useMemo(() => {
-    const currentIndex = subtitle.findIndex((item) => item.startTime <= currentTime && item.endTime > currentTime);
-    setCurrentIndex(currentIndex);
-  }, [currentTime, subtitle]);
+    const sub = subtitle.find((item) => item.startTime <= currentTime && item.endTime > currentTime);
+    setSettings({ currentSubtitle: sub?.id || -1 });
+  }, [currentTime, subtitle, setSettings]);
 
   useEffect(() => {
     const settingsString = window.localStorage.getItem('settings');
@@ -317,12 +325,7 @@ export default function App({ defaultLang }) {
       }
     }
     if (!settings || isEmpty(settingsString)) {
-      setSettings(new Settings({
-        currentSpeaker: 1,
-        scrollable: true,
-        magnet: false,
-        zoom: 1,
-      }));
+      setSettings(new Settings({}));
     }
 
     const localSubtitleString = window.localStorage.getItem('subtitle');
@@ -342,22 +345,48 @@ export default function App({ defaultLang }) {
 
   useEffect(() => {
     if (waveform && !isEmpty(settings)) {
-      console.log('wa', +(settings.zoom || 1) * 10);
       waveform.setOptions({
         scrollable: settings.scrollable || false,
-        duration: +(settings.zoom || 1) * 10,
+        duration: +(settings.zoom || 1) * 5,
       });
     }
   }, [waveform, settings]);
 
   useEffect(() => {
-    async function test() {
+    async function fetchLanguages() {
       const langs = await languagesApi.getAll('test');
-      console.log('langs', langs);
+      setLangs(langs);
+
+      for (const speaker of speakers) {
+        if (speaker.speechConfig?.locale) {
+          const speakerLocale = speaker.speechConfig.locale;
+          speaker.lang = langs.find(x => x.locale === speakerLocale);
+          console.log(speaker.lang);
+        }
+      }
+
+      setSpeakers(speakers);
     }
 
-    test();
-  });
+    if (!langs || langs.length === 0) {
+      fetchLanguages();
+    }
+  }, [langs, setLangs]);
+
+  useEffect(() => {
+    if (!speakers || !langs) {
+      return;
+    }
+    for (const speaker of speakers) {
+      if (speaker.speechConfig?.locale) {
+        const speakerLocale = speaker.speechConfig.locale;
+        speaker.lang = langs.find(x => x.locale === speakerLocale);
+        console.log('langs', speaker.lang);
+      }
+    }
+
+    setSpeakers(speakers);
+  }, [speakers, setSpeakers, langs]);
 
   const props = {
     player,
@@ -368,8 +397,8 @@ export default function App({ defaultLang }) {
     setWaveform,
     currentTime,
     setCurrentTime,
-    currentIndex,
-    setCurrentIndex,
+    // currentIndex,
+    // setCurrentIndex,
     playing,
     setPlaying,
     language,
@@ -384,6 +413,13 @@ export default function App({ defaultLang }) {
     newSpeaker,
     settings,
     setSettings,
+
+    recording,
+    setRecording,
+    langs,
+    setLangs,
+    currentLang,
+    setCurrentLang,
 
     notify,
     newSub,
@@ -407,7 +443,10 @@ export default function App({ defaultLang }) {
           <Player {...props} />
           <Tool {...props} />
         </div>
-        <Subtitles {...props} />
+        <div className='subtitles'>
+          <Subtitles {...props} />
+          <Speakers {...props} />
+        </div>
       </div>
       <Footer {...props} />
       {loading ? <Loading loading={loading} /> : null}

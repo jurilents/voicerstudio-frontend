@@ -151,7 +151,7 @@ let lastX = 0;
 let lastIndex = -1;
 let lastWidth = 0;
 let lastDiffX = 0;
-let isDroging = false;
+let isDragging = false;
 
 export default React.memo(function(
     {
@@ -183,7 +183,7 @@ export default React.memo(function(
       }
       lastSub = sub;
       if (event.button !== 0) return;
-      isDroging = true;
+      isDragging = true;
       lastType = type;
       lastX = event.pageX;
       lastIndex = currentSubs.indexOf(sub);
@@ -202,15 +202,12 @@ export default React.memo(function(
         $subs.style.width = `${width}px`;
         const start = DT.d2t(previou.endTime);
         const end = DT.d2t(next.startTime);
-        updateSub(sub, {
-          start,
-          end,
-        });
+        updateSub(sub, { start, end });
       }
     };
 
     const onDocumentMouseMove = useCallback((event) => {
-      if (isDroging && lastTarget) {
+      if (isDragging && lastTarget) {
         lastDiffX = event.pageX - lastX;
         if (lastType === 'left') {
           lastTarget.style.width = `${lastWidth - lastDiffX}px`;
@@ -224,17 +221,22 @@ export default React.memo(function(
     }, []);
 
     const onDocumentMouseUp = useCallback(() => {
-      if (isDroging && lastTarget && lastDiffX) {
+      if (isDragging && lastTarget && lastDiffX) {
         const timeDiff = lastDiffX / gridGap / 10;
         const index = hasSub(lastSub);
-        const previou = subtitle[index - 1];
+        const previous = subtitle[index - 1];
         const next = subtitle[index + 1];
 
-        const startTime = magnetically(lastSub.startTime + timeDiff, previou ? previou.endTime : null);
-        const endTime = magnetically(lastSub.endTime + timeDiff, next ? next.startTime : null);
+        let startTime = lastSub.startTime + timeDiff;
+        let endTime = lastSub.endTime + timeDiff;
+        if (settings.magnet) {
+          startTime = magnetically(startTime, previous ? previous.endTime : null);
+          endTime = magnetically(endTime, next ? next.startTime : null);
+        }
+
         const width = (endTime - startTime) * 10 * gridGap;
 
-        if ((previou && endTime < previou.startTime) || (next && startTime > next.endTime)) {
+        if ((previous && endTime < previous.startTime) || (next && startTime > next.endTime)) {
           setSubtitle(subtitle.sort((a, b) => parseFloat(a.startTime) - parseFloat(b.startTime)));
         }
 
@@ -256,10 +258,7 @@ export default React.memo(function(
           if (startTime > 0 && endTime > 0 && endTime - startTime >= 0.2) {
             const start = DT.d2t(startTime);
             const end = DT.d2t(endTime);
-            updateSub(lastSub, {
-              start,
-              end,
-            });
+            updateSub(lastSub, { start, end });
           } else {
             lastTarget.style.width = `${width}px`;
           }
@@ -272,8 +271,8 @@ export default React.memo(function(
       lastX = 0;
       lastWidth = 0;
       lastDiffX = 0;
-      isDroging = false;
-    }, [gridGap, hasSub, subtitle, setSubtitle, updateSub]);
+      isDragging = false;
+    }, [gridGap, hasSub, subtitle, setSubtitle, updateSub, settings.magnet]);
 
     const onKeyDown = useCallback(
       (event) => {

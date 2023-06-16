@@ -1,3 +1,5 @@
+import DT from 'duration-time-conversion';
+
 export const userAgent = window.navigator.userAgent;
 export const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
 
@@ -35,7 +37,19 @@ export function getWaveformZoomSteps(waveform) {
   if (!waveform) {
     return 1;
   }
-  const step = 10;
+  const step = 5;
   const segments = Math.round(waveform.decoder.audiobuffer.duration / step);
   return segments;
+}
+
+export function predictDuration(text, wordsPerMinute) {
+  const wordsCount = text.split(' ').length;
+  const wordsPerSecond = wordsPerMinute / 60;
+  return wordsCount * wordsPerSecond;
+}
+
+export function d2t(time) {
+  time = time === Infinity ? 0 : time;
+  const displayValue = DT.d2t(time);
+  return displayValue.substring(0, displayValue.length - 1);
 }

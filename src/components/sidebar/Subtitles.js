@@ -3,50 +3,21 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Table } from 'react-virtualized';
 import unescape from 'lodash/unescape';
 import debounce from 'lodash/debounce';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay, faRocket } from '@fortawesome/free-solid-svg-icons';
+import { d2t } from '../../utils';
 
 const Style = styled.div`
-  position: relative;
-  //box-shadow: 0px 5px 25px 5px rgb(0 0 0 / 80%);
-  background-color: rgb(0 0 0 / 100%);
-
   .ReactVirtualized__Table__row:nth-child(2n) {
     background-color: rgba(12, 12, 12, 0.5);
   }
 
-  .speakers-wrapper {
-    ul {
-      list-style: none;
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      gap: 5px;
-
-      li {
-        width: auto;
-      }
-    }
-
-    .btn {
-      border: 2px solid #009688;
-      background: transparent;
-      padding-left: 20px;
-      padding-right: 20px;
-      opacity: 90%;
-
-      &.active {
-        background-color: rgba(0, 150, 136, 0.9);
-      }
-
-      &:hover {
-        background-color: #009688;
-        opacity: 100%;
-      }
-    }
-  }
-
   .ReactVirtualized__Table {
+    height: 100%;
+
     .ReactVirtualized__Table__Grid {
       outline: none;
+      height: 100%;
     }
 
     .ReactVirtualized__Table__row {
@@ -59,7 +30,6 @@ const Style = styled.div`
 
         .textarea {
           flex: 1;
-          border: none;
           width: 100%;
           //height: 100%;
           color: #fff;
@@ -108,6 +78,10 @@ const Style = styled.div`
           width: 80px;
           font-size: 11px;
 
+          .estimate-duration {
+            color: #02b2a2;
+          }
+
           .timing-duration {
             opacity: 40%;
           }
@@ -136,28 +110,18 @@ const Style = styled.div`
   }
 `;
 
-export default function Subtitles(
-  {
-    currentIndex,
-    subtitle,
-    checkSub,
-    player,
-    updateSub,
-    speakers,
-    settings,
-    setSettings,
-  }) {
+export default function Subtitles({ subtitle, checkSub, player, updateSub, settings }) {
   const [height, setHeight] = useState(100);
 
   const resize = useCallback(() => {
-    setHeight(document.body.clientHeight - 250);
+    setHeight(document.body.clientHeight - 330);
   }, [setHeight]);
 
   useEffect(() => {
     resize();
     if (!resize.init) {
       resize.init = true;
-      const debounceResize = debounce(resize, 500);
+      const debounceResize = debounce(resize, 600);
       window.addEventListener('resize', debounceResize);
     }
   }, [resize]);
@@ -165,13 +129,13 @@ export default function Subtitles(
   const currentSpeakerSubs = subtitle.filter(x => x.speaker === settings.currentSpeaker);
 
   return (
-    <Style className='subtitles'>
+    <Style>
       <Table
         headerHeight={40}
-        width={500}
+        width={600}
         height={height}
         rowHeight={80}
-        scrollToIndex={currentIndex}
+        scrollToIndex={currentSpeakerSubs.findIndex(x => x.id === settings.currentSubtitle)}
         rowCount={currentSpeakerSubs.length}
         rowGetter={({ index }) => currentSpeakerSubs[index]}
         headerRowRenderer={() => null}
@@ -195,10 +159,14 @@ export default function Subtitles(
                   <span>{props.index + 1}</span>
                 </div>
                 <div className='item-bar item-timing'>
-                  <input type='text' value='00:00:30.33' onChange={() => {
+                  <input type='text' value={d2t(props.rowData.startTime)} title='Start time' onChange={() => {
                   }} />
-                  <input className='timing-duration' type='text' value='00:40.01' disabled={true} />
-                  <input type='text' value='00:01:10.32' onChange={() => {
+                  <input className='estimate-duration' type='text' value='00:40.01' title='Estimate duration'
+                         disabled={true} />
+                  <input className='timing-duration' type='text'
+                         value={d2t(props.rowData.endTime - props.rowData.startTime)} title='Current duration'
+                         disabled={true} />
+                  <input type='text' value={d2t(props.rowData.endTime)} title='End time' onChange={() => {
                   }} />
                 </div>
                 <textarea
@@ -206,7 +174,7 @@ export default function Subtitles(
                   spellCheck={false}
                   className={[
                     'textarea',
-                    currentIndex === props.index ? 'highlight' : '',
+                    settings.currentSubtitle === props.rowData.id ? 'highlight' : '',
                     checkSub(props.rowData) ? 'illegal' : '',
                   ].join(' ').trim()}
                   value={unescape(props.rowData.text)}
@@ -221,7 +189,7 @@ export default function Subtitles(
                   spellCheck={false}
                   className={[
                     'textarea',
-                    currentIndex === props.index ? 'highlight' : '',
+                    settings.currentSubtitle === props.rowData.id ? 'highlight' : '',
                     checkSub(props.rowData) ? 'illegal' : '',
                   ].join(' ').trim()}
                   value={unescape(props.rowData.note)}
@@ -232,26 +200,18 @@ export default function Subtitles(
                   }}
                 />
                 <div className='item-bar item-actions'>
-                  <button className='generateVoice'>⏺</button>
-                  <button className='playVoice'>⏯</button>
+                  <button className='icon-btn generateVoice' title='Generate speech'>
+                    <FontAwesomeIcon icon={faRocket} />
+                  </button>
+                  <button className='icon-btn playVoice'>
+                    <FontAwesomeIcon icon={faPlay} />
+                  </button>
                 </div>
               </div>
             </div>
           );
         }}
       ></Table>
-      <div className='speakers-wrapper'>
-        <ul>
-          {speakers.map((item) => (
-            <li key={item.id}>
-              <button className={item.id === settings.currentSpeaker ? 'btn active' : 'btn'}
-                      onClick={(() => setSettings({ ...settings, currentSpeaker: item.id }))}>
-                {item.id} {item.name} - {settings.currentSpeaker}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
     </Style>
   );
 }

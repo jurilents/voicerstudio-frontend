@@ -8,7 +8,7 @@ const Style = styled.div`
   padding-bottom: 20px;
   position: relative;
   overflow: hidden;
-  background-color: rgb(0 0 0 / 100%);
+  background-color: rgba(0, 0, 0, 50%);
   border-left: 1px solid rgb(255 255 255 / 20%);
 
   ul {

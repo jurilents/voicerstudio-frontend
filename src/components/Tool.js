@@ -8,6 +8,8 @@ import sub2ass from '../libs/readSub/sub2ass';
 import googleTranslate from '../libs/googleTranslate';
 import FFmpeg from '@ffmpeg/ffmpeg';
 import SimpleFS from '@forlagshuset/simple-fs';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLocationCrosshairs, faMagnet, faPause, faPlay, faRocket, faStop } from '@fortawesome/free-solid-svg-icons';
 
 const Style = styled.div`
   display: flex;
@@ -16,7 +18,7 @@ const Style = styled.div`
   padding-bottom: 20px;
   position: relative;
   overflow: hidden;
-  background-color: rgb(0 0 0 / 100%);
+  background-color: rgba(0, 0, 0, 50%);
   border-left: 1px solid rgb(255 255 255 / 20%);
 
   .import {
@@ -173,10 +175,10 @@ const Style = styled.div`
     gap: 10px;
 
     .btn {
-      font-size: 20px;
-      max-width: 50px;
+      font-size: 18px;
+      max-width: 40px;
 
-      &:active:hover {
+      &.focus:active:hover {
         background-color: #c22213;
       }
     }
@@ -197,6 +199,10 @@ const fs = new SimpleFS.FileSystem();
 
 export default function Header(
   {
+    playing,
+    setPlaying,
+    recording,
+    setRecording,
     player,
     waveform,
     newSub,
@@ -430,6 +436,16 @@ export default function Header(
       });
   }, [subtitle, setLoading, formatSub, setSubtitle, translate, notify]);
 
+  const togglePlay = () => {
+    if (playing) {
+      setPlaying(false);
+      player.pause();
+    } else {
+      setPlaying(true);
+      player.play();
+    }
+  };
+
   return (
     <Style className='tool'>
       <div className='top'>
@@ -491,22 +507,31 @@ export default function Header(
         <div className='hotkey'>
           <input type='range' min={1} max={getWaveformZoomSteps(waveform)} value={settings.zoom}
                  onChange={(e) => {
-                   setSettings({ ...settings, zoom: e.target.value });
+                   setSettings({ zoom: e.target.value });
                  }} />
         </div>
         <div className='actions'>
-          <div className={'btn noselect' + (settings.scrollable ? ' active' : '')}
-               onClick={() => setSettings({ ...settings, scrollable: !settings.scrollable })}>
-            🔒
+          <div className={'btn btn-icon focus' + (settings.scrollable ? ' active' : '')}
+               onClick={() => setSettings({ scrollable: !settings.scrollable })}>
+            <FontAwesomeIcon icon={faLocationCrosshairs} />
           </div>
-          <div className={'btn noselect' + (settings.magnet ? ' active' : '')}
-               onClick={() => setSettings({ ...settings, magnet: !settings.magnet })}>
-            🧲
+          <div className={'btn btn-icon focus' + (settings.magnet ? ' active' : '')}
+               onClick={() => setSettings({ magnet: !settings.magnet })}>
+            <FontAwesomeIcon icon={faMagnet} />
           </div>
           <div className='separator'></div>
-          <div className={'btn noselect' + (settings.magnet ? ' record' : '')}
-               onClick={() => setSettings({ ...settings, magnet: !settings.magnet })}>
-            ⏺️
+          <div className={'btn btn-icon' + (settings.magnet ? ' record' : '')}
+               onClick={() => togglePlay()} title='Hotkey: SPASE'>
+            <FontAwesomeIcon icon={playing ? faPause : faPlay} />
+          </div>
+          <div className='separator'></div>
+          <div className={'btn btn-icon focus' + (settings.magnet ? ' record' : '')}
+               onClick={() => setSettings({ magnet: !settings.magnet })}>
+            <FontAwesomeIcon icon={faRocket} />
+          </div>
+          <div className={'btn btn-icon focus' + (recording ? ' record' : '')}
+               onMouseDown={() => setRecording(true)}>
+            <FontAwesomeIcon icon={faStop} />
           </div>
         </div>
       </div>
