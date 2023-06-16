@@ -4,15 +4,16 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default class Sub {
   constructor(obj) {
-    this.id = 'sub_' + uuidv4();
+    this.id = obj.id || ('sub_' + uuidv4());
     this.speaker = obj.speaker;
     this.start = obj.start;
     this.end = obj.end;
     this.text = obj.text;
     this.note = obj.note;
+    this.voicedStamp = obj.voicedStamp;
   }
 
-  get check() {
+  get isValid() {
     return this.startTime >= 0 && this.endTime >= 0 && this.startTime < this.endTime;
   }
 
@@ -38,5 +39,32 @@ export default class Sub {
 
   get duration() {
     return parseFloat((this.endTime - this.startTime).toFixed(3));
+  }
+
+  createVoicedStamp() {
+    this.voicedStamp = new VoicedSubStamp(this);
+  }
+
+  get voicedStatus() {
+    if (this.text === this.voicedText) {
+
+    }
+  }
+
+}
+
+class VoicedSubStamp {
+  constructor(obj) {
+    this.text = obj.text;
+    this.start = obj.start;
+    this.end = obj.end;
+    this.blobUrl = obj.blobUrl;
+  }
+
+  equalTo(target) {
+    return target
+      && this.text === target.text
+      && this.start === target.start
+      && this.end === target.end;
   }
 }

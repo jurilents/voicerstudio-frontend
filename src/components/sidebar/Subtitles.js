@@ -114,7 +114,7 @@ export default function Subtitles({ subtitle, checkSub, player, updateSub, setti
   const [height, setHeight] = useState(100);
 
   const resize = useCallback(() => {
-    setHeight(document.body.clientHeight - 330);
+    setHeight(document.body.clientHeight - 335);
   }, [setHeight]);
 
   useEffect(() => {

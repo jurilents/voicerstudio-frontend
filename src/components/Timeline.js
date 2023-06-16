@@ -281,9 +281,10 @@ export default React.memo(function(
           const keyCode = getKeyCode(event);
           switch (keyCode) {
             case 37:
+              const overflow = sub.startTime - 0.1 <= 0;
               updateSub(sub, {
-                start: DT.d2t(sub.startTime - 0.1),
-                end: DT.d2t(sub.endTime - 0.1),
+                start: DT.d2t(overflow ? 0 : sub.startTime - 0.1),
+                end: DT.d2t(overflow ? sub.endTime - sub.startTime : sub.endTime - 0.1),
               });
               player.currentTime = sub.startTime - 0.1;
               break;

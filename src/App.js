@@ -34,6 +34,7 @@ const Style = styled.div`
     }
 
     .subtitles {
+      padding-top: 5px;
       width: 600px;
       overflow: hidden;
       position: relative;
@@ -165,7 +166,7 @@ export default function App({ defaultLang }) {
       const index = hasSub(sub);
       if (index < 0) return;
       const previous = subtitle[index - 1];
-      return (previous && sub.startTime < previous.endTime) || !sub.check || sub.duration < 0.2;
+      return (previous && sub.startTime < previous.endTime) || !sub.isValid || sub.duration < 0.2;
     },
     [subtitle, hasSub],
   );
@@ -213,7 +214,7 @@ export default function App({ defaultLang }) {
       const subs = copySubs();
       const subClone = formatSub(sub);
       Object.assign(subClone, obj);
-      if (subClone.check) {
+      if (subClone.isValid) {
         subs[index] = subClone;
         setSubtitle(subs);
       }
