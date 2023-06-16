@@ -73,6 +73,7 @@ export default function App({ defaultLang }) {
     new Speaker({ id: 1, name: 'Speaker 1' }),
     new Speaker({ id: 2, name: 'Speaker 2' }),
   ]);
+  const [preset, setPreset] = useState('');
   const [subtitle, setSubtitleOriginal] = useState([]);
   const [waveform, setWaveform] = useState(null);
   const [playing, setPlaying] = useState(false);
@@ -131,8 +132,8 @@ export default function App({ defaultLang }) {
   );
 
   const setSpeakers = useCallback(
-    (newSpeakers) => {
-      if (!isEqual(newSpeakers, speakers)) {
+    (newSpeakers, force = false) => {
+      if (force || !isEqual(newSpeakers, speakers)) {
         window.localStorage.setItem('speakers', JSON.stringify(newSpeakers));
         setSpeakersOriginal(newSpeakers);
       }
@@ -276,6 +277,18 @@ export default function App({ defaultLang }) {
     [hasSub, copySubs, setSubtitle, newSub],
   );
 
+  const patchSpeaker = useCallback(
+    (id, patchValues) => {
+      const index = speakers.findIndex(x => x.id === id);
+      if (index < 0) return;
+      const speakersCopy = [...speakers];
+      const speaker = speakers[index];
+      speakersCopy[index] = new Speaker({ ...speaker, ...patchValues });
+      setSpeakers(speakersCopy, true);
+    },
+    [speakers, setSpeakers],
+  );
+
   const onKeyDown = useCallback(
     (event) => {
       const keyCode = getKeyCode(event);
@@ -314,12 +327,29 @@ export default function App({ defaultLang }) {
   }, [currentTime, subtitle, setSettings]);
 
   useEffect(() => {
+    // ========= Speakers =========
+    const localSpeakersString = window.localStorage.getItem('speakers');
+    if (localSpeakersString) {
+      try {
+        const localSpeakers = JSON.parse(localSpeakersString);
+        if (localSpeakers.length) {
+          setSpeakersOriginal(localSpeakers.map((item) => new Speaker(item)));
+        }
+      } catch (error) {
+        // ignore
+      }
+    }
+    // setSpeakersOriginal([]);
+
+    // ========= Settings =========
     const settingsString = window.localStorage.getItem('settings');
     if (settingsString) {
       try {
         const localSettings = JSON.parse(settingsString);
         if (localSettings && !isEmpty(localSettings)) {
           setSettingsOriginal(localSettings);
+          const currentSpeaker = speakers.find(x => x.id === localSettings.currentSpeaker);
+          setPreset(currentSpeaker?.preset || '');
         }
       } catch (error) {
         // ignore
@@ -329,6 +359,7 @@ export default function App({ defaultLang }) {
       setSettings(new Settings({}));
     }
 
+    // ========= Subtitles =========
     const localSubtitleString = window.localStorage.getItem('subtitle');
     if (localSubtitleString) {
       try {
@@ -342,7 +373,7 @@ export default function App({ defaultLang }) {
       }
     }
     setSubtitleOriginal([]);
-  }, [setSubtitleOriginal, setSettingsOriginal, speakers]);
+  }, [setSubtitleOriginal, setSpeakersOriginal, setSettingsOriginal]);
 
   useEffect(() => {
     if (waveform && !isEmpty(settings)) {
@@ -357,16 +388,6 @@ export default function App({ defaultLang }) {
     async function fetchLanguages() {
       const langs = await languagesApi.getAll('test');
       setLangs(langs);
-
-      for (const speaker of speakers) {
-        if (speaker.speechConfig?.locale) {
-          const speakerLocale = speaker.speechConfig.locale;
-          speaker.lang = langs.find(x => x.locale === speakerLocale);
-          console.log(speaker.lang);
-        }
-      }
-
-      setSpeakers(speakers);
     }
 
     if (!langs || langs.length === 0) {
@@ -375,18 +396,21 @@ export default function App({ defaultLang }) {
   }, [langs, setLangs]);
 
   useEffect(() => {
-    if (!speakers || !langs) {
+    if (!speakers?.length || !langs?.length) {
       return;
     }
-    for (const speaker of speakers) {
-      if (speaker.speechConfig?.locale) {
-        const speakerLocale = speaker.speechConfig.locale;
-        speaker.lang = langs.find(x => x.locale === speakerLocale);
-        console.log('langs', speaker.lang);
+
+    const speakersClone = [...speakers];
+    for (let i = 0; i < speakersClone.length; i++) {
+      if (speakersClone[i].locale && speakersClone[i].voice) {
+        const speaker = new Speaker(speakersClone[i]);
+        const lang = langs.find(x => x.locale === speaker.locale);
+        const voice = lang.voices.find(x => x.key === speaker.voice);
+        speaker.wordsPerMinute = voice.wordsPerMinute;
+        speakersClone[i] = speaker;
       }
     }
-
-    setSpeakers(speakers);
+    setSpeakers(speakersClone);
   }, [speakers, setSpeakers, langs]);
 
   const props = {
@@ -411,9 +435,12 @@ export default function App({ defaultLang }) {
 
     speakers,
     setSpeakers,
+    patchSpeaker,
     newSpeaker,
     settings,
     setSettings,
+    preset,
+    setPreset,
 
     recording,
     setRecording,

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { parsePreset } from '../../utils/presetParser';
 
 const Style = styled.div`
@@ -69,19 +69,17 @@ const Style = styled.div`
   }
 `;
 
-export default function Speakers({ notify, speakers, setSpeakers, settings, setSettings }) {
-  const [preset, setPreset] = useState('');
-
+export default function Speakers({ notify, speakers, patchSpeaker, settings, setSettings, preset, setPreset }) {
   useEffect(() => {
     const speaker = speakers.find(x => x.id === settings.currentSpeaker);
     if (speaker.preset) {
-      setPreset(speaker.preset);
+      // setPreset(speaker.preset);
     } else {
-      setSettings({ ...settings });
+      setSettings({ speaker });
     }
-  }, [settings.currentSpeaker]);
+  }, [setSettings, speakers, settings.currentSpeaker]);
 
-  function applyPreset(preset) {
+  const applyPreset = useCallback((preset) => {
     console.log(preset);
     const speaker = speakers.find(x => x.id === settings.currentSpeaker);
     try {
@@ -89,29 +87,40 @@ export default function Speakers({ notify, speakers, setSpeakers, settings, setS
         return;
       }
       const presetParts = preset.split(': ');
-      const presetPayload = presetParts.length > 1 ? presetParts[1] : presetParts[0];
+      let presetPayload;
+      if (presetParts.length > 1) {
+        speaker.name = presetParts[0];
+        presetPayload = presetParts[1];
+      } else {
+        presetPayload = presetParts[0];
+      }
       speaker.preset = preset;
       speaker.speechConfig = parsePreset(presetPayload);
-      setSettings({ speaker });
+      patchSpeaker(speaker.id, {
+        preset: speaker.preset,
+        speechConfig: speaker.speechConfig,
+      });
       notify({
         message: `Preset for speaker "${speaker.name}" updates successfully!`,
         level: 'info',
       });
     } catch (e) {
-      console.error(e);
+      // console.error(e);
       notify({
         message: 'Invalid preset :(',
         level: 'error',
       });
     }
-  }
+  }, [notify, speakers, patchSpeaker, settings.currentSpeaker]);
 
   return (
     <Style>
       <div className='speaker-config'>
-        <textarea className='preset-area' rows={2} value={preset} onChange={(e) => setPreset(e.target.value)}>
+        <textarea className='preset-area' rows={2} value={preset}
+                  onChange={(e) => setPreset(e.target.value)}>
         </textarea>
-        <button className='btn preset-apply' onClick={() => applyPreset(preset)}>
+        <button className='btn preset-apply'
+                onClick={() => applyPreset(preset)}>
           Apply Preset
         </button>
       </div>
@@ -119,7 +128,7 @@ export default function Speakers({ notify, speakers, setSpeakers, settings, setS
         {speakers.map((item) => (
           <li key={item.id}>
             <button className={item.id === settings.currentSpeaker ? 'btn active' : 'btn'}
-                    onClick={(() => setSettings({ ...settings, currentSpeaker: item.id }))}>
+                    onClick={(() => setSettings({ currentSpeaker: item.id }))}>
               {item.name}
             </button>
           </li>

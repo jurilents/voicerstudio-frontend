@@ -43,9 +43,13 @@ export function getWaveformZoomSteps(waveform) {
 }
 
 export function predictDuration(text, wordsPerMinute) {
-  const wordsCount = text.split(' ').length;
+  if (!wordsPerMinute) {
+    wordsPerMinute = 150;
+  }
+  const wordsCount = !text ? 0 : text.trim().split(/\s+/).length;
   const wordsPerSecond = wordsPerMinute / 60;
-  return wordsCount * wordsPerSecond;
+  const predictedSeconds = wordsCount / wordsPerSecond;
+  return d2t(predictedSeconds);
 }
 
 export function d2t(time) {

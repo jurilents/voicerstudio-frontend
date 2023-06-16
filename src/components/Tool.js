@@ -194,7 +194,7 @@ const Style = styled.div`
   }
 `;
 
-FFmpeg.createFFmpeg({ log: true }).load();
+FFmpeg.createFFmpeg({ log: process.env.REACT_APP_LOG_FFMPEG === 'true' }).load();
 const fs = new SimpleFS.FileSystem();
 
 export default function Header(

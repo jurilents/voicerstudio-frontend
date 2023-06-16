@@ -5,7 +5,7 @@ import unescape from 'lodash/unescape';
 import debounce from 'lodash/debounce';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faRocket } from '@fortawesome/free-solid-svg-icons';
-import { d2t } from '../../utils';
+import { d2t, predictDuration } from '../../utils';
 
 const Style = styled.div`
   .ReactVirtualized__Table__row:nth-child(2n) {
@@ -110,7 +110,7 @@ const Style = styled.div`
   }
 `;
 
-export default function Subtitles({ subtitle, checkSub, player, updateSub, settings }) {
+export default function Subtitles({ subtitle, speakers, checkSub, player, updateSub, settings }) {
   const [height, setHeight] = useState(100);
 
   const resize = useCallback(() => {
@@ -127,6 +127,7 @@ export default function Subtitles({ subtitle, checkSub, player, updateSub, setti
   }, [resize]);
 
   const currentSpeakerSubs = subtitle.filter(x => x.speaker === settings.currentSpeaker);
+  const currentSpeaker = speakers.find(x => x.id === settings.currentSpeaker);
 
   return (
     <Style>
@@ -161,7 +162,9 @@ export default function Subtitles({ subtitle, checkSub, player, updateSub, setti
                 <div className='item-bar item-timing'>
                   <input type='text' value={d2t(props.rowData.startTime)} title='Start time' onChange={() => {
                   }} />
-                  <input className='estimate-duration' type='text' value='00:40.01' title='Estimate duration'
+                  <input className='estimate-duration' type='text'
+                         value={predictDuration(props.rowData.text, currentSpeaker.lang?.wordsPerMinute)}
+                         title='Estimate duration'
                          disabled={true} />
                   <input className='timing-duration' type='text'
                          value={d2t(props.rowData.endTime - props.rowData.startTime)} title='Current duration'
