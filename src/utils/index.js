@@ -38,8 +38,7 @@ export function getWaveformZoomSteps(waveform) {
     return 1;
   }
   const step = 5;
-  const segments = Math.round(waveform.decoder.audiobuffer.duration / step);
-  return segments;
+  return Math.round(waveform.decoder.audiobuffer.duration / step);
 }
 
 export function predictDuration(text, wordsPerMinute) {

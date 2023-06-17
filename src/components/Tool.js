@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import languages from '../libs/languages';
 import { t, Translate } from 'react-i18nify';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { download, getExt, getWaveformZoomSteps } from '../utils';
 import { file2sub, sub2srt, sub2txt, sub2vtt } from '../libs/readSub';
 import sub2ass from '../libs/readSub/sub2ass';
@@ -446,6 +446,25 @@ export default function Header(
     }
   };
 
+  const startRecording = () => {
+    setRecording(true);
+    setPlaying(true);
+    player.play();
+  };
+
+  const onDocumentMouseUp = useCallback(() => {
+    if (recording) {
+      setRecording(false);
+    }
+  }, [recording, setRecording]);
+
+  useEffect(() => {
+    document.addEventListener('mouseup', onDocumentMouseUp);
+    return () => {
+      document.removeEventListener('mouseup', onDocumentMouseUp);
+    };
+  }, [onDocumentMouseUp]);
+
   return (
     <Style className='tool'>
       <div className='top'>
@@ -530,7 +549,7 @@ export default function Header(
             <FontAwesomeIcon icon={faRocket} />
           </div>
           <div className={'btn btn-icon focus' + (recording ? ' record' : '')}
-               onMouseDown={() => setRecording(true)}>
+               onMouseDown={() => startRecording()}>
             <FontAwesomeIcon icon={faStop} />
           </div>
         </div>
