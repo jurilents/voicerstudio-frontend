@@ -1,4 +1,5 @@
 import axios from 'axios';
+import DT from 'duration-time-conversion';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -19,9 +20,10 @@ export const speechApi = {
       headers: { 'X-Credentials': credentials },
       responseType: 'blob',
     });
-    const file = result.data;
-    const audioBlob = new Blob([file]);
-    return URL.createObjectURL(audioBlob);
+    return {
+      url: URL.createObjectURL(new Blob([result.data])),
+      duration: +result.headers['x-duration'],
+    };
   },
   batch: async (body, credentials) => {
     const result = await api.post(`v1/speech/batch`, body, {

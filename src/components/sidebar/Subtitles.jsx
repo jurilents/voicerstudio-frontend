@@ -5,7 +5,7 @@ import unescape from 'lodash/unescape';
 import debounce from 'lodash/debounce';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faPlay, faRocket } from '@fortawesome/free-solid-svg-icons';
-import { d2t, predictDuration } from '../../utils';
+import { d2t, download, predictDuration } from '../../utils';
 import { speechApi } from '../../api/axios';
 import { useDispatch } from 'react-redux';
 import { addAudio, playAudio, removeAudio } from '../../store/audioReducer';
@@ -152,14 +152,18 @@ export default function Subtitles(
         // role: 'string',
         pitch: +speaker.speechConfig[5],
         volume: +speaker.speechConfig[6],
+        start: sub.start,
+        end: sub.end,
         // speed: +speaker.speechConfig[7], // do not apply speed (rate)
       };
       console.log('Single speech request:', request);
-      const audioUrl = await speechApi.single(request, 'test');
-      console.log('audioUrl', audioUrl);
-      dispatch(addAudio(audioUrl));
+      const audio = await speechApi.single(request, 'test');
+      console.log('audioUrl', audio);
+      dispatch(addAudio(audio.url));
+      sub.endTime = sub.startTime + audio.duration;
       updateSub(sub, {
-        voicedStamp: sub.buildVoicedStamp(audioUrl),
+        end: sub.end,
+        voicedStamp: sub.buildVoicedStamp(audio.url),
       });
     }
 
@@ -170,15 +174,18 @@ export default function Subtitles(
   }, [dispatch, updateSub, speakers, settings.currentSpeaker]);
 
   const playSub = useCallback((sub) => {
-    if (!sub.voicedStamp?.audioUrl) {
-      return;
+    if (sub.voicedStamp?.audioUrl) {
+      dispatch(playAudio(sub.voicedStamp.audioUrl, true));
     }
-
-    dispatch(playAudio(sub.voicedStamp.audioUrl, true));
   }, [dispatch]);
 
-  const downloadSub = useCallback((sub) => {
-    //
+  const downloadSub = useCallback((sub, index) => {
+    if (sub.voicedStamp?.audioUrl) {
+      const start = sub.start.replaceAll(':', '-');
+      const end = sub.end.replaceAll(':', '-');
+      const fileName = `[${currentSpeaker.name}-${index}] ${start} to ${end}.wav`;
+      download(sub.voicedStamp.audioUrl, fileName);
+    }
   }, []);
 
   return (
@@ -266,7 +273,7 @@ export default function Subtitles(
                     <FontAwesomeIcon icon={faPlay} />
                   </button>
                   <button className='icon-btn playVoice'
-                          onClick={() => downloadSub(props.rowData)}>
+                          onClick={() => downloadSub(props.rowData, props.index + 1)}>
                     <FontAwesomeIcon icon={faDownload} />
                   </button>
                 </div>
