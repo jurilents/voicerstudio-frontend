@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL,
+  baseURL: 'https://api.voicer-demo.tacles.net', //process.env.REACT_APP_API_BASE_URL,
 });
 
 export const languagesApi = {

@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/05edf1bd-9b87-4b45-8c97-c93863912267/resourceGroups/voicer/providers/Microsoft.Web/sites/voicerstudio",
+    "appService.deploySubpath": "."
+}
