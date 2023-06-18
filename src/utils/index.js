@@ -12,13 +12,13 @@ export function sleep(ms = 0) {
 }
 
 export function download(url, name) {
-  const elink = document.createElement('a');
-  elink.style.display = 'none';
-  elink.href = url;
-  elink.download = name;
-  document.body.appendChild(elink);
-  elink.click();
-  document.body.removeChild(elink);
+  const link = document.createElement('a');
+  link.style.display = 'none';
+  link.href = url;
+  link.download = name;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 export function getKeyCode(event) {
@@ -48,11 +48,17 @@ export function predictDuration(text, wordsPerMinute) {
   const wordsCount = !text ? 0 : text.trim().split(/\s+/).length;
   const wordsPerSecond = wordsPerMinute / 60;
   const predictedSeconds = wordsCount / wordsPerSecond;
-  return d2t(predictedSeconds);
+  return d2t(predictedSeconds, true);
 }
 
-export function d2t(time) {
+export function d2t(time, shorten) {
   time = time === Infinity ? 0 : time;
-  const displayValue = DT.d2t(time);
+  let displayValue = DT.d2t(time);
+  if (shorten) {
+    if (displayValue.startsWith('00:00:'))
+      displayValue = displayValue.substring(6, displayValue.length);
+    else if (displayValue.startsWith('00:'))
+      displayValue = displayValue.substring(3, displayValue.length);
+  }
   return displayValue.substring(0, displayValue.length - 1);
 }

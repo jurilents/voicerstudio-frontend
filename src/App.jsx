@@ -10,11 +10,9 @@ import Footer from './components/footer/Footer';
 import Loading from './components/Loading';
 import ProgressBar from './components/footer/ProgressBar';
 import { getKeyCode } from './utils';
-import Sub from './models/Sub';
+import { Settings, Speaker, Sub } from './models';
 import Header from './components/header/Header';
-import Speaker from './models/Speaker';
 import { isEmpty } from 'lodash';
-import Settings from './models/Settings';
 import Speakers from './components/sidebar/Speakers';
 import { languagesApi } from './api/axios';
 

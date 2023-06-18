@@ -1,4 +1,4 @@
-export default class Settings {
+export class Settings {
   constructor(obj) {
     this.currentSpeaker = obj.currentSpeaker || 1;
     this.currentSubtitle = obj.currentSubtitle || -1;

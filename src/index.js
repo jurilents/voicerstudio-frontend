@@ -9,6 +9,8 @@ import i18n from './i18n';
 import App from './App';
 import Mobile from './Mobile';
 import GlobalStyle from './GlobalStyle';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 setTranslations(i18n);
 const language = navigator.language.toLowerCase();
@@ -16,9 +18,11 @@ const defaultLang = i18n[language] ? language : 'en';
 setLocale(defaultLang);
 
 ReactDOM.render(
+  <Provider store={store}>
     <React.Fragment>
-        <GlobalStyle />
-        {isMobile ? <Mobile /> : <App defaultLang={defaultLang} />}
-    </React.Fragment>,
-    document.getElementById('root'),
+      <GlobalStyle />
+      {isMobile ? <Mobile /> : <App defaultLang={defaultLang} />}
+    </React.Fragment>
+  </Provider>,
+  document.getElementById('root'),
 );

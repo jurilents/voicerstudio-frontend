@@ -2,7 +2,7 @@ import clamp from 'lodash/clamp';
 import DT from 'duration-time-conversion';
 import { v4 as uuidv4 } from 'uuid';
 
-export default class Sub {
+export class Sub {
   constructor(obj) {
     this.id = obj.id || ('sub_' + uuidv4());
     this.speaker = obj.speaker;
@@ -41,8 +41,8 @@ export default class Sub {
     return parseFloat((this.endTime - this.startTime).toFixed(3));
   }
 
-  createVoicedStamp() {
-    this.voicedStamp = new VoicedSubStamp(this);
+  buildVoicedStamp(audioUrl) {
+    return new VoicedSubStamp(this, audioUrl);
   }
 
   get voicedStatus() {
@@ -53,12 +53,12 @@ export default class Sub {
 
 }
 
-class VoicedSubStamp {
-  constructor(obj) {
+export class VoicedSubStamp {
+  constructor(obj, audioUrl) {
     this.text = obj.text;
     this.start = obj.start;
     this.end = obj.end;
-    this.blobUrl = obj.blobUrl;
+    this.audioUrl = obj.audioUrl || audioUrl;
   }
 
   equalTo(target) {

@@ -4,6 +4,7 @@ import { Translate } from 'react-i18nify';
 import styled from 'styled-components';
 import backlight from '../../libs/backlight';
 import { VideoWrap } from './VideoWrap';
+import { AudioWrap } from './AudioWrap';
 
 const Style = styled.div`
   display: flex;
@@ -140,6 +141,7 @@ export default function Player(props) {
   return (
     <Style className='player'>
       <div className='video' ref={$player}>
+        <AudioWrap {...props} />
         <VideoWrap {...props} />
         {props.player && currentSub ? (
           <div className='subtitle'>

@@ -1,4 +1,4 @@
-export default class Speaker {
+export class Speaker {
   constructor(obj) {
     this.id = obj.id;
     this.name = obj.name;

@@ -4,8 +4,11 @@ import { Table } from 'react-virtualized';
 import unescape from 'lodash/unescape';
 import debounce from 'lodash/debounce';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faRocket } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faPlay, faRocket } from '@fortawesome/free-solid-svg-icons';
 import { d2t, predictDuration } from '../../utils';
+import { speechApi } from '../../api/axios';
+import { useDispatch } from 'react-redux';
+import { addAudio, playAudio, removeAudio } from '../../store/audioReducer';
 
 const Style = styled.div`
   .ReactVirtualized__Table__row:nth-child(2n) {
@@ -96,7 +99,7 @@ const Style = styled.div`
             background-color: transparent;
             border: none;
             width: 100%;
-            min-height: 30px;
+            min-height: 20px;
             opacity: 75%;
             cursor: pointer;
 
@@ -110,9 +113,17 @@ const Style = styled.div`
   }
 `;
 
-export default function Subtitles({ subtitle, speakers, checkSub, player, updateSub, settings }) {
+export default function Subtitles(
+  {
+    subtitle,
+    speakers,
+    checkSub,
+    player,
+    updateSub,
+    settings,
+  }) {
+  const dispatch = useDispatch();
   const [height, setHeight] = useState(100);
-
   const resize = useCallback(() => {
     setHeight(document.body.clientHeight - 335);
   }, [setHeight]);
@@ -128,6 +139,47 @@ export default function Subtitles({ subtitle, speakers, checkSub, player, update
 
   const currentSpeakerSubs = subtitle.filter(x => x.speaker === settings.currentSpeaker);
   const currentSpeaker = speakers.find(x => x.id === settings.currentSpeaker);
+
+  const speakSub = useCallback((sub) => {
+    async function fetch() {
+      const speaker = speakers.find(x => x.id === settings.currentSpeaker);
+      const request = {
+        locale: speaker.locale,
+        voice: speaker.voice,
+        text: sub.text,
+        style: speaker.speechConfig[3],
+        styleDegree: +speaker.speechConfig[4],
+        // role: 'string',
+        pitch: +speaker.speechConfig[5],
+        volume: +speaker.speechConfig[6],
+        // speed: +speaker.speechConfig[7], // do not apply speed (rate)
+      };
+      console.log('Single speech request:', request);
+      const audioUrl = await speechApi.single(request, 'test');
+      console.log('audioUrl', audioUrl);
+      dispatch(addAudio(audioUrl));
+      updateSub(sub, {
+        voicedStamp: sub.buildVoicedStamp(audioUrl),
+      });
+    }
+
+    if (sub.voicedStamp?.audioUrl) {
+      dispatch(removeAudio(sub.voicedStamp.audioUrl));
+    }
+    fetch();
+  }, [dispatch, updateSub, speakers, settings.currentSpeaker]);
+
+  const playSub = useCallback((sub) => {
+    if (!sub.voicedStamp?.audioUrl) {
+      return;
+    }
+
+    dispatch(playAudio(sub.voicedStamp.audioUrl, true));
+  }, [dispatch]);
+
+  const downloadSub = useCallback((sub) => {
+    //
+  }, []);
 
   return (
     <Style>
@@ -163,11 +215,12 @@ export default function Subtitles({ subtitle, speakers, checkSub, player, update
                   <input type='text' value={d2t(props.rowData.startTime)} title='Start time' onChange={() => {
                   }} />
                   <input className='estimate-duration' type='text'
-                         value={predictDuration(props.rowData.text, currentSpeaker.lang?.wordsPerMinute)}
+                         value={`${predictDuration(props.rowData.text, currentSpeaker.lang?.wordsPerMinute)}`}
                          title='Estimate duration'
                          disabled={true} />
                   <input className='timing-duration' type='text'
-                         value={d2t(props.rowData.endTime - props.rowData.startTime)} title='Current duration'
+                         value={`${d2t(props.rowData.endTime - props.rowData.startTime, true)}`}
+                         title='Current duration'
                          disabled={true} />
                   <input type='text' value={d2t(props.rowData.endTime)} title='End time' onChange={() => {
                   }} />
@@ -203,11 +256,18 @@ export default function Subtitles({ subtitle, speakers, checkSub, player, update
                   }}
                 />
                 <div className='item-bar item-actions'>
-                  <button className='icon-btn generateVoice' title='Generate speech'>
+                  <button className='icon-btn generateVoice'
+                          onClick={() => speakSub(props.rowData)}
+                          title='Generate speech'>
                     <FontAwesomeIcon icon={faRocket} />
                   </button>
-                  <button className='icon-btn playVoice'>
+                  <button className='icon-btn playVoice'
+                          onClick={() => playSub(props.rowData)}>
                     <FontAwesomeIcon icon={faPlay} />
+                  </button>
+                  <button className='icon-btn playVoice'
+                          onClick={() => downloadSub(props.rowData)}>
+                    <FontAwesomeIcon icon={faDownload} />
                   </button>
                 </div>
               </div>

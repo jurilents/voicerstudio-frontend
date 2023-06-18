@@ -3,9 +3,10 @@ import React from 'react';
 
 const Style = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
-  padding-bottom: 20px;
+  align-items: center;
+  padding: 5px 20px 5px 10px;
   position: relative;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 50%);
@@ -34,6 +35,10 @@ const Style = styled.div`
       text-decoration: none;
     }
   }
+
+  .version {
+    opacity: 33%;
+  }
 `;
 
 export default function Header() {
@@ -43,13 +48,13 @@ export default function Header() {
       <nav>
         <ul>
           <li>
-            <a href='/voice-studio'>Voice Studio</a>
-          </li>
-          <li>
-            <a href='/video-studio'>4Video</a>
+            <a href='/'>Voicer Studio</a>
           </li>
         </ul>
       </nav>
+      <div>
+        <span className='version'>v0.0.0-demo1 18/06/23</span>
+      </div>
     </Style>
   );
 }

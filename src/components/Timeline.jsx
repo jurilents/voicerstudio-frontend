@@ -79,8 +79,11 @@ const Timeline = styled.div`
       height: 100%;
 
       p {
-        margin: 2px 0;
+        width: calc(100% - 8px);
         line-height: 1;
+        margin: 2px 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         &.bilingual {
           transform: scale(0.8);
