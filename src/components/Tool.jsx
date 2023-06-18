@@ -9,7 +9,15 @@ import googleTranslate from '../libs/googleTranslate';
 import FFmpeg from '@ffmpeg/ffmpeg';
 import SimpleFS from '@forlagshuset/simple-fs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationCrosshairs, faMagnet, faPause, faPlay, faRocket, faStop } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCloudDownload,
+  faLocationCrosshairs,
+  faMagnet,
+  faPause,
+  faPlay,
+  faStop,
+} from '@fortawesome/free-solid-svg-icons';
+import { speechApi } from '../api/axios';
 
 const Style = styled.div`
   display: flex;
@@ -210,6 +218,7 @@ export default function Header(
     clearSubs,
     language,
     subtitle,
+    speakers,
     setLoading,
     formatSub,
     setSubtitle,
@@ -465,6 +474,32 @@ export default function Header(
     };
   }, [onDocumentMouseUp]);
 
+  const generateAndDownloadFinal = useCallback(() => {
+    async function fetch() {
+      const speaker = speakers.find(x => x.id === settings.currentSpeaker);
+      const speakerSubs = subtitle.filter(x => x.speaker === speaker.id);
+      const request = speakerSubs.map(sub => ({
+        locale: speaker.locale,
+        voice: speaker.voice,
+        text: sub.text,
+        style: speaker.speechConfig[3],
+        styleDegree: +speaker.speechConfig[4],
+        // role: 'string',
+        pitch: +speaker.speechConfig[5],
+        volume: +speaker.speechConfig[6],
+        start: sub.start,
+        end: sub.end,
+      }));
+      console.log('Batch speech request:', request);
+      const audio = await speechApi.batch(request, 'test');
+      console.log('result audio url', audio);
+      download(audio.url, `[${speaker.id}] output.wav`);
+    }
+
+    fetch();
+  }, [speakers, subtitle, settings.currentSpeaker]);
+
+
   return (
     <Style className='tool'>
       <div className='top'>
@@ -545,8 +580,8 @@ export default function Header(
           </div>
           <div className='separator'></div>
           <div className={'btn btn-icon focus' + (settings.magnet ? ' record' : '')}
-               onClick={() => setSettings({ magnet: !settings.magnet })}>
-            <FontAwesomeIcon icon={faRocket} />
+               onClick={() => generateAndDownloadFinal()}>
+            <FontAwesomeIcon icon={faCloudDownload} />
           </div>
           <div className={'btn btn-icon focus' + (recording ? ' record' : '')}
                onMouseDown={() => startRecording()}>

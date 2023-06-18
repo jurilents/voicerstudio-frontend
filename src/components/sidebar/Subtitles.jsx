@@ -158,7 +158,7 @@ export default function Subtitles(
       };
       console.log('Single speech request:', request);
       const audio = await speechApi.single(request, 'test');
-      console.log('audioUrl', audio);
+      console.log('single audio url', audio);
       dispatch(addAudio(audio.url));
       sub.endTime = sub.startTime + audio.duration;
       updateSub(sub, {

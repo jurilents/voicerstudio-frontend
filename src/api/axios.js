@@ -1,5 +1,4 @@
 import axios from 'axios';
-import DT from 'duration-time-conversion';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -30,6 +29,9 @@ export const speechApi = {
       headers: { 'X-Credentials': credentials },
       responseType: 'blob',
     });
-    return result.data;
+    return {
+      url: URL.createObjectURL(new Blob([result.data])),
+      duration: +result.headers['x-duration'],
+    };
   },
 };
