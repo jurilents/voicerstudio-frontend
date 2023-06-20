@@ -291,8 +291,8 @@ export default function Header(
       setLoading(t('LOADING_VIDEO'));
       ffmpeg.FS(
         'writeFile',
-        videoFile ? videoFile.name : 'sample.mp4',
-        await fetchFile(videoFile || 'sample.mp4'),
+        videoFile ? videoFile.name : 'samples/sample.mp4',
+        await fetchFile(videoFile || 'samples/sample.mp4'),
       );
       setLoading(t('LOADING_SUB'));
       const subtitleFile = new File([new Blob([sub2ass(subtitle)])], 'subtitle.ass');

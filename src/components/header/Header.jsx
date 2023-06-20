@@ -11,6 +11,38 @@ const Style = styled.div`
   overflow: hidden;
   background-color: rgba(0, 0, 0, 50%);
   border-left: 1px solid rgb(255 255 255 / 20%);
+  height: 60px;
+
+  .logo {
+    //width: auto;
+    height: 90%;
+    //color: white;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    img {
+      max-height: 100%;
+      margin-right: -5px;
+    }
+
+    .logo-content {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+    }
+
+    .logo-title {
+      font-size: 16px;
+      padding-top: 5px;
+      font-weight: bold;
+    }
+
+    .logo-version {
+      opacity: 50%;
+      font-size: 11px;
+    }
+  }
 
   ul {
     list-style: none;
@@ -35,26 +67,26 @@ const Style = styled.div`
       text-decoration: none;
     }
   }
-
-  .version {
-    opacity: 33%;
-  }
 `;
 
 export default function Header() {
 
   return (
-    <Style className='header'>
+    <Style className='header noselect'>
+      <div className='logo'>
+        <img src='/images/logo-silver.png' alt='Creative Society' />
+        <div className='logo-content'>
+          <span className='logo-title'>Voicer Studio</span>
+          <span className='logo-version'>v0.0.0-demo2 20/06/23</span>
+        </div>
+      </div>
       <nav>
         <ul>
           <li>
-            <a href='/'>Voicer Studio</a>
+            <a href='https://text2aspeech.azurewebsites.net/ru/app'>Text 2 Speech</a>
           </li>
         </ul>
       </nav>
-      <div>
-        <span className='version'>v0.0.0-demo1 18/06/23</span>
-      </div>
     </Style>
   );
 }

@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://api.voicer-demo.tacles.net', //process.env.REACT_APP_API_BASE_URL,
+  baseURL:
+  process.env.REACT_APP_API_BASE_URL,
+  // https://api-voicerstudio.azurewebsites.net',
+  // 'https://api.voicer-demo.tacles.net',
 });
 
 export const languagesApi = {

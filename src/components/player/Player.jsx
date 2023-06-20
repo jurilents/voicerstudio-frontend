@@ -8,27 +8,30 @@ import { AudioWrap } from './AudioWrap';
 
 const Style = styled.div`
   display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
-  //height: 100%;
+  height: 50%;
   width: 100%;
-  padding: 5% 2%;
+  padding: 2% 2%;
 
   .video {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: auto;
-    width: auto;
     position: relative;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
 
     video {
       position: relative;
       z-index: 10;
       outline: none;
+      height: 100%;
       max-height: 100%;
       max-width: 100%;
-      box-shadow: 0px 5px 25px 5px rgb(0 0 0 / 80%);
+      box-shadow: 0 5px 25px 5px rgb(0 0 0 / 80%);
       background-color: #000;
       cursor: pointer;
     }

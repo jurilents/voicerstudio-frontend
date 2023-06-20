@@ -29,7 +29,7 @@ export const Waveform = memo(({ player, waveform, setWaveform, setRender, settin
 
     setWaveform(waveform);
     waveform.on('update', setRender);
-    waveform.load('/sample.mp3');
+    waveform.load('/samples/sample.mp3');
   }, [player, $waveform, setWaveform, setRender, settings]);
 
   return <div className='waveform' ref={$waveform} />;

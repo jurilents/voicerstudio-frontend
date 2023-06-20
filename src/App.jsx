@@ -26,11 +26,6 @@ const Style = styled.div`
     justify-content: flex-end;
     padding-bottom: 35px;
 
-    .player {
-      flex: 1;
-      height: auto;
-    }
-
     .subtitles {
       padding-top: 5px;
       width: 600px;
