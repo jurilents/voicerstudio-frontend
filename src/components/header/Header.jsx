@@ -82,7 +82,7 @@ export default function Header() {
       <nav>
         <ul>
           <li>
-            <a href='https://text2aspeech.azurewebsites.net/ru/app'>Text 2 Speech</a>
+            <a href='https://text2aspeech.azurewebsites.net/ru/app' target='_blank'>Text 2 Speech</a>
           </li>
         </ul>
       </nav>
