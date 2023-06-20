@@ -1,14 +1,12 @@
 import styled from 'styled-components';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Table } from 'react-virtualized';
-import unescape from 'lodash/unescape';
 import debounce from 'lodash/debounce';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faPlay, faRocket } from '@fortawesome/free-solid-svg-icons';
-import { d2t, download, predictDuration } from '../../utils';
+import { download } from '../../utils';
 import { speechApi } from '../../api/axios';
 import { useDispatch } from 'react-redux';
 import { addAudio, playAudio, removeAudio } from '../../store/audioReducer';
+import SubtitleItem from './SubtitleItem';
 
 const Style = styled.div`
   .ReactVirtualized__Table__row:nth-child(2n) {
@@ -186,7 +184,7 @@ export default function Subtitles(
       const fileName = `[${currentSpeaker.name}-${index}] ${start} to ${end}.wav`;
       download(sub.voicedStamp.audioUrl, fileName);
     }
-  }, []);
+  }, [currentSpeaker.name]);
 
   return (
     <Style>
@@ -201,84 +199,17 @@ export default function Subtitles(
         headerRowRenderer={() => null}
         rowRenderer={(props) => {
           return (
-            <div
+            <SubtitleItem
               key={props.key}
-              className={props.className}
-              style={props.style}
-              onClick={() => {
-                if (player) {
-                  player.pause();
-                  if (player.duration >= props.rowData.startTime) {
-                    player.currentTime = props.rowData.startTime + 0.001;
-                  }
-                }
-              }}
-            >
-              <div className='item'>
-                <div className='item-bar item-index'>
-                  <span>{props.index + 1}</span>
-                </div>
-                <div className='item-bar item-timing'>
-                  <input type='text' value={d2t(props.rowData.startTime)} title='Start time' onChange={() => {
-                  }} />
-                  <input className='estimate-duration' type='text'
-                         value={`${predictDuration(props.rowData.text, currentSpeaker.lang?.wordsPerMinute)}`}
-                         title='Estimate duration'
-                         disabled={true} />
-                  <input className='timing-duration' type='text'
-                         value={`${d2t(props.rowData.endTime - props.rowData.startTime, true)}`}
-                         title='Current duration'
-                         disabled={true} />
-                  <input type='text' value={d2t(props.rowData.endTime)} title='End time' onChange={() => {
-                  }} />
-                </div>
-                <textarea
-                  maxLength={400}
-                  spellCheck={false}
-                  className={[
-                    'textarea',
-                    settings.currentSubtitle === props.rowData.id ? 'highlight' : '',
-                    checkSub(props.rowData) ? 'illegal' : '',
-                  ].join(' ').trim()}
-                  value={unescape(props.rowData.text)}
-                  onChange={(event) => {
-                    updateSub(props.rowData, {
-                      text: event.target.value,
-                    });
-                  }}
-                />
-                <textarea
-                  maxLength={400}
-                  spellCheck={false}
-                  className={[
-                    'textarea',
-                    settings.currentSubtitle === props.rowData.id ? 'highlight' : '',
-                    checkSub(props.rowData) ? 'illegal' : '',
-                  ].join(' ').trim()}
-                  value={unescape(props.rowData.note)}
-                  onChange={(event) => {
-                    updateSub(props.rowData, {
-                      note: event.target.value,
-                    });
-                  }}
-                />
-                <div className='item-bar item-actions'>
-                  <button className='icon-btn generateVoice'
-                          onClick={() => speakSub(props.rowData)}
-                          title='Generate speech'>
-                    <FontAwesomeIcon icon={faRocket} />
-                  </button>
-                  <button className='icon-btn playVoice'
-                          onClick={() => playSub(props.rowData)}>
-                    <FontAwesomeIcon icon={faPlay} />
-                  </button>
-                  <button className='icon-btn playVoice'
-                          onClick={() => downloadSub(props.rowData, props.index + 1)}>
-                    <FontAwesomeIcon icon={faDownload} />
-                  </button>
-                </div>
-              </div>
-            </div>
+              currentSpeaker={currentSpeaker}
+              checkSub={checkSub}
+              player={player}
+              settings={settings}
+              props={props}
+              updateSub={updateSub}
+              speakSub={speakSub}
+              downloadSub={downloadSub}
+              playSub={playSub} />
           );
         }}
       ></Table>

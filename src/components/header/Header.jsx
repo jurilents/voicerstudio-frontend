@@ -70,7 +70,6 @@ const Style = styled.div`
 `;
 
 export default function Header() {
-
   return (
     <Style className='header noselect'>
       <div className='logo'>
