@@ -3,7 +3,7 @@ import NotificationSystem from 'react-notification-system';
 import DT from 'duration-time-conversion';
 import isEqual from 'lodash/isEqual';
 import styled from 'styled-components';
-import Tool from './components/Tool';
+import Toolbar from './components/toolbar/Toolbar';
 import Subtitles from './components/sidebar/Subtitles';
 import Player from './components/player/Player';
 import Footer from './components/footer/Footer';
@@ -369,15 +369,6 @@ export default function App({ defaultLang }) {
   }, [setSubtitleOriginal, setSpeakersOriginal, setSettingsOriginal]);
 
   useEffect(() => {
-    if (waveform && !isEmpty(settings)) {
-      waveform.setOptions({
-        scrollable: settings.scrollable || false,
-        duration: +(settings.zoom || 1) * 5,
-      });
-    }
-  }, [waveform, settings]);
-
-  useEffect(() => {
     async function fetchLanguages() {
       const langs = await languagesApi.getAll('test');
       setLangs(langs);
@@ -462,7 +453,7 @@ export default function App({ defaultLang }) {
         <div className='left'>
           <Header {...props} />
           <Player {...props} />
-          <Tool {...props} />
+          <Toolbar {...props} />
         </div>
         <div className='subtitles'>
           <Subtitles {...props} />

@@ -8,6 +8,8 @@ import { Waveform } from './Waveform';
 import { Grab } from './Grab';
 import { Progress } from './Progress';
 import { Duration } from './Duration';
+import { isEmpty } from 'lodash';
+import { useSettings } from '../../hooks';
 
 const Style = styled.div`
   position: relative;
@@ -114,53 +116,65 @@ const Style = styled.div`
 `;
 
 export default function Footer(props) {
-    const $footer = createRef();
-    const [render, setRender] = useState({
-        padding: 2,
-        duration: 10,
-        gridGap: 10,
-        gridNum: 110,
-        beginTime: -5,
-    });
+  const $footer = createRef();
+  const [render, setRender] = useState({
+    padding: 2,
+    duration: 10,
+    gridGap: 10,
+    gridNum: 110,
+    beginTime: -5,
+  });
+  const { settings } = useSettings();
 
-    const onWheel = useCallback(
-        (event) => {
-            if (
-                !props.player ||
-                !props.waveform ||
-                props.player.playing ||
-                !$footer.current ||
-                !$footer.current.contains(event.target)
-            ) {
-                return;
-            }
+  const onWheel = useCallback(
+    (event) => {
+      if (
+        !props.player ||
+        !props.waveform ||
+        props.player.playing ||
+        !$footer.current ||
+        !$footer.current.contains(event.target)
+      ) {
+        return;
+      }
 
-            const deltaY = Math.sign(event.deltaY) / 5;
-            const currentTime = clamp(props.player.currentTime + deltaY, 0, props.player.duration);
-            props.player.currentTime = currentTime;
-            props.waveform.seek(currentTime);
-        },
-        [props.waveform, props.player, $footer],
-    );
+      const direction = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      const scrollDelta = Math.sign(direction) / 5;
+      const currentTime = clamp(props.player.currentTime + scrollDelta, 0, props.player.duration);
+      props.player.currentTime = currentTime;
+      props.waveform.seek(currentTime);
+    },
+    [props.waveform, props.player, $footer],
+  );
 
-    useEffect(() => {
-        const onWheelThrottle = throttle(onWheel, 100);
-        window.addEventListener('wheel', onWheelThrottle);
-        return () => window.removeEventListener('wheel', onWheelThrottle);
-    }, [onWheel]);
+  useEffect(() => {
+    const onWheelThrottle = throttle(onWheel, 100);
+    window.addEventListener('wheel', onWheelThrottle, { passive: true });
+    return () => window.removeEventListener('wheel', onWheelThrottle);
+  }, [onWheel]);
 
-    return (
-        <Style className='footer' ref={$footer}>
-            {props.player ? (
-                <React.Fragment>
-                    <Progress {...props} />
-                    <Duration {...props} />
-                    <Waveform {...props} setRender={setRender} />
-                    <Grab {...props} render={render} />
-                    <Metronome {...props} render={render} />
-                    <Timeline {...props} render={render} />
-                </React.Fragment>
-            ) : null}
-        </Style>
-    );
+  useEffect(() => {
+    if (props.waveform && !isEmpty(settings)) {
+      console.log('set options 3:');
+      props.waveform.setOptions({
+        scrollable: settings.scrollableMode || false,
+        duration: +(settings.zoom || 1) * 5,
+      });
+    }
+  }, [props.waveform, settings]);
+
+  return (
+    <Style className='footer' ref={$footer}>
+      {props.player ? (
+        <React.Fragment>
+          <Progress {...props} />
+          <Duration {...props} />
+          <Waveform {...props} setRender={setRender} />
+          <Grab {...props} render={render} />
+          <Metronome {...props} render={render} />
+          <Timeline {...props} render={render} />
+        </React.Fragment>
+      ) : null}
+    </Style>
+  );
 }

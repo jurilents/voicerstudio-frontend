@@ -76,11 +76,14 @@ export default function Header() {
         <img src='/images/logo-silver.png' alt='Creative Society' />
         <div className='logo-content'>
           <span className='logo-title'>Voicer Studio</span>
-          <span className='logo-version'>v0.0.0-demo2 20/06/23</span>
+          <span className='logo-version'>v0.0.3-alpha 25/06/23</span>
         </div>
       </div>
       <nav>
         <ul>
+          <li>
+            <a href='/session/new'>New Session</a>
+          </li>
           <li>
             <a href='https://text2aspeech.azurewebsites.net/ru/app' target='_blank'>Text 2 Speech</a>
           </li>

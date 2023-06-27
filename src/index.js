@@ -8,7 +8,7 @@ import { setLocale, setTranslations } from 'react-i18nify';
 import i18n from './i18n';
 import App from './App';
 import Mobile from './Mobile';
-import GlobalStyle from './GlobalStyle';
+import GlobalStyle from './styles/GlobalStyle';
 import { Provider } from 'react-redux';
 import { store } from './store';
 

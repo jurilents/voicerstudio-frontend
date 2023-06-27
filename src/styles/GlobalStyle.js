@@ -1,7 +1,15 @@
 import { createGlobalStyle } from 'styled-components';
+import './_inputs.css';
+import palette from './palette';
 
 export default createGlobalStyle`
-  //@import '/node_modules/bootstrap/dist/css/bootstrap.min.css';
+  :root {
+    --c-primary: ${palette.colors.primary};
+    --c-primary-dark: ${palette.colors.primaryDark};
+    --c-primary-light: ${palette.colors.primaryLight};
+    --c-success: ${palette.colors.success};
+    --c-danger: ${palette.colors.danger};
+  }
 
   html,
   body,

@@ -1,14 +1,17 @@
 import React, { createRef, memo, useEffect } from 'react';
 import WFPlayer from 'wfplayer';
+import { useSelector } from 'react-redux';
 
-export const Waveform = memo(({ player, waveform, setWaveform, setRender, settings, setSettings }) => {
+export const Waveform = memo((
+  { player, waveform, setWaveform, setRender }) => {
   const $waveform = createRef();
+  const settings = useSelector(store => store.settings);
 
   useEffect(() => {
     [...WFPlayer.instances].forEach((item) => item.destroy());
 
     const waveform = new WFPlayer({
-      scrollable: settings.scrollable || false,
+      scrollable: settings.scrollableMode || false,
       scrollbar: true,
       ruler: true,
       progress: true,
@@ -30,7 +33,9 @@ export const Waveform = memo(({ player, waveform, setWaveform, setRender, settin
     setWaveform(waveform);
     waveform.on('update', setRender);
     waveform.load('/samples/sample.mp3');
-  }, [player, $waveform, setWaveform, setRender, settings]);
+  }, []);
 
-  return <div className='waveform' ref={$waveform} />;
+  return (
+    <div className='waveform' ref={$waveform} />
+  );
 }, () => true);

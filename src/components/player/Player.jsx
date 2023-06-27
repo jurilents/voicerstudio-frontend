@@ -1,10 +1,10 @@
-import React, { createRef, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { createRef, useCallback, useMemo, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Translate } from 'react-i18nify';
 import styled from 'styled-components';
-import backlight from '../../libs/backlight';
 import { VideoWrap } from './VideoWrap';
 import { AudioWrap } from './AudioWrap';
+import { Actions } from '../toolbar/Actions';
 
 const Style = styled.div`
   display: flex;
@@ -45,7 +45,7 @@ const Style = styled.div`
       z-index: 20;
       left: 0;
       right: 0;
-      bottom: 5%;
+      bottom: 10%;
       width: 100%;
       padding: 0 20px;
       user-select: none;
@@ -84,6 +84,21 @@ const Style = styled.div`
         }
       }
     }
+
+    .actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      z-index: 20;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      padding: 5px 20px;
+      background-color: rgb(30 30 30 / 80%);
+    }
   }
 `;
 
@@ -93,12 +108,12 @@ export default function Player(props) {
   const [inputItemCursor, setInputItemCursor] = useState(0);
   const $player = createRef();
 
-  useEffect(() => {
-    if ($player.current && props.player && !backlight.state) {
-      backlight.state = true;
-      backlight($player.current, props.player);
-    }
-  }, [$player, props.player]);
+  // useEffect(() => {
+  //   if ($player.current && props.player && !backlight.state) {
+  //     backlight.state = true;
+  //     backlight($player.current, props.player);
+  //   }
+  // }, [$player, props.player]);
 
   useMemo(() => {
     const sub = props.subtitle.find(x => x.id === props.settings.currentSubtitle);
@@ -113,7 +128,7 @@ export default function Player(props) {
         setInputItemCursor(event.target.selectionStart);
       }
     },
-    [props, currentSub],
+    [props.player, props.updateSub, currentSub],
   );
 
   const onClick = useCallback(
@@ -123,7 +138,7 @@ export default function Player(props) {
         setInputItemCursor(event.target.selectionStart);
       }
     },
-    [props],
+    [props.player],
   );
 
   const onFocus = useCallback((event) => {
@@ -139,13 +154,14 @@ export default function Player(props) {
 
   const onSplit = useCallback(() => {
     props.splitSub(currentSub, inputItemCursor);
-  }, [props, currentSub, inputItemCursor]);
+  }, [props.splitSub, currentSub, inputItemCursor]);
 
   return (
     <Style className='player'>
       <div className='video' ref={$player}>
         <AudioWrap {...props} />
         <VideoWrap {...props} />
+        <Actions {...props} />
         {props.player && currentSub ? (
           <div className='subtitle'>
             {focusing ? (

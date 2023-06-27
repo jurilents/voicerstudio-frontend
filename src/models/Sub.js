@@ -49,6 +49,8 @@ export class Sub {
     if (this.text === this.voicedText) {
 
     }
+
+    // TODO: return value here
   }
 
 }
