@@ -13,6 +13,7 @@ const Style = styled.div`
   justify-content: center;
   height: 50%;
   width: 100%;
+  min-width: 280px;
   padding: 2% 2%;
 
   .video {

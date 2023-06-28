@@ -1,10 +1,13 @@
-export default {
+const palette = {
   colors: {
-    primaryLight: '#38c2c5',
-    primary: '#20bdc2',
-    primaryDark: '#1b999b',
+    primaryLight: '#0da295',
+    primary: '#087C71',
+    primaryDark: '#115d55',
     success: '#69c220',
     danger: '#b22e1c',
     text: '#ffffff',
   },
 };
+
+
+export default palette;

@@ -9,7 +9,7 @@ input[type="range"] {
 }
 
 ::-webkit-slider-runnable-track {
-  background: #ddd;
+  background: rgb(0 0 0 / 80%);
 }
 
 /*
@@ -28,11 +28,11 @@ input[type="range"] {
 
 ::-moz-range-track {
   height: 40px;
-  background: #ddd;
+  background: #726f6f;
 }
 
 ::-moz-range-thumb {
-  background: #fff;
+  background: #646262;
   height: 40px;
   width: 20px;
   border: 3px solid #999;
@@ -46,7 +46,7 @@ input[type="range"] {
 }
 
 ::-ms-thumb {
-  background: #fff;
+  background: #5e5858;
   border: 2px solid #999;
   height: 40px;
   width: 20px;
@@ -62,7 +62,7 @@ input[type="range"] {
 }
 
 ::-ms-track {
-  background: #ddd;
+  background: #626262;
   color: transparent;
   height: 40px;
   border: none;

@@ -1,16 +1,21 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 
 const Style = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  padding: 10px 10% 0 0;
-  gap: 10px;
+
+  .row {
+    margin-bottom: 10px;
+  }
 
   .col:first-child {
     text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 
   .hotkey-key {
@@ -23,19 +28,42 @@ const Style = styled.div`
     color: rgb(255 255 255 / 75%);
     background-color: rgb(255 255 255 / 20%);
   }
+
+  .offset {
+    height: 30px;
+  }
 `;
 
 export default function HelpTab() {
   return (
     <Style className='hotkey'>
-      <Row>
-        <Col>Play/Pause</Col>
-        <Col><span className='hotkey-key'>Space</span></Col>
-      </Row>
-      <Row>
-        <Col>Undo</Col>
-        <Col><span className='hotkey-key'>⌘ + Z</span></Col>
-      </Row>
+      <h3>Hotkeys</h3>
+      <Container>
+        <Row>
+          <Col>Play/Pause</Col>
+          <Col><span className='hotkey-key'>Space</span></Col>
+        </Row>
+        <Row>
+          <Col>Undo</Col>
+          <Col><span className='hotkey-key'>⌘ + Z</span></Col>
+        </Row>
+      </Container>
+      <div className='offset'></div>
+      <h3>Support</h3>
+      <Container>
+        <Row>
+          <Col>Any questions</Col>
+          <Col>
+            <a href='https://t.me/Lisa_Volkova' target='_blank' className='hotkey-key'>@Lisa_Volkova</a>
+          </Col>
+        </Row>
+        <Row>
+          <Col>Bugs</Col>
+          <Col>
+            <a href='https://t.me/jurilents' target='_blank' className='hotkey-key'>@jurilents</a>
+          </Col>
+        </Row>
+      </Container>
     </Style>
   );
 }

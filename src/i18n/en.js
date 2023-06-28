@@ -25,7 +25,7 @@ export const en = {
     LOADING_FONT: 'Loading font...',
     LOADING_VIDEO: 'Loading video...',
     LOADING_SUB: 'Loading subtitle...',
-    CLEAR_TIP: 'Confirm that all data is cleared',
+    CLEAR_TIP: 'Confirm that all speakers is cleared',
     BURN_ERROR: 'Burn subtitles failed',
     BURN_START: 'Start burn subtitles',
     BURN_SUCCESS: 'Burn subtitles success',

@@ -37,10 +37,6 @@ const Style = styled.div`
       justify-content: space-between;
       flex-direction: column;
     }
-
-    .tool {
-      margin: 10px 0 0 0;
-    }
   }
 
   .footer {
@@ -50,6 +46,13 @@ const Style = styled.div`
   .left {
     display: flex;
     flex-direction: column;
+    justify-content: space-evenly;
+    flex: 1;
+  }
+
+  .left-content {
+    display: flex;
+    flex-direction: row;
     justify-content: space-evenly;
     flex: 1;
   }
@@ -452,8 +455,10 @@ export default function App({ defaultLang }) {
       <div className='main'>
         <div className='left'>
           <Header {...props} />
-          <Player {...props} />
-          <Toolbar {...props} />
+          <div className='left-content'>
+            <Toolbar {...props} />
+            <Player {...props} />
+          </div>
         </div>
         <div className='subtitles'>
           <Subtitles {...props} />

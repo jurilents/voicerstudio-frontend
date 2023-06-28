@@ -17,12 +17,14 @@ import {
   faHeadphonesAlt,
   faHouseChimney,
   faLanguage,
+  faRobot,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import GeneralTab from './tabs/GeneralTab';
 import MixerTab from './tabs/MixerTab';
 import ExportTab from './tabs/ExportTab';
 import HelpTab from './tabs/HelpTab';
+import SpeakersTab from './tabs/SpeakersTab';
 
 const Style = styled.div`
   display: flex;
@@ -33,9 +35,16 @@ const Style = styled.div`
   overflow: hidden;
   background-color: rgba(0, 0, 0, 50%);
   border-left: 1px solid rgb(255 255 255 / 20%);
+  max-width: 400px;
 
   .tab-content {
     min-height: 130px;
+    padding: 10px 10px 20px 10px;
+    height: 100%;
+  }
+
+  .tab-pane {
+    height: 100%;
   }
 
   .tabs-buttons {
@@ -45,12 +54,21 @@ const Style = styled.div`
     .nav-link {
       cursor: pointer;
       border-radius: 0;
-      padding: 5px 10px;
+      padding: 10px 12px;
+      color: white;
 
-      svg {
-        margin-right: 5px;
+      &.active {
+        background-color: var(--c-primary);
       }
     }
+  }
+
+  h3 {
+    border-bottom: 1px solid rgb(255 255 255 / 30%);
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    font-size: 20px;
+    text-align: center;
   }
 
   .import {
@@ -421,48 +439,46 @@ export default function Toolbar(props) {
 
   return (
     <Style className='tool noselect'>
-      <Tab.Container id='left-tabs-example' defaultActiveKey='general'>
+      <Tab.Container id='left-tabs-example' defaultActiveKey='speakers'>
         <Nav variant='pills' className='tabs-buttons'>
           <Nav.Item>
-            <Nav.Link as='span' eventKey='general'>
+            <Nav.Link as='span' eventKey='general' title='General'>
               <FontAwesomeIcon icon={faHouseChimney} />
-              General
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link as='span' eventKey='speakers'>
+            <Nav.Link as='span' eventKey='presets' title='Voice Presets'>
+              <FontAwesomeIcon icon={faRobot} />
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link as='span' eventKey='speakers' title='Speakers'>
               <FontAwesomeIcon icon={faUsers} />
-              Speakers
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link as='span' eventKey='mixer'>
+            <Nav.Link as='span' eventKey='mixer' title='Mixer'>
               <FontAwesomeIcon icon={faHeadphonesAlt} />
-              Mixer
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link as='span' eventKey='translate'>
+            <Nav.Link as='span' eventKey='translate' title='Translate'>
               <FontAwesomeIcon icon={faLanguage} />
-              Translate
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link as='span' eventKey='import'>
+            <Nav.Link as='span' eventKey='import' title='Import'>
               <FontAwesomeIcon icon={faFileImport} />
-              Import
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link as='span' eventKey='export'>
+            <Nav.Link as='span' eventKey='export' title='Export'>
               <FontAwesomeIcon icon={faCloudArrowDown} />
-              Export
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link as='span' eventKey='help'>
+            <Nav.Link as='span' eventKey='help' title='Help'>
               <FontAwesomeIcon icon={faCircleQuestion} />
-              Help
             </Nav.Link>
           </Nav.Item>
         </Nav>
@@ -471,6 +487,7 @@ export default function Toolbar(props) {
             <GeneralTab {...props} />
           </Tab.Pane>
           <Tab.Pane eventKey='speakers'>
+            <SpeakersTab {...props} />
           </Tab.Pane>
           <Tab.Pane eventKey='mixer'>
             <MixerTab {...props} />

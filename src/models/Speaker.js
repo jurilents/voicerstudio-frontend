@@ -2,6 +2,7 @@ export class Speaker {
   constructor(obj) {
     this.id = obj.id;
     this.name = obj.name;
+    this.color = obj.color;
     this.preset = obj.preset;
     this.speechConfig = obj.speechConfig || {};
     if (Array.isArray(obj.speechConfig)) {

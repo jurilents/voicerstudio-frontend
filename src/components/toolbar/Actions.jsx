@@ -18,7 +18,7 @@ const Style = styled.div`
     max-width: 40px;
 
     &.focus:active:hover {
-      background-color: #c22213;
+      background-color: var(--c-danger);
     }
   }
 
@@ -35,6 +35,7 @@ const Style = styled.div`
     background: transparent;
     padding-left: 20px;
     padding-right: 20px;
+    opacity: 100%;
 
     &.active {
       background-color: rgba(0, 150, 136, 0.9);
@@ -97,8 +98,8 @@ export function Actions(
 
   return (
     <Style className='actions'>
-      <div className={'btn btn-icon focus' + (settings.scrollableMode ? ' active' : '')}
-           onClick={() => patchSettings({ scrollableMode: !settings.scrollableMode })}>
+      <div className={'btn btn-icon focus' + (settings.drawingMode ? ' active' : '')}
+           onClick={() => patchSettings({ drawingMode: !settings.drawingMode })}>
         <FontAwesomeIcon icon={faPencil} />
       </div>
       <div className={'btn btn-icon focus' + (settings.scrollableMode ? ' active' : '')}
