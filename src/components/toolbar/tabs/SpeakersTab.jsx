@@ -60,12 +60,6 @@ const Style = styled.div`
       flex-wrap: nowrap;
       align-items: center;
       opacity: 50%;
-
-      //button {
-      //  border: none;
-      //  outline: none;
-      //  background: none;
-      //}
     }
 
     .add-button {
@@ -133,7 +127,7 @@ export default function SpeakersTab(props) {
             <ListGroup.Item
               className={(selectedSpeaker?.id && speaker.id === selectedSpeaker.id ? 'selected' : '')}
               key={speaker.id}
-              onFocus={() => dispatch(selectSpeaker(speaker.id))}>
+              onClick={() => dispatch(selectSpeaker(speaker.id))}>
               <div className='color-preview' style={{ backgroundColor: speaker.color || '#000' }}></div>
               <input className='list-item-text'
                      type='text'
@@ -164,7 +158,9 @@ export default function SpeakersTab(props) {
           <Col>
             <Form.Select
               defaultValue={selectedSpeaker.color}
-              style={{ backgroundColor: selectedSpeaker.color || 'rgb(255 255 255 / 60%)' }}>
+              style={{ backgroundColor: selectedSpeaker.color || 'rgb(255 255 255 / 60%)' }}
+              onChange={(event) =>
+                dispatch(patchSpeaker(selectedSpeaker.id, { color: event.target.value }))}>
               {Object.entries(colors).map(([name, value], index) => (
                 <option key={index} value={value}>
                   {name}

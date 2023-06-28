@@ -5,7 +5,7 @@ import colors from '../utils/colors';
 const ADD_SPEAKER = 'ADD_SPEAKER';
 const REMOVE_SPEAKER = 'REMOVE_SPEAKER';
 const PATCH_SPEAKER = 'PATCH_SPEAKER';
-const SELECT_SPEAKER = 'PATCH_SPEAKER';
+const SELECT_SPEAKER = 'SELECT_SPEAKER';
 
 // Storage keys
 const STORAGE_KEY = 'session';

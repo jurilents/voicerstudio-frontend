@@ -36,6 +36,7 @@ const Style = styled.div`
     padding-left: 20px;
     padding-right: 20px;
     opacity: 100%;
+    color: white;
 
     &.active {
       background-color: rgba(0, 150, 136, 0.9);
