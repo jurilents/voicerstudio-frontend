@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSettings } from '../../../store/settingsReducer';
-import { Row } from 'react-bootstrap';
+import { Col, Form, Row } from 'react-bootstrap';
+import { speechApi } from '../../../api/axios';
+import { download } from '../../../utils';
+import { selectSpeaker } from '../../../store/sessionReducer';
 
 const Style = styled.div`
 `;
@@ -20,34 +23,92 @@ const codec = {
 export default function ExportTab(props) {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
+  const subs = useSelector(store => store.session.subs);
+  const speakers = useSelector(store => store.session.speakers);
+  const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
 
-  function onFormatChange(event) {
-    const value = event.target.value;
-    dispatch(setSettings({ exportFormat: value }));
-  }
+  const generateAndExport = useCallback(() => {
+    async function fetch() {
+      const speakerSubs = subs.filter(x => x.speaker === selectedSpeaker.id);
+      const request = speakerSubs.map(sub => ({
+        locale: selectedSpeaker.preset.locale,
+        voice: selectedSpeaker.preset.voice,
+        text: sub.text,
+        style: selectedSpeaker.preset.style,
+        styleDegree: selectedSpeaker.preset.styleDegree,
+        // role: 'string',
+        pitch: selectedSpeaker.preset.pitch,
+        volume: 1,
+        start: sub.start,
+        end: sub.end,
+      }));
+      console.log('Batch speech request:', request);
+      const audio = await speechApi.batch(request, 'dev_placeholder');
+      console.log('result audio url', audio);
+      download(audio.url, `[${selectedSpeaker.displayName}] output.wav`);
+    }
 
-  function onCodecChange(event) {
-    const value = event.target.value;
-    console.log('Selected codec: ', value);
-    dispatch(setSettings({ exportCodec: value }));
-  }
+    fetch();
+  }, [speakers, selectedSpeaker, subs]);
+
 
   return (
-    <Style className='hotkey'>
-      <Row>
-        <select onChange={onFormatChange}>
-          {Object.keys(codec).map((item, index) =>
-            (<option key={index} value={item}>{item}</option>),
-          )}
-        </select>
-        <select onChange={onCodecChange} defaultValue={settings.exportCodec}>
-          {codec[settings.exportFormat].map((item, index) =>
-            (<option key={index} value={item.value}>
-              {item.displayName}
-            </option>),
-          )}
-        </select>
-      </Row>
+    <Style className='tab-outlet'>
+      <div>
+        <h3>Export</h3>
+        <Row>
+          <Col className='label'>Speaker</Col>
+          <Col>
+            <Form.Select
+              className='app-select'
+              onChange={(event) =>
+                dispatch(selectSpeaker(+event.target.value))}
+              defaultValue={settings.exportCodec}>
+              {speakers.map((speaker, index) =>
+                (<option key={index} value={speaker.id}>
+                  {speaker.displayName}
+                </option>),
+              )}
+            </Form.Select>
+          </Col>
+        </Row>
+        <Row>
+          <Col className='label'>Format</Col>
+          <Col>
+            <Form.Select
+              className='app-select'
+              onChange={(event) =>
+                dispatch(setSettings({ exportFormat: event.target.value }))}>
+              {Object.keys(codec).map((item, index) =>
+                (<option key={index} value={item}>{item}</option>),
+              )}
+            </Form.Select>
+          </Col>
+        </Row>
+        <Row>
+          <Col className='label'>CODEC</Col>
+          <Col>
+            <Form.Select
+              className='app-select'
+              onChange={(event) =>
+                dispatch(setSettings({ exportCodec: event.target.value }))}
+              defaultValue={settings.exportCodec}>
+              {codec[settings.exportFormat].map((item, index) =>
+                (<option key={index} value={item.value}>
+                  {item.displayName}
+                </option>),
+              )}
+            </Form.Select>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <button className='btn btn-outline' onClick={generateAndExport}>
+              Export
+            </button>
+          </Col>
+        </Row>
+      </div>
     </Style>
   );
 }

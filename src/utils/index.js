@@ -62,3 +62,8 @@ export function d2t(time, shorten) {
   }
   return displayValue.substring(0, displayValue.length - 1);
 }
+
+export function toPercentsDelta(num, sign, extraAccuracy) {
+  num = (num * 100).toFixed(extraAccuracy ? 1 : 0);
+  return (num > 0 ? (sign ? '+' : '') + num : num) + '%';
+}

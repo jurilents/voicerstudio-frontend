@@ -27,6 +27,7 @@ const Style = styled.div`
     background-color: white;
     opacity: 30%;
     width: 2px;
+    min-width: 2px;
     min-height: 25px;
     border-radius: 5px;
   }
@@ -71,31 +72,6 @@ export function Actions(
       player.play();
     }
   };
-
-  const generateAndDownloadFinal = useCallback(() => {
-    async function fetch() {
-      const speaker = speakers.find(x => x.id === settings.currentSpeaker);
-      const speakerSubs = subtitle.filter(x => x.speaker === speaker.id);
-      const request = speakerSubs.map(sub => ({
-        locale: speaker.locale,
-        voice: speaker.voice,
-        text: sub.text,
-        style: speaker.speechConfig[3],
-        styleDegree: +speaker.speechConfig[4],
-        // role: 'string',
-        pitch: +speaker.speechConfig[5],
-        volume: +speaker.speechConfig[6],
-        start: sub.start,
-        end: sub.end,
-      }));
-      console.log('Batch speech request:', request);
-      const audio = await speechApi.batch(request, 'test');
-      console.log('result audio url', audio);
-      download(audio.url, `[${speaker.id}] output.wav`);
-    }
-
-    fetch();
-  }, [speakers, subtitle, settings.currentSpeaker]);
 
   return (
     <Style className='actions'>

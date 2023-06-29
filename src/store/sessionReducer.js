@@ -1,11 +1,19 @@
 import { Speaker } from '../models';
 import colors from '../utils/colors';
+import speakersReducer from './sessionReducer.speakers';
+import presetsReducer from './sessionReducer.presets';
 
 // Commands
 const ADD_SPEAKER = 'ADD_SPEAKER';
 const REMOVE_SPEAKER = 'REMOVE_SPEAKER';
 const PATCH_SPEAKER = 'PATCH_SPEAKER';
 const SELECT_SPEAKER = 'SELECT_SPEAKER';
+
+const ADD_PRESET = 'ADD_PRESET';
+const REMOVE_PRESET = 'REMOVE_PRESET';
+const PATCH_PRESET = 'PATCH_PRESET';
+
+const SET_VIDEO = 'SET_VIDEO';
 
 // Storage keys
 const STORAGE_KEY = 'session';
@@ -17,6 +25,8 @@ const rootState = {
   selectedSpeaker: defaultSpeaker,
   subs: [],
   selectedSub: null,
+  presets: [],
+  videoUrl: null,
 };
 
 const storedState = localStorage.getItem(STORAGE_KEY);
@@ -24,55 +34,55 @@ const defaultState = storedState ? { ...rootState, ...JSON.parse(storedState) } 
 
 export default function sessionReducer(state = defaultState, action) {
   switch (action.type) {
+    /************************* SPEAKERS *************************/
     case ADD_SPEAKER: {
-      const newSpeakers = {
-        ...state,
-        speakers: [...state.speakers, action.payload.speaker],
-      };
-      if (!state.selectedSpeaker) {
-        newSpeakers.selectedSpeaker = newSpeakers.data[0];
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newSpeakers));
-      return newSpeakers;
+      const session = speakersReducer.addSpeaker(state, action);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      return session;
     }
-
     case REMOVE_SPEAKER: {
-      if (state.speakers.length < 2) {
-        return state;
-      }
-      const newSpeakers = {
-        ...state,
-        speakers: state.speakers.filter(x => x.id !== action.payload.id),
-      };
-      if (state.selectedSpeaker && state.selectedSpeaker.id === action.payload.id) {
-        newSpeakers.selectedSpeaker = state.speakers?.length ? state.speakers[0] : null;
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newSpeakers));
-      return newSpeakers;
+      const session = speakersReducer.removeSpeaker(state, action);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      return session;
     }
-
     case PATCH_SPEAKER: {
-      const index = state.speakers.findIndex(x => x.id === action.payload.id);
-      if (index < 0) return;
-      const speakersCopy = [...state.speakers];
-      const speaker = state.speakers[index];
-      speakersCopy[index] = new Speaker({ ...speaker, ...action.payload.patch });
-      const newSpeakers = {
-        ...state,
-        speakers: speakersCopy,
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newSpeakers));
-      return newSpeakers;
+      const session = speakersReducer.patchSpeaker(state, action);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      return session;
+    }
+    case SELECT_SPEAKER: {
+      const session = speakersReducer.selectSpeaker(state, action);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      return session;
     }
 
-    case SELECT_SPEAKER: {
-      const selectedSpeaker = state.speakers.find(x => x.id === action.payload.id);
-      const newSpeakers = {
+    /************************* PRESETS *************************/
+    case ADD_PRESET: {
+      const session = presetsReducer.addPreset(state, action);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      return session;
+    }
+
+    case REMOVE_PRESET: {
+      const session = presetsReducer.removePreset(state, action);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      return session;
+    }
+
+    case PATCH_PRESET: {
+      const session = presetsReducer.patchPreset(state, action);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      return session;
+    }
+
+    /************************* VIDEO *************************/
+    case SET_VIDEO: {
+      const session = {
         ...state,
-        selectedSpeaker: selectedSpeaker,
+        videoUrl: action.payload.videoUrl,
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newSpeakers));
-      return newSpeakers;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      return session;
     }
 
     default:
@@ -84,3 +94,9 @@ export const addSpeaker = (speaker) => ({ type: ADD_SPEAKER, payload: { speaker 
 export const removeSpeaker = (id) => ({ type: REMOVE_SPEAKER, payload: { id } });
 export const patchSpeaker = (id, patch) => ({ type: PATCH_SPEAKER, payload: { id, patch } });
 export const selectSpeaker = (id) => ({ type: SELECT_SPEAKER, payload: { id } });
+
+export const addPreset = (preset) => ({ type: ADD_PRESET, payload: { preset } });
+export const removePreset = (id) => ({ type: REMOVE_PRESET, payload: { id } });
+export const patchPreset = (id, patch) => ({ type: PATCH_PRESET, payload: { id, patch } });
+
+export const setVideo = (videoUrl) => ({ type: SET_VIDEO, payload: { videoUrl } });

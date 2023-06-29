@@ -64,6 +64,22 @@ export default createGlobalStyle`
     &:hover {
       opacity: 1;
     }
+
+    &.btn-primary {
+      background-color: var(--c-primary);
+
+      &:hover {
+        background-color: var(--c-primary-dark);
+      }
+    }
+
+    &.btn-outline {
+      border: 2px solid var(--c-primary);
+
+      &:hover {
+        background-color: var(--c-primary);
+      }
+    }
   }
 
   .icon-btn {
@@ -75,5 +91,15 @@ export default createGlobalStyle`
     -webkit-user-select: none; /* Safari */
     -ms-user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
+  }
+
+  .app-select {
+    min-width: 160px;
+    border-radius: 1px;
+    border-color: rgb(255 255 255 / 30%);
+    color: #ffffff;
+    background-color: transparent;
+    margin-right: 10px;
+    font-size: inherit;
   }
 `;

@@ -14,7 +14,10 @@ import { Settings, Speaker, Sub } from './models';
 import Header from './components/header/Header';
 import { isEmpty } from 'lodash';
 import Speakers from './components/sidebar/Speakers';
-import { languagesApi } from './api/axios';
+import { NotificationProvider } from './context/NotificationContext';
+import { useVideoStorage } from './hooks/useVideoStorage';
+import { useDispatch, useSelector } from 'react-redux';
+import { setVideo } from './store/sessionReducer';
 
 const Style = styled.div`
   height: 100%;
@@ -59,6 +62,10 @@ const Style = styled.div`
 `;
 
 export default function App({ defaultLang }) {
+  const dispatch = useDispatch();
+  const videoUrl = useSelector(store => store.session.videoUrl);
+  const { loadVideo } = useVideoStorage();
+
   const subtitleHistory = useRef([]);
   const notificationSystem = useRef(null);
   const [player, setPlayer] = useState(null);
@@ -371,16 +378,6 @@ export default function App({ defaultLang }) {
     setSubtitleOriginal([]);
   }, [setSubtitleOriginal, setSpeakersOriginal, setSettingsOriginal]);
 
-  useEffect(() => {
-    async function fetchLanguages() {
-      const langs = await languagesApi.getAll('test');
-      setLangs(langs);
-    }
-
-    if (!langs || langs.length === 0) {
-      fetchLanguages();
-    }
-  }, [langs, setLangs]);
 
   useEffect(() => {
     if (!speakers?.length || !langs?.length) {
@@ -399,6 +396,18 @@ export default function App({ defaultLang }) {
     }
     setSpeakers(speakersClone);
   }, [speakers, setSpeakers, langs]);
+
+  useEffect(() => {
+    async function load() {
+      const url = await loadVideo('video1');
+      dispatch(setVideo(url));
+    }
+
+    if (videoUrl) {
+      load();
+    }
+  }, []);
+
 
   const props = {
     player,
@@ -452,22 +461,24 @@ export default function App({ defaultLang }) {
 
   return (
     <Style>
-      <div className='main'>
-        <div className='left'>
-          <Header {...props} />
-          <div className='left-content'>
-            <Toolbar {...props} />
-            <Player {...props} />
+      <NotificationProvider>
+        <div className='main'>
+          <div className='left'>
+            <Header {...props} />
+            <div className='left-content'>
+              <Toolbar {...props} />
+              <Player {...props} />
+            </div>
+          </div>
+          <div className='subtitles'>
+            <Subtitles {...props} />
+            <Speakers {...props} />
           </div>
         </div>
-        <div className='subtitles'>
-          <Subtitles {...props} />
-          <Speakers {...props} />
-        </div>
-      </div>
-      <Footer {...props} />
-      {loading ? <Loading loading={loading} /> : null}
-      {processing > 0 && processing < 100 ? <ProgressBar processing={processing} /> : null}
+        <Footer {...props} />
+        {loading ? <Loading loading={loading} /> : null}
+        {processing > 0 && processing < 100 ? <ProgressBar processing={processing} /> : null}
+      </NotificationProvider>
       <NotificationSystem ref={notificationSystem} allowHTML={true} />
     </Style>
   );

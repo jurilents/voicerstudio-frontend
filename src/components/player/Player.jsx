@@ -104,8 +104,8 @@ const Style = styled.div`
 `;
 
 export default function Player(props) {
-  const [currentSub, setCurrentSub] = useState(null);
-  const [focusing, setFocusing] = useState(false);
+  // const [currentSub, setCurrentSub] = useState(null);
+  // const [focusing, setFocusing] = useState(false);
   const [inputItemCursor, setInputItemCursor] = useState(0);
   const $player = createRef();
 
@@ -116,46 +116,46 @@ export default function Player(props) {
   //   }
   // }, [$player, props.player]);
 
-  useMemo(() => {
-    const sub = props.subtitle.find(x => x.id === props.settings.currentSubtitle);
-    setCurrentSub(sub?.id || -1);
-  }, [props.subtitle, props.settings]);
+  // useMemo(() => {
+  //   const sub = props.subtitle.find(x => x.id === props.settings.currentSubtitle);
+  //   setCurrentSub(sub?.id || -1);
+  // }, [props.subtitle, props.settings]);
 
-  const onChange = useCallback(
-    (event) => {
-      props.player.pause();
-      props.updateSub(currentSub, { text: event.target.value });
-      if (event.target.selectionStart) {
-        setInputItemCursor(event.target.selectionStart);
-      }
-    },
-    [props.player, props.updateSub, currentSub],
-  );
+  // const onChange = useCallback(
+  //   (event) => {
+  //     props.player.pause();
+  //     props.updateSub(currentSub, { text: event.target.value });
+  //     if (event.target.selectionStart) {
+  //       setInputItemCursor(event.target.selectionStart);
+  //     }
+  //   },
+  //   [props.player, props.updateSub, currentSub],
+  // );
 
-  const onClick = useCallback(
-    (event) => {
-      props.player.pause();
-      if (event.target.selectionStart) {
-        setInputItemCursor(event.target.selectionStart);
-      }
-    },
-    [props.player],
-  );
+  // const onClick = useCallback(
+  //   (event) => {
+  //     props.player.pause();
+  //     if (event.target.selectionStart) {
+  //       setInputItemCursor(event.target.selectionStart);
+  //     }
+  //   },
+  //   [props.player],
+  // );
 
-  const onFocus = useCallback((event) => {
-    setFocusing(true);
-    if (event.target.selectionStart) {
-      setInputItemCursor(event.target.selectionStart);
-    }
-  }, []);
+  // const onFocus = useCallback((event) => {
+  //   setFocusing(true);
+  //   if (event.target.selectionStart) {
+  //     setInputItemCursor(event.target.selectionStart);
+  //   }
+  // }, []);
 
-  const onBlur = useCallback(() => {
-    setTimeout(() => setFocusing(false), 500);
-  }, []);
+  // const onBlur = useCallback(() => {
+  //   setTimeout(() => setFocusing(false), 500);
+  // }, []);
 
-  const onSplit = useCallback(() => {
-    props.splitSub(currentSub, inputItemCursor);
-  }, [props.splitSub, currentSub, inputItemCursor]);
+  // const onSplit = useCallback(() => {
+  //   props.splitSub(currentSub, inputItemCursor);
+  // }, [props.splitSub, currentSub, inputItemCursor]);
 
   return (
     <Style className='player'>
@@ -163,25 +163,25 @@ export default function Player(props) {
         <AudioWrap {...props} />
         <VideoWrap {...props} />
         <Actions {...props} />
-        {props.player && currentSub ? (
-          <div className='subtitle'>
-            {focusing ? (
-              <div className='operate' onClick={onSplit}>
-                <Translate value='SPLIT' />
-              </div>
-            ) : null}
-            <TextareaAutosize
-              className={`textarea ${!props.playing ? 'pause' : ''}`}
-              value={currentSub.text}
-              onChange={onChange}
-              onClick={onClick}
-              onFocus={onFocus}
-              onBlur={onBlur}
-              onKeyDown={onFocus}
-              spellCheck={false}
-            />
-          </div>
-        ) : null}
+        {/*{props.player && currentSub ? (*/}
+        {/*  <div className='subtitle'>*/}
+        {/*    {focusing ? (*/}
+        {/*      <div className='operate' onClick={onSplit}>*/}
+        {/*        <Translate value='SPLIT' />*/}
+        {/*      </div>*/}
+        {/*    ) : null}*/}
+        {/*    <TextareaAutosize*/}
+        {/*      className={`textarea ${!props.playing ? 'pause' : ''}`}*/}
+        {/*      value={currentSub.text}*/}
+        {/*      onChange={onChange}*/}
+        {/*      onClick={onClick}*/}
+        {/*      onFocus={onFocus}*/}
+        {/*      onBlur={onBlur}*/}
+        {/*      onKeyDown={onFocus}*/}
+        {/*      spellCheck={false}*/}
+        {/*    />*/}
+        {/*  </div>*/}
+        {/*) : null}*/}
       </div>
     </Style>
   );
