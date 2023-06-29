@@ -7,7 +7,6 @@ import Metronome from '../Metronome';
 import Waveform from './Waveform';
 import Grab from './Grab';
 import Progress from './Progress';
-import Duration from './Duration';
 import TimelineHeading from './TimelineHeading';
 import { isEmpty } from 'lodash';
 import { useSettings } from '../../hooks';
@@ -18,6 +17,7 @@ const Style = styled.div`
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: center;
+  padding-bottom: 35px;
 
   .timeline-outlet {
     position: relative;
@@ -68,10 +68,12 @@ export default function Footer(props) {
 
   useEffect(() => {
     if (props.waveform && !isEmpty(settings)) {
-      console.log('set options 3:');
+      console.log('setting waveform');
+      console.log('settings.waveZoom', settings.waveZoom);
       props.waveform.setOptions({
         scrollable: settings.scrollableMode || false,
         duration: +(settings.zoom || 1) * 5,
+        // waveSize: +settings.waveZoom,
       });
     }
   }, [props.waveform, settings]);
@@ -82,12 +84,11 @@ export default function Footer(props) {
       <div className='timeline-outlet'>
         {props.player ? (
           <>
-            <Progress {...props} headingWidth={headingWidth} />
-            <Duration {...props} />
             <Waveform {...props} setRender={setRender} />
             <Grab {...props} render={render} headingWidth={headingWidth} />
-            <Metronome {...props} render={render} />
-            <Timeline {...props} render={render} />
+            <Metronome {...props} render={render} headingWidth={headingWidth} />
+            <Timeline {...props} render={render} headingWidth={headingWidth} />
+            <Progress {...props} headingWidth={headingWidth} />
           </>
         ) : null}
       </div>

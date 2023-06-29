@@ -4,7 +4,13 @@ import { useSelector } from 'react-redux';
 
 export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
   const $video = createRef();
+  const playbackSpeed = useSelector(store => store.settings.playbackSpeed);
   const videoUrl = useSelector(store => store.session.videoUrl) || '/samples/sample.mp4?t=1';
+
+  useEffect(() => {
+    $video.current.playbackRate = playbackSpeed;
+  }, [$video, playbackSpeed]);
+
 
   useEffect(() => {
     setPlayer($video.current);

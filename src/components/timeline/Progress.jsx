@@ -5,13 +5,14 @@ const Style = styled.div`
   position: absolute;
   left: 0;
   right: 0;
-  top: -35px;
+  bottom: -35px;
   z-index: 11;
   width: 100%;
   height: 35px;
   user-select: none;
   border-top: 1px solid rgb(255 255 255 / 20%);
   background-color: rgb(0 0 0 / 50%);
+  border-radius: 0;
 
   .bar {
     position: absolute;
@@ -22,11 +23,11 @@ const Style = styled.div`
     height: 100%;
     display: inline-block;
     background-color: #730000;
-    overflow: hidden;
+    overflow: visible;
 
     .handle {
       position: absolute;
-      right: 0;
+      right: -5px;
       top: 0;
       bottom: 0;
       width: 10px;
@@ -61,7 +62,7 @@ export default function Progress(props) {
   const onProgressClick = useCallback(
     (event) => {
       if (event.button !== 0) return;
-      const screenDelta = (event.pageX - props.headingWidth + 5) / (document.body.clientWidth - props.headingWidth);
+      const screenDelta = (event.pageX - props.headingWidth) / (document.body.clientWidth - props.headingWidth);
       const currentTime = screenDelta * props.player.duration;
       props.player.currentTime = currentTime;
       props.waveform.seek(currentTime);
@@ -80,7 +81,7 @@ export default function Progress(props) {
   const onGrabMove = useCallback(
     (event) => {
       if (grabbing) {
-        const screenDelta = (event.pageX - props.headingWidth + 5) / (document.body.clientWidth - props.headingWidth);
+        const screenDelta = (event.pageX - props.headingWidth) / (document.body.clientWidth - props.headingWidth);
         props.player.currentTime = screenDelta * props.player.duration;
       }
     },

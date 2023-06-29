@@ -20,21 +20,6 @@ const Style = styled.div`
     height: 30px;
   }
 
-  .range-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 5px;
-    min-width: 200px;
-    width: 200px;
-
-    input {
-      width: 140px;
-      min-width: 140px;
-      max-width: 140px;
-    }
-  }
-
   .text-to-voice {
     width: 100%;
     background-color: transparent;
@@ -72,12 +57,12 @@ Whose strength's abundance weakens his own heart.`);
 
   useEffect(() => {
     async function fetchLanguages() {
-      languages = await languagesApi.getAll('dev_placeholder');
-      if (languages.length < 1) {
+      const newLanguages = await languagesApi.getAll('dev_placeholder');
+      if (newLanguages.length < 1) {
         throw new Error('No languages fetched :(');
       }
-      dispatch(setLanguages(languages));
-      const defaultLang = languages.find(x => x.locale === lang.locale) || languages[0];
+      dispatch(setLanguages(newLanguages));
+      const defaultLang = newLanguages.find(x => x.locale === lang.locale) || newLanguages[0];
       setLang(defaultLang);
       setVoice(defaultLang.voices ? defaultLang.voices[0] : {});
     }
@@ -130,7 +115,7 @@ Whose strength's abundance weakens his own heart.`);
     <Style className='tab-outlet'>
       <div>
         <h3>Presets</h3>
-        <ListGroup className='presets-list'>
+        <ListGroup className='presets-list app-list-group'>
           {presets.map((preset) => (
             <ListGroup.Item
               key={preset.id}>

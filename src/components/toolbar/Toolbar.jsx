@@ -27,12 +27,14 @@ import SpeakersTab from './tabs/SpeakersTab';
 import PresetsTab from './tabs/PresetsTab';
 import { Style } from './Toolbar.styles';
 import ImportTab from './tabs/ImportTab';
+import { useSelector } from 'react-redux';
 
 
 FFmpeg.createFFmpeg({ log: process.env.REACT_APP_LOG_FFMPEG === 'true' }).load();
 const fs = new SimpleFS.FileSystem();
 
 export default function Toolbar(props) {
+  const singleRecordMode = useSelector(store => store.settings.singleRecordMode);
   const [translate, setTranslate] = useState('en');
   const [videoFile, setVideoFile] = useState(null);
 
@@ -116,8 +118,12 @@ export default function Toolbar(props) {
   const onDocumentMouseUp = useCallback(() => {
     if (props.recording) {
       props.setRecording(false);
+      if (singleRecordMode) {
+        props.setPlaying(false);
+        props.player.pause();
+      }
     }
-  }, [props.recording, props.setRecording]);
+  }, [props.recording, props.setRecording, singleRecordMode]);
 
   useEffect(() => {
     document.addEventListener('mouseup', onDocumentMouseUp);
@@ -128,7 +134,7 @@ export default function Toolbar(props) {
 
   return (
     <Style className='tool noselect'>
-      <Tab.Container id='left-tabs-example' defaultActiveKey='import'>
+      <Tab.Container id='left-tabs-example' defaultActiveKey='general'>
         <Nav variant='pills' className='tabs-buttons'>
           <Nav.Item>
             <Nav.Link as='span' eventKey='general' title='General'>

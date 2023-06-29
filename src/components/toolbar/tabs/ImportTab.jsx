@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { getExt } from '../../../utils';
 import { setVideo } from '../../../store/sessionReducer';
 import { t } from 'react-i18nify';
@@ -113,18 +113,20 @@ export default function ImportTab(props) {
         {/*  <Translate value='OPEN_VIDEO' />*/}
         {/*</div>*/}
 
-        <Row>
-          <Col className='label'>Import Video</Col>
-          <Col>
-            <input className='file' type='file' onChange={onVideoChange} onClick={onInputClick} />
-          </Col>
-        </Row>
-        <Row>
-          <Col className='label'>Import Subtitles</Col>
-          <Col>
-            <input className='file' type='file' onChange={onVideoChange} onClick={onInputClick} />
-          </Col>
-        </Row>
+        <Container>
+          <Row>
+            <Col className='label'>Import Video</Col>
+            <Col>
+              <input className='file' type='file' onChange={onVideoChange} onClick={onInputClick} />
+            </Col>
+          </Row>
+          <Row>
+            <Col className='label'>Import Subtitles</Col>
+            <Col>
+              <input className='file' type='file' onChange={onVideoChange} onClick={onInputClick} />
+            </Col>
+          </Row>
+        </Container>
       </div>
     </Style>
   );

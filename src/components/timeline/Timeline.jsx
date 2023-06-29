@@ -16,7 +16,7 @@ const Style = styled.div`
   width: 100%;
   height: 100%;
   pointer-events: none;
-  overflow-y: hidden;
+  overflow: hidden;
 
   .react-contextmenu-wrapper {
     position: absolute;
@@ -170,13 +170,14 @@ export default React.memo(function(
       updateSub,
       mergeSub,
       settings,
+      headingWidth,
     },
   ) {
     const $blockRef = React.createRef();
     const $subsRef1 = React.createRef();
     const $subsRef2 = React.createRef();
     const currentSubs = getCurrentSubs(subtitle, render.beginTime, render.duration);
-    const gridGap = document.body.clientWidth / render.gridNum;
+    const gridGap = (document.body.clientWidth - headingWidth) / render.gridNum;
     const currentSub = currentSubs.find(
       (item) => item.startTime <= currentTime && item.endTime > currentTime,
     ) || {};
@@ -189,7 +190,7 @@ export default React.memo(function(
       if (event.button !== 0) return;
       isDragging = true;
       lastType = type;
-      lastX = event.pageX;
+      lastX = event.pageX - headingWidth;
       lastIndex = currentSubs.indexOf(sub);
       const $subsRef = lastSub.speaker === 1 ? $subsRef1 : $subsRef2;
       lastTarget = Array.from($subsRef.current.children).find(x => x.id === lastSub.id);
@@ -212,7 +213,7 @@ export default React.memo(function(
 
     const onDocumentMouseMove = useCallback((event) => {
       if (isDragging && lastTarget) {
-        lastDiffX = event.pageX - lastX;
+        lastDiffX = event.pageX - headingWidth - lastX;
         if (lastType === 'left') {
           lastTarget.style.width = `${lastWidth - lastDiffX}px`;
           lastTarget.style.transform = `translate(${lastDiffX}px)`;

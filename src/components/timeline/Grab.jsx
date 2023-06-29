@@ -44,7 +44,6 @@ export default function Grab(props) {
   const onGrabMove = useCallback(
     (event) => {
       if (grabbing && props.player && props.waveform) {
-        console.log(event);
         let screenDelta = (event.pageX - props.headingWidth - grabStartX) / (document.body.clientWidth - props.headingWidth);
         if (!scrollableMode) {
           screenDelta = -screenDelta / 2;

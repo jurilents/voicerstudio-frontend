@@ -13,9 +13,12 @@ const rootState = {
   scrollableMode: true,
   //
   magnetMode: true,
-  timelineZoom: 1,
   //
-  playbackSpeed: 1,
+  singleRecordMode: true,
+  timelineZoom: 1,
+  waveZoom: 1,
+  //
+  playbackSpeed: 100,
   // From 0 (mute) to 1 (100%)
   masterVolume: 1,
   originalVolume: 1,

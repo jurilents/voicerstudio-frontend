@@ -1,17 +1,33 @@
 import styled from 'styled-components';
 import { faLocationCrosshairs, faMagnet, faPause, faPencil, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useCallback } from 'react';
-import { speechApi } from '../../api/axios';
-import { download } from '../../utils';
 import { useSettings } from '../../hooks';
+import Duration from '../timeline/Duration';
+import React from 'react';
 
 const Style = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 10px;
-  gap: 10px;
+  //display: flex;
+  //flex-direction: column;
+  //justify-content: center;
+  //align-items: center;
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: rgb(30 30 30 / 80%);
+  padding-bottom: 5px;
+
+  .actions-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 20px;
+    margin-bottom: 5px;
+    gap: 10px;
+    border-bottom: 2px solid rgb(255 255 255 / 10%);
+  }
 
   .btn {
     font-size: 18px;
@@ -47,6 +63,7 @@ const Style = styled.div`
 
 export function Actions(
   {
+    currentTime,
     playing,
     setPlaying,
     recording,
@@ -74,32 +91,37 @@ export function Actions(
   };
 
   return (
-    <Style className='actions'>
-      <div className={'btn btn-icon focus' + (settings.drawingMode ? ' active' : '')}
-           onClick={() => patchSettings({ drawingMode: !settings.drawingMode })}>
-        <FontAwesomeIcon icon={faPencil} />
+    <Style className='actions-wrapper'>
+      <div className='actions-container'>
+        <div className={'btn btn-icon focus' + (settings.drawingMode ? ' active' : '')}
+             onClick={() => patchSettings({ drawingMode: !settings.drawingMode })}>
+          <FontAwesomeIcon icon={faPencil} />
+        </div>
+        <div className={'btn btn-icon focus' + (settings.scrollableMode ? ' active' : '')}
+             onClick={() => patchSettings({ scrollableMode: !settings.scrollableMode })}>
+          <FontAwesomeIcon icon={faLocationCrosshairs} />
+        </div>
+        <div className={'btn btn-icon focus' + (settings.magnetMode ? ' active' : '')}
+             onClick={() => patchSettings({ magnetMode: !settings.magnetMode })}>
+          <FontAwesomeIcon icon={faMagnet} />
+        </div>
+        <div className='separator'></div>
+        <div className={'btn btn-icon' + (settings.magnetMode ? ' record' : '')}
+             onClick={() => togglePlay()} title='Hotkey: SPASE'>
+          <FontAwesomeIcon icon={playing ? faPause : faPlay} />
+        </div>
+        <div className='separator'></div>
+        {/*<div className={'btn btn-icon focus' + (settings.magnet ? ' record' : '')}*/}
+        {/*     onClick={() => generateAndDownloadFinal()}>*/}
+        {/*  <FontAwesomeIcon icon={faCloudDownload} />*/}
+        {/*</div>*/}
+        <div className={'btn btn-icon focus' + (recording ? ' record' : '')}
+             onMouseDown={() => startRecording()}>
+          <FontAwesomeIcon icon={faStop} />
+        </div>
       </div>
-      <div className={'btn btn-icon focus' + (settings.scrollableMode ? ' active' : '')}
-           onClick={() => patchSettings({ scrollableMode: !settings.scrollableMode })}>
-        <FontAwesomeIcon icon={faLocationCrosshairs} />
-      </div>
-      <div className={'btn btn-icon focus' + (settings.magnetMode ? ' active' : '')}
-           onClick={() => patchSettings({ magnetMode: !settings.magnetMode })}>
-        <FontAwesomeIcon icon={faMagnet} />
-      </div>
-      <div className='separator'></div>
-      <div className={'btn btn-icon' + (settings.magnetMode ? ' record' : '')}
-           onClick={() => togglePlay()} title='Hotkey: SPASE'>
-        <FontAwesomeIcon icon={playing ? faPause : faPlay} />
-      </div>
-      <div className='separator'></div>
-      {/*<div className={'btn btn-icon focus' + (settings.magnet ? ' record' : '')}*/}
-      {/*     onClick={() => generateAndDownloadFinal()}>*/}
-      {/*  <FontAwesomeIcon icon={faCloudDownload} />*/}
-      {/*</div>*/}
-      <div className={'btn btn-icon focus' + (recording ? ' record' : '')}
-           onMouseDown={() => startRecording()}>
-        <FontAwesomeIcon icon={faStop} />
+      <div className='duration-container'>
+        <Duration currentTime={currentTime} player={player} />
       </div>
     </Style>
   );

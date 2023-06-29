@@ -1,6 +1,4 @@
-import React, { createRef, useCallback, useMemo, useState } from 'react';
-import TextareaAutosize from 'react-textarea-autosize';
-import { Translate } from 'react-i18nify';
+import React, { createRef, useState } from 'react';
 import styled from 'styled-components';
 import { VideoWrap } from './VideoWrap';
 import { AudioWrap } from './AudioWrap';
@@ -85,21 +83,6 @@ const Style = styled.div`
           background-color: rgb(0 0 0 / 50%);
         }
       }
-    }
-
-    .actions {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      position: absolute;
-      z-index: 20;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      width: 100%;
-      padding: 5px 20px;
-      background-color: rgb(30 30 30 / 80%);
     }
   }
 `;

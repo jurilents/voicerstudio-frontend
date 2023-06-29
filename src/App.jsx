@@ -12,7 +12,6 @@ import ProgressBar from './components/timeline/ProgressBar';
 import { getKeyCode } from './utils';
 import { Settings, Speaker, Sub } from './models';
 import Header from './components/header/Header';
-import { isEmpty } from 'lodash';
 import Speakers from './components/sidebar/Speakers';
 import { NotificationProvider } from './context/NotificationContext';
 import { useVideoStorage } from './hooks/useVideoStorage';
@@ -27,7 +26,7 @@ const Style = styled.div`
     display: flex;
     height: calc(100% - 400px);
     justify-content: flex-end;
-    padding-bottom: 35px;
+    //padding-bottom: 35px;
 
     .subtitles {
       padding-top: 5px;
@@ -56,8 +55,7 @@ const Style = styled.div`
     flex-direction: row;
     justify-content: space-evenly;
     flex: 1;
-    height: 100%;
-    max-height: 100%;
+    height: calc(100% - 60px);
   }
 `;
 

@@ -57,7 +57,7 @@ export default function SpeakersTab(props) {
     <Style className='tab-outlet'>
       <div>
         <h3>Speakers</h3>
-        <ListGroup>
+        <ListGroup className='app-list-group'>
           {speakers.map((speaker) => (
             <ListGroup.Item
               className={(selectedSpeaker?.id && speaker.id === selectedSpeaker.id ? 'selected' : '')}

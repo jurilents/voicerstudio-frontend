@@ -9,12 +9,16 @@ export const Style = styled.div`
   overflow: hidden;
   background-color: rgba(0, 0, 0, 50%);
   border-left: 1px solid rgb(255 255 255 / 20%);
-  max-width: 400px;
+  max-width: 420px;
 
   .tab-content {
+    width: 370px;
+    max-width: 100%;
     min-height: 130px;
     padding: 10px 10px 20px 10px;
+    margin-bottom: 5px;
     height: 100%;
+    overflow-y: auto;
   }
 
   .tab-outlet {
@@ -59,7 +63,7 @@ export const Style = styled.div`
   h3 {
     border-bottom: 1px solid rgb(255 255 255 / 30%);
     padding-bottom: 5px;
-    margin-bottom: 20px;
+    margin: 10px 0 20px 0;
     font-size: 20px;
     text-align: center;
   }
@@ -194,59 +198,18 @@ export const Style = styled.div`
     background-color: #3f51b5;
   }
 
-  .list-group {
-    width: 100%;
-    border-radius: 0;
+  .range-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    min-width: 200px;
+    width: 200px;
 
-    .list-group-item {
-      display: flex;
-      justify-content: space-between;
-      background-color: transparent;
-      color: var(--c-text);
-      border-color: rgb(255 255 255 / 20%);
-      padding: 5px;
-
-      &:focus-within, &.selected {
-        //background-color: var(--c-primary-dark);
-        background-color: rgb(255 255 255 / 10%);
-      }
-
-      &:hover {
-        .list-item-actions {
-          opacity: 100%;
-        }
-      }
-    }
-
-    .list-item-text {
-      width: 100%;
-      outline: none;
-      resize: none;
-      line-height: 1.2;
-      border: none;
-      color: #fff;
-      font-size: 14px;
-      padding: 5px 10px;
-      user-select: all;
-      pointer-events: all;
-      background-color: transparent;
-    }
-
-    .list-item-actions {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      align-items: center;
-      opacity: 50%;
-    }
-
-    .add-button {
-      font-size: 18px;
-      opacity: 80% !important;
-
-      &:hover {
-        opacity: 100%;
-      }
+    input {
+      width: 140px;
+      min-width: 140px;
+      max-width: 140px;
     }
   }
 `;

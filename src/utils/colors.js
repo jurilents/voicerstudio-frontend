@@ -1,8 +1,8 @@
 const colors = {
-  blue: '#3194cb',
-  yellow: '#eab70e',
-  red: '#c91e1e',
-  magenta: '#c235b7',
+  blue: '#215486',
+  yellow: '#735c0e',
+  red: '#722727',
+  magenta: '#6b2c64',
 };
 
 export default colors;

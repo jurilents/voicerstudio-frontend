@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { ListGroup } from 'react-bootstrap';
 import timelineStyles from './timelineStyles';
+import { useSelector } from 'react-redux';
 
 const Style = styled.div`
   //position: fixed;
@@ -30,15 +31,50 @@ const Style = styled.div`
       background-color: rgb(0 0 0 / 80%);
     }
   }
+
+  .app-list-group {
+    flex-direction: column-reverse;
+  }
+
+  .list-group-item {
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px !important;
+    border: 1px solid transparent;
+    border-right: 10px solid transparent;
+  }
+
+  .speaker-btn {
+    background-color: rgb(255 255 255 / 10%);
+
+    &:hover {
+      background-color: var(--c-primary-dark);
+    }
+  }
+
+  .grab-filler {
+    height: 12%;
+    width: 100%;
+  }
 `;
 
 export default function TimelineHeading() {
+  const speakers = useSelector(store => store.session.speakers);
+
   return (
     <Style className='timeline-heading'>
-      <ListGroup>
-        <ListGroup.Item>
-          Speaker 1
-        </ListGroup.Item>
+      <div className='grab-filler'></div>
+      <ListGroup className='app-list-group'>
+        {speakers.map((speaker, index) => (
+          <ListGroup.Item key={index} style={{ borderColor: speaker.color }}>
+            <div className='speaker-actions'>
+              <button className='btn speaker-btn'>M</button>
+            </div>
+            <div>{speaker.displayName}</div>
+          </ListGroup.Item>
+        ))}
       </ListGroup>
     </Style>
   );

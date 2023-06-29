@@ -4,6 +4,10 @@ const PLAY_AUDIO = 'PLAY_AUDIO';
 
 const defaultState = {
   players: [],
+  volume: {
+    master: 1,
+    original: 1,
+  },
 };
 
 export default function audioReducer(state = defaultState, action) {

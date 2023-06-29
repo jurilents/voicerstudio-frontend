@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSettings } from '../../../store/settingsReducer';
-import { Col, Form, Row } from 'react-bootstrap';
+import { Col, Container, Form, Row } from 'react-bootstrap';
 import { speechApi } from '../../../api/axios';
 import { download } from '../../../utils';
 import { selectSpeaker } from '../../../store/sessionReducer';
@@ -56,58 +56,60 @@ export default function ExportTab(props) {
     <Style className='tab-outlet'>
       <div>
         <h3>Export</h3>
-        <Row>
-          <Col className='label'>Speaker</Col>
-          <Col>
-            <Form.Select
-              className='app-select'
-              onChange={(event) =>
-                dispatch(selectSpeaker(+event.target.value))}
-              defaultValue={settings.exportCodec}>
-              {speakers.map((speaker, index) =>
-                (<option key={index} value={speaker.id}>
-                  {speaker.displayName}
-                </option>),
-              )}
-            </Form.Select>
-          </Col>
-        </Row>
-        <Row>
-          <Col className='label'>Format</Col>
-          <Col>
-            <Form.Select
-              className='app-select'
-              onChange={(event) =>
-                dispatch(setSettings({ exportFormat: event.target.value }))}>
-              {Object.keys(codec).map((item, index) =>
-                (<option key={index} value={item}>{item}</option>),
-              )}
-            </Form.Select>
-          </Col>
-        </Row>
-        <Row>
-          <Col className='label'>CODEC</Col>
-          <Col>
-            <Form.Select
-              className='app-select'
-              onChange={(event) =>
-                dispatch(setSettings({ exportCodec: event.target.value }))}
-              defaultValue={settings.exportCodec}>
-              {codec[settings.exportFormat].map((item, index) =>
-                (<option key={index} value={item.value}>
-                  {item.displayName}
-                </option>),
-              )}
-            </Form.Select>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <button className='btn btn-outline' onClick={generateAndExport}>
-              Export
-            </button>
-          </Col>
-        </Row>
+        <Container>
+          <Row>
+            <Col className='label'>Speaker</Col>
+            <Col>
+              <Form.Select
+                className='app-select'
+                onChange={(event) =>
+                  dispatch(selectSpeaker(+event.target.value))}
+                defaultValue={settings.exportCodec}>
+                {speakers.map((speaker, index) =>
+                  (<option key={index} value={speaker.id}>
+                    {speaker.displayName}
+                  </option>),
+                )}
+              </Form.Select>
+            </Col>
+          </Row>
+          <Row>
+            <Col className='label'>Format</Col>
+            <Col>
+              <Form.Select
+                className='app-select'
+                onChange={(event) =>
+                  dispatch(setSettings({ exportFormat: event.target.value }))}>
+                {Object.keys(codec).map((item, index) =>
+                  (<option key={index} value={item}>{item}</option>),
+                )}
+              </Form.Select>
+            </Col>
+          </Row>
+          <Row>
+            <Col className='label'>CODEC</Col>
+            <Col>
+              <Form.Select
+                className='app-select'
+                onChange={(event) =>
+                  dispatch(setSettings({ exportCodec: event.target.value }))}
+                defaultValue={settings.exportCodec}>
+                {codec[settings.exportFormat].map((item, index) =>
+                  (<option key={index} value={item.value}>
+                    {item.displayName}
+                  </option>),
+                )}
+              </Form.Select>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <button className='btn btn-outline' onClick={generateAndExport}>
+                Export
+              </button>
+            </Col>
+          </Row>
+        </Container>
       </div>
     </Style>
   );

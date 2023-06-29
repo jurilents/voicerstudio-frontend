@@ -40,17 +40,28 @@ function findIndex(subs, startTime) {
 
 let lastRecording = false;
 
-export default function Metronome({ render, subtitle, newSub, addSub, player, playing, recording, currentTime }) {
+export default function Metronome(
+  {
+    render,
+    subtitle,
+    newSub,
+    addSub,
+    player,
+    playing,
+    recording,
+    currentTime,
+    headingWidth,
+  }) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartTime, setDragStartTime] = useState(0);
   const [dragEndTime, setDragEndTime] = useState(0);
-  const gridGap = document.body.clientWidth / render.gridNum;
+  const gridGap = (document.body.clientWidth - headingWidth) / render.gridNum;
 
   const getEventTime = useCallback(
     (event) => {
-      return (event.pageX - render.padding * gridGap) / gridGap / 10 + render.beginTime;
+      return (event.pageX - headingWidth - render.padding * gridGap) / gridGap / 10 + render.beginTime;
     },
-    [gridGap, render],
+    [gridGap, render, headingWidth],
   );
 
   const onMouseDown = useCallback(

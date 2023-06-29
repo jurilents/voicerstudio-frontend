@@ -102,4 +102,60 @@ export default createGlobalStyle`
     margin-right: 10px;
     font-size: inherit;
   }
+
+  .app-list-group {
+    width: 100%;
+    border-radius: 0;
+
+    .list-group-item {
+      display: flex;
+      justify-content: space-between;
+      background-color: transparent;
+      color: var(--c-text);
+      border-color: rgb(255 255 255 / 20%);
+      padding: 5px;
+
+      &:focus-within, &.selected {
+        //background-color: var(--c-primary-dark);
+        background-color: rgb(255 255 255 / 10%);
+      }
+
+      &:hover {
+        .list-item-actions {
+          opacity: 100%;
+        }
+      }
+    }
+
+    .list-item-text {
+      width: 100%;
+      outline: none;
+      resize: none;
+      line-height: 1.2;
+      border: none;
+      color: #fff;
+      font-size: 14px;
+      padding: 5px 10px;
+      user-select: all;
+      pointer-events: all;
+      background-color: transparent;
+    }
+
+    .list-item-actions {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      opacity: 50%;
+    }
+
+    .add-button {
+      font-size: 18px;
+      opacity: 80% !important;
+
+      &:hover {
+        opacity: 100%;
+      }
+    }
+  }
 `;
