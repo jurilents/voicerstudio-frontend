@@ -14,6 +14,11 @@ export function useVideoStorage() {
 
   const saveVideo = async (id, videoBlob) => {
     const db = await openDatabase();
+    const data = await db.get(TABLE_NAME, id);
+    if (data) {
+      await db.delete(TABLE_NAME, id);
+    }
+
     await db.add('videos', {
       id: id,
       video: videoBlob,

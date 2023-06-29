@@ -1,9 +1,25 @@
 import React, { createRef, memo, useEffect } from 'react';
+import styled from 'styled-components';
 import WFPlayer from 'wfplayer';
 import { useSelector } from 'react-redux';
 
-export const Waveform = memo((
-  { player, waveform, setWaveform, setRender }) => {
+const Style = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  user-select: none;
+  pointer-events: none;
+`;
+
+export default memo(function Waveform(
+  { player, waveform, setWaveform, setRender },
+) {
   const $waveform = createRef();
   const settings = useSelector(store => store.settings);
 
@@ -36,6 +52,6 @@ export const Waveform = memo((
   }, []);
 
   return (
-    <div className='waveform' ref={$waveform} />
+    <Style className='waveform' ref={$waveform} />
   );
 }, () => true);

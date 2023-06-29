@@ -25,7 +25,7 @@ const rootState = {
 
 const storedState = localStorage.getItem(STORAGE_KEY);
 const defaultState = storedState ? { ...rootState, ...JSON.parse(storedState) } : rootState;
-
+console.log('defaultState', defaultState);
 
 export default function settingsReducer(state = defaultState, action) {
   switch (action.type) {

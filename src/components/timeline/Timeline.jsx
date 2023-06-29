@@ -4,9 +4,9 @@ import { Translate } from 'react-i18nify';
 import styled from 'styled-components';
 import isEqual from 'lodash/isEqual';
 import DT from 'duration-time-conversion';
-import { getKeyCode } from '../utils';
+import { getKeyCode } from '../../utils';
 
-const Timeline = styled.div`
+const Style = styled.div`
   position: absolute;
   z-index: 9;
   top: 0;
@@ -16,6 +16,7 @@ const Timeline = styled.div`
   width: 100%;
   height: 100%;
   pointer-events: none;
+  overflow-y: hidden;
 
   .react-contextmenu-wrapper {
     position: absolute;
@@ -322,7 +323,7 @@ export default React.memo(function(
     }, [onDocumentMouseMove, onDocumentMouseUp, onKeyDown]);
 
     return (
-      <Timeline ref={$blockRef}>
+      <Style ref={$blockRef} className='timeline'>
         <div ref={$subsRef1} className={settings.currentSpeaker === 1 ? 'active-speaker' : ''}>
           {currentSubs.filter(sub => sub.speaker === 1).map((sub, key) => {
             return (
@@ -443,7 +444,7 @@ export default React.memo(function(
             <Translate value='MERGE' />
           </MenuItem>
         </ContextMenu>
-      </Timeline>
+      </Style>
     );
   },
   (prevProps, nextProps) => {

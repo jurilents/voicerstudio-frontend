@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import DT from 'duration-time-conversion';
 import { t } from 'react-i18nify';
 
-const Metronome = styled.div`
+const Style = styled.div`
   position: absolute;
   z-index: 8;
   top: 0;
@@ -40,7 +40,7 @@ function findIndex(subs, startTime) {
 
 let lastRecording = false;
 
-export default function Component({ render, subtitle, newSub, addSub, player, playing, recording, currentTime }) {
+export default function Metronome({ render, subtitle, newSub, addSub, player, playing, recording, currentTime }) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartTime, setDragStartTime] = useState(0);
   const [dragEndTime, setDragEndTime] = useState(0);
@@ -136,7 +136,7 @@ export default function Component({ render, subtitle, newSub, addSub, player, pl
   }, [recording, updateRecordingSub, startRecordingSub, stopRecordingSub]);
 
   return (
-    <Metronome onMouseDown={onMouseDown} onMouseMove={onMouseMove}>
+    <Style className='metronome' onMouseDown={onMouseDown} onMouseMove={onMouseMove}>
       {player && !playing && dragStartTime && dragEndTime && dragEndTime > dragStartTime ? (
         <div
           className='template'
@@ -146,6 +146,6 @@ export default function Component({ render, subtitle, newSub, addSub, player, pl
           }}
         ></div>
       ) : null}
-    </Metronome>
+    </Style>
   );
 }

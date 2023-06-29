@@ -6,9 +6,9 @@ import styled from 'styled-components';
 import Toolbar from './components/toolbar/Toolbar';
 import Subtitles from './components/sidebar/Subtitles';
 import Player from './components/player/Player';
-import Footer from './components/footer/Footer';
+import Footer from './components/timeline/Footer';
 import Loading from './components/Loading';
-import ProgressBar from './components/footer/ProgressBar';
+import ProgressBar from './components/timeline/ProgressBar';
 import { getKeyCode } from './utils';
 import { Settings, Speaker, Sub } from './models';
 import Header from './components/header/Header';
@@ -25,7 +25,7 @@ const Style = styled.div`
 
   .main {
     display: flex;
-    height: calc(100% - 200px);
+    height: calc(100% - 400px);
     justify-content: flex-end;
     padding-bottom: 35px;
 
@@ -42,15 +42,13 @@ const Style = styled.div`
     }
   }
 
-  .footer {
-    height: 200px;
-  }
-
   .left {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     flex: 1;
+    height: 100%;
+    max-height: 100%;
   }
 
   .left-content {
@@ -58,6 +56,8 @@ const Style = styled.div`
     flex-direction: row;
     justify-content: space-evenly;
     flex: 1;
+    height: 100%;
+    max-height: 100%;
   }
 `;
 
@@ -345,22 +345,22 @@ export default function App({ defaultLang }) {
     // setSpeakersOriginal([]);
 
     // ========= Settings =========
-    const settingsString = window.localStorage.getItem('settings');
-    if (settingsString) {
-      try {
-        const localSettings = JSON.parse(settingsString);
-        if (localSettings && !isEmpty(localSettings)) {
-          setSettingsOriginal(localSettings);
-          const currentSpeaker = speakers.find(x => x.id === localSettings.currentSpeaker);
-          setPreset(currentSpeaker?.preset || '');
-        }
-      } catch (error) {
-        // ignore
-      }
-    }
-    if (!settings || isEmpty(settingsString)) {
-      setSettings(new Settings({}));
-    }
+    // const settingsString = window.localStorage.getItem('settings');
+    // if (settingsString) {
+    //   try {
+    //     const localSettings = JSON.parse(settingsString);
+    //     if (localSettings && !isEmpty(localSettings)) {
+    //       setSettingsOriginal(localSettings);
+    //       const currentSpeaker = speakers.find(x => x.id === localSettings.currentSpeaker);
+    //       setPreset(currentSpeaker?.preset || '');
+    //     }
+    //   } catch (error) {
+    //     // ignore
+    //   }
+    // }
+    // if (!settings || isEmpty(settingsString)) {
+    //   setSettings(new Settings({}));
+    // }
 
     // ========= Subtitles =========
     const localSubtitleString = window.localStorage.getItem('subtitle');
