@@ -2,6 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import DT from 'duration-time-conversion';
 import { t } from 'react-i18nify';
+import { useDispatch, useSelector } from 'react-redux';
+import { addSub } from '../store/sessionReducer';
+import { Sub } from '../models';
 
 const Style = styled.div`
   position: absolute;
@@ -43,15 +46,14 @@ let lastRecording = false;
 export default function Metronome(
   {
     render,
-    subtitle,
-    newSub,
-    addSub,
     player,
     playing,
     recording,
     currentTime,
     headingWidth,
   }) {
+  const dispatch = useDispatch();
+  const { subs, selectedSub, speakers, selectedSpeaker } = useSelector(store => store.session);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartTime, setDragStartTime] = useState(0);
   const [dragEndTime, setDragEndTime] = useState(0);
@@ -87,23 +89,21 @@ export default function Metronome(
   const onDocumentMouseUp = useCallback(() => {
     if (isDragging) {
       if (dragStartTime > 0 && dragEndTime > 0 && dragEndTime - dragStartTime >= 0.2) {
-        const index = findIndex(subtitle, dragStartTime) + 1;
+        // const index = findIndex(subs, dragStartTime) + 1;
         const start = DT.d2t(dragStartTime);
         const end = DT.d2t(dragEndTime);
-        addSub(
-          index,
-          newSub({
-            start,
-            end,
-            text: t('SUB_TEXT'),
-          }),
-        );
+        dispatch(addSub(new Sub({
+          speakerId: selectedSpeaker.id,
+          start,
+          end,
+          text: t('SUB_TEXT'),
+        })));
       }
     }
     setIsDragging(false);
     setDragStartTime(0);
     setDragEndTime(0);
-  }, [isDragging, dragStartTime, dragEndTime, subtitle, addSub, newSub]);
+  }, [isDragging, dragStartTime, dragEndTime, dispatch]);
 
   useEffect(() => {
     document.addEventListener('mouseup', onDocumentMouseUp);
@@ -117,16 +117,21 @@ export default function Metronome(
 
   const stopRecordingSub = useCallback(() => {
     if (dragStartTime > 0 && dragEndTime > 0 && dragEndTime - dragStartTime >= 0.2) {
-      const index = findIndex(subtitle, dragStartTime) + 1;
+      // const index = findIndex(subs, dragStartTime) + 1;
       const start = DT.d2t(dragStartTime);
       const end = DT.d2t(dragEndTime);
-      const sub = newSub({ start, end, text: t('SUB_TEXT') });
-      addSub(index, sub);
+      // const sub = newSub({ start, end, text: t('SUB_TEXT') });
+      dispatch(addSub(new Sub({
+        speakerId: selectedSpeaker.id,
+        start,
+        end,
+        text: t('SUB_TEXT'),
+      })));
     }
     setIsDragging(false);
     setDragStartTime(0);
     setDragEndTime(0);
-  }, [currentTime]);
+  }, [currentTime, selectedSpeaker]);
 
   const updateRecordingSub = useCallback(() => {
     setDragEndTime(currentTime);
@@ -154,8 +159,8 @@ export default function Metronome(
           style={{
             left: render.padding * gridGap + (dragStartTime - render.beginTime) * gridGap * 10,
             width: (dragEndTime - dragStartTime) * gridGap * 10,
-          }}
-        ></div>
+          }}>
+        </div>
       ) : null}
     </Style>
   );

@@ -1,6 +1,7 @@
-import { Speaker } from '../models';
+import { Speaker, Sub } from '../models';
 import colors from '../utils/colors';
 import speakersReducer from './sessionReducer.speakers';
+import subsReducer from './sessionReducer.subs';
 import presetsReducer from './sessionReducer.presets';
 
 // Commands
@@ -8,6 +9,12 @@ const ADD_SPEAKER = 'ADD_SPEAKER';
 const REMOVE_SPEAKER = 'REMOVE_SPEAKER';
 const PATCH_SPEAKER = 'PATCH_SPEAKER';
 const SELECT_SPEAKER = 'SELECT_SPEAKER';
+
+const SET_ALL_SPEAKER_SUBS = 'SET_ALL_SPEAKER_SUBS';
+const ADD_SPEAKER_SUB = 'ADD_SPEAKER_SUB';
+const REMOVE_SPEAKER_SUB = 'REMOVE_SPEAKER_SUB';
+const PATCH_SPEAKER_SUB = 'PATCH_SPEAKER_SUB';
+const SELECT_SPEAKER_SUB = 'SELECT_SPEAKER_SUB';
 
 const ADD_PRESET = 'ADD_PRESET';
 const REMOVE_PRESET = 'REMOVE_PRESET';
@@ -19,60 +26,95 @@ const SET_VIDEO = 'SET_VIDEO';
 const STORAGE_KEY = 'session';
 
 // Default state
-const defaultSpeaker = new Speaker({ id: 1, name: 'Speaker 1', color: colors.blue });
+const defaultSpeaker = new Speaker({ id: 1, displayName: 'Speaker 1', color: colors.blue });
 const rootState = {
   speakers: [defaultSpeaker],
   selectedSpeaker: defaultSpeaker,
-  subs: [],
   selectedSub: null,
   presets: [],
   videoUrl: null,
+  subsHistory: [],
 };
 
+function parseSessionJson(json) {
+  const obj = JSON.parse(json);
+  if (obj.speakers && Array.isArray(obj.speakers)) {
+    obj.speakers = obj.speakers.map(speaker => {
+      if (speaker.subs && Array.isArray(speaker.subs)) {
+        speaker.subs = speaker.subs.map(sub => new Sub(sub));
+      }
+      return new Speaker(speaker);
+    });
+  }
+  return obj;
+}
+
 const storedState = localStorage.getItem(STORAGE_KEY);
-const defaultState = storedState ? { ...rootState, ...JSON.parse(storedState) } : rootState;
+const defaultState = storedState ? { ...rootState, ...parseSessionJson(storedState) } : rootState;
+
+function saveToLocalStorage(session) {
+  const sessionCopy = { ...session };
+  delete sessionCopy.subsHistory;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionCopy));
+  return session;
+}
 
 export default function sessionReducer(state = defaultState, action) {
   switch (action.type) {
     /************************* SPEAKERS *************************/
     case ADD_SPEAKER: {
       const session = speakersReducer.addSpeaker(state, action);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-      return session;
+      return saveToLocalStorage(session);
     }
     case REMOVE_SPEAKER: {
       const session = speakersReducer.removeSpeaker(state, action);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-      return session;
+      return saveToLocalStorage(session);
     }
     case PATCH_SPEAKER: {
       const session = speakersReducer.patchSpeaker(state, action);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-      return session;
+      return saveToLocalStorage(session);
     }
     case SELECT_SPEAKER: {
       const session = speakersReducer.selectSpeaker(state, action);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-      return session;
+      return saveToLocalStorage(session);
+    }
+
+    /************************* SPEAKER SUBS *************************/
+    case SET_ALL_SPEAKER_SUBS: {
+      const session = subsReducer.setAllSubs(state, action);
+      return saveToLocalStorage(session);
+    }
+    case ADD_SPEAKER_SUB: {
+      const session = subsReducer.addSub(state, action);
+      return saveToLocalStorage(session);
+    }
+    case REMOVE_SPEAKER_SUB: {
+      const session = subsReducer.removeSub(state, action);
+      return saveToLocalStorage(session);
+    }
+    case PATCH_SPEAKER_SUB: {
+      const session = subsReducer.patchSub(state, action);
+      return saveToLocalStorage(session);
+    }
+    case SELECT_SPEAKER_SUB: {
+      const session = subsReducer.selectSub(state, action);
+      return saveToLocalStorage(session);
     }
 
     /************************* PRESETS *************************/
     case ADD_PRESET: {
       const session = presetsReducer.addPreset(state, action);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-      return session;
+      return saveToLocalStorage(session);
     }
 
     case REMOVE_PRESET: {
       const session = presetsReducer.removePreset(state, action);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-      return session;
+      return saveToLocalStorage(session);
     }
 
     case PATCH_PRESET: {
       const session = presetsReducer.patchPreset(state, action);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-      return session;
+      return saveToLocalStorage(session);
     }
 
     /************************* VIDEO *************************/
@@ -81,8 +123,7 @@ export default function sessionReducer(state = defaultState, action) {
         ...state,
         videoUrl: action.payload.videoUrl,
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-      return session;
+      return saveToLocalStorage(session);
     }
 
     default:
@@ -94,6 +135,12 @@ export const addSpeaker = (speaker) => ({ type: ADD_SPEAKER, payload: { speaker 
 export const removeSpeaker = (id) => ({ type: REMOVE_SPEAKER, payload: { id } });
 export const patchSpeaker = (id, patch) => ({ type: PATCH_SPEAKER, payload: { id, patch } });
 export const selectSpeaker = (id) => ({ type: SELECT_SPEAKER, payload: { id } });
+
+export const setAllSubs = (speakerId, subs) => ({ type: ADD_SPEAKER_SUB, payload: { speakerId, subs } });
+export const addSub = (sub) => ({ type: ADD_SPEAKER_SUB, payload: { sub } });
+export const removeSub = (sub) => ({ type: REMOVE_SPEAKER_SUB, payload: { sub } });
+export const patchSub = (sub, patch) => ({ type: PATCH_SPEAKER_SUB, payload: { sub, patch } });
+export const selectSub = (speakerId, id) => ({ type: SELECT_SPEAKER_SUB, payload: { speakerId, id } });
 
 export const addPreset = (preset) => ({ type: ADD_PRESET, payload: { preset } });
 export const removePreset = (id) => ({ type: REMOVE_PRESET, payload: { id } });

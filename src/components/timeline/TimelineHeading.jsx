@@ -2,18 +2,16 @@ import React from 'react';
 import styled from 'styled-components';
 import { ListGroup } from 'react-bootstrap';
 import timelineStyles from './timelineStyles';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectSpeaker } from '../../store/sessionReducer';
 
 const Style = styled.div`
-  //position: fixed;
-  //top: 0;
-  //left: 0;
-  //right: 0;
-  //z-index: 999;
   width: ${timelineStyles.headingWidth};
   height: 100%;
-  //user-select: none;
-  //pointer-events: none;
+  padding: 50px 0 10px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 
   .inner {
     position: relative;
@@ -37,13 +35,19 @@ const Style = styled.div`
   }
 
   .list-group-item {
-    height: 60px;
+    //height: 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px !important;
     border: 1px solid transparent;
-    border-right: 10px solid transparent;
+    border-right: 3px solid transparent;
+    cursor: pointer;
+
+    &.selected-speaker {
+      background-color: rgb(255 255 255 / 10%);
+      border-right-width: 10px;
+    }
   }
 
   .speaker-btn {
@@ -53,22 +57,22 @@ const Style = styled.div`
       background-color: var(--c-primary-dark);
     }
   }
-
-  .grab-filler {
-    height: 12%;
-    width: 100%;
-  }
 `;
 
 export default function TimelineHeading() {
-  const speakers = useSelector(store => store.session.speakers);
+  const dispatch = useDispatch();
+  const { speakers, selectedSpeaker } = useSelector(store => store.session);
+  const timelineRowHeight = useSelector(store => store.settings.timelineRowHeight);
 
   return (
     <Style className='timeline-heading'>
-      <div className='grab-filler'></div>
       <ListGroup className='app-list-group'>
         {speakers.map((speaker, index) => (
-          <ListGroup.Item key={index} style={{ borderColor: speaker.color }}>
+          <ListGroup.Item
+            key={index}
+            className={selectedSpeaker.id === speaker.id ? 'selected-speaker' : ''}
+            style={{ borderColor: speaker.color, height: timelineRowHeight }}
+            onClick={() => dispatch(selectSpeaker(speaker.id))}>
             <div className='speaker-actions'>
               <button className='btn speaker-btn'>M</button>
             </div>

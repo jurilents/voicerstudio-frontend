@@ -18,12 +18,13 @@ const rootState = {
   timelineZoom: 1,
   waveZoom: 1,
   //
-  playbackSpeed: 100,
+  playbackSpeed: 1,
   // From 0 (mute) to 1 (100%)
   masterVolume: 1,
   originalVolume: 1,
   exportFormat: 'WAV',
   exportCodec: 'Riff8Khz16BitMonoPcm',
+  timelineRowHeight: 70,
 };
 
 const storedState = localStorage.getItem(STORAGE_KEY);

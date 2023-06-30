@@ -5,6 +5,7 @@ export class Speaker {
     this.color = obj.color;
     this.preset = obj.preset;
     this.wordsPerMinute = obj.wordsPerMinute;
+    this.subs = obj.subs || [];
   }
 
   get clone() {

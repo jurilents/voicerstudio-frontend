@@ -8,7 +8,9 @@ export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
   const videoUrl = useSelector(store => store.session.videoUrl) || '/samples/sample.mp4?t=1';
 
   useEffect(() => {
-    $video.current.playbackRate = playbackSpeed;
+    if ($video.current) {
+      $video.current.playbackRate = playbackSpeed;
+    }
   }, [$video, playbackSpeed]);
 
 

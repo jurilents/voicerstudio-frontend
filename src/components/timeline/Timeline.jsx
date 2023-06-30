@@ -1,10 +1,11 @@
-import { ContextMenu, ContextMenuTrigger, MenuItem } from 'react-contextmenu';
-import React, { useCallback, useEffect } from 'react';
-import { Translate } from 'react-i18nify';
+import { ContextMenuTrigger } from 'react-contextmenu';
+import React, { createRef, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import isEqual from 'lodash/isEqual';
 import DT from 'duration-time-conversion';
 import { getKeyCode } from '../../utils';
+import { useDispatch, useSelector } from 'react-redux';
+import { patchSub, removeSub, selectSpeaker, setAllSubs } from '../../store/sessionReducer';
 
 const Style = styled.div`
   position: absolute;
@@ -30,18 +31,12 @@ const Style = styled.div`
     pointer-events: all;
   }
 
-  .subs2 {
-    .sub-item {
-      top: 60%;
-    }
-  }
-
   .sub-item {
     opacity: 60%;
     position: absolute;
-    top: 30%;
+    //top: 30%;
     left: 0;
-    height: 20%;
+    height: 50px;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -130,7 +125,7 @@ const Style = styled.div`
   }
 `;
 
-function getCurrentSubs(subs, beginTime, duration) {
+function getVisibleSubs(subs, beginTime, duration) {
   return subs.filter((item) => {
     return (
       (item.startTime >= beginTime && item.startTime <= beginTime + duration) ||
@@ -157,57 +152,51 @@ let lastWidth = 0;
 let lastDiffX = 0;
 let isDragging = false;
 
-export default React.memo(function(
-    {
-      player,
-      subtitle,
-      setSubtitle,
-      render,
-      currentTime,
-      checkSub,
-      removeSub,
-      hasSub,
-      updateSub,
-      mergeSub,
-      settings,
-      headingWidth,
-    },
-  ) {
-    const $blockRef = React.createRef();
-    const $subsRef1 = React.createRef();
-    const $subsRef2 = React.createRef();
-    const currentSubs = getCurrentSubs(subtitle, render.beginTime, render.duration);
+export default React.memo(function Timeline({ player, render, currentTime, headingWidth }) {
+    const $blockRef = createRef();
+    const $subsRefs = createRef();
+    $subsRefs.current = [];
+
+    const dispatch = useDispatch();
+    const { selectedSub, speakers, selectedSpeaker } = useSelector(store => store.session);
+    const { timelineRowHeight, magnetMode } = useSelector(store => store.settings);
+
+    const cursorSubs = [];
+    for (const speaker of speakers) {
+      speaker.visibleSubs = getVisibleSubs(speaker.subs, render.beginTime, render.duration);
+      cursorSubs.push(...speaker.subs.filter(x => x.startTime <= currentTime && x.endTime > currentTime));
+    }
     const gridGap = (document.body.clientWidth - headingWidth) / render.gridNum;
-    const currentSub = currentSubs.find(
-      (item) => item.startTime <= currentTime && item.endTime > currentTime,
-    ) || {};
+    console.log('cursorSubs', cursorSubs);
 
     const onMouseDown = (sub, event, type) => {
-      if (sub.speaker !== settings.currentSpeaker) {
-        return;
+      if (sub.speakerId !== selectedSpeaker.id) {
+        dispatch(selectSpeaker(sub.speakerId));
       }
       lastSub = sub;
       if (event.button !== 0) return;
       isDragging = true;
       lastType = type;
       lastX = event.pageX - headingWidth;
-      lastIndex = currentSubs.indexOf(sub);
-      const $subsRef = lastSub.speaker === 1 ? $subsRef1 : $subsRef2;
-      lastTarget = Array.from($subsRef.current.children).find(x => x.id === lastSub.id);
+      lastIndex = selectedSpeaker.subs.indexOf(sub);
+      const speakerId = `speaker-${lastSub.speakerId}`;
+      const $subsRef = $subsRefs.current.find(x => x.id === speakerId);
+      console.log('$subsRef', $subsRef.children);
+      lastTarget = Array.from($subsRef.children).find(x => x.id === lastSub.id);
       lastWidth = parseFloat(lastTarget.style.width);
     };
 
     const onDoubleClick = (sub, event) => {
       const $subs = event.currentTarget;
-      const index = hasSub(sub);
-      const previou = subtitle[index - 1];
-      const next = subtitle[index + 1];
-      if (previou && next) {
-        const width = (next.startTime - previou.endTime) * 10 * gridGap;
+      const index = selectedSpeaker.subs.findIndex(x => x.id === sub.id);
+      const prev = selectedSpeaker.subs[index - 1];
+      const next = selectedSpeaker.subs[index + 1];
+      if (prev && next) {
+        const width = (next.startTime - prev.endTime) * 10 * gridGap;
         $subs.style.width = `${width}px`;
-        const start = DT.d2t(previou.endTime);
+        const start = DT.d2t(prev.endTime);
         const end = DT.d2t(next.startTime);
-        updateSub(sub, { start, end });
+        dispatch(patchSub(sub, { start, end }));
       }
     };
 
@@ -228,13 +217,13 @@ export default React.memo(function(
     const onDocumentMouseUp = useCallback(() => {
       if (isDragging && lastTarget && lastDiffX) {
         const timeDiff = lastDiffX / gridGap / 10;
-        const index = hasSub(lastSub);
-        const previous = subtitle[index - 1];
-        const next = subtitle[index + 1];
+        const index = selectedSpeaker.subs.findIndex(x => x.id === lastSub.id);
+        const previous = selectedSpeaker.subs[index - 1];
+        const next = selectedSpeaker.subs[index + 1];
 
         let startTime = lastSub.startTime + timeDiff;
         let endTime = lastSub.endTime + timeDiff;
-        if (settings.magnet) {
+        if (magnetMode) {
           startTime = magnetically(startTime, previous ? previous.endTime : null);
           endTime = magnetically(endTime, next ? next.startTime : null);
         }
@@ -242,20 +231,20 @@ export default React.memo(function(
         const width = (endTime - startTime) * 10 * gridGap;
 
         if ((previous && endTime < previous.startTime) || (next && startTime > next.endTime)) {
-          setSubtitle(subtitle.sort((a, b) => parseFloat(a.startTime) - parseFloat(b.startTime)));
+          dispatch(setAllSubs(selectedSpeaker.subs.sort((a, b) => parseFloat(a.startTime) - parseFloat(b.startTime))));
         }
 
         if (lastType === 'left') {
           if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
             const start = DT.d2t(startTime);
-            updateSub(lastSub, { start });
+            dispatch(patchSub(lastSub, { start }));
           } else {
             lastTarget.style.width = `${width}px`;
           }
         } else if (lastType === 'right') {
           if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
             const end = DT.d2t(endTime);
-            updateSub(lastSub, { end });
+            dispatch(patchSub(lastSub, { end }));
           } else {
             lastTarget.style.width = `${width}px`;
           }
@@ -263,7 +252,7 @@ export default React.memo(function(
           if (startTime > 0 && endTime > 0 && endTime - startTime >= 0.2) {
             const start = DT.d2t(startTime);
             const end = DT.d2t(endTime);
-            updateSub(lastSub, { start, end });
+            dispatch(patchSub(lastSub, { start, end }));
           } else {
             lastTarget.style.width = `${width}px`;
           }
@@ -277,39 +266,61 @@ export default React.memo(function(
       lastWidth = 0;
       lastDiffX = 0;
       isDragging = false;
-    }, [gridGap, hasSub, subtitle, setSubtitle, updateSub, settings.magnet]);
+    }, [gridGap, dispatch]);
+
+    const addSubsRef = (subsElm) => {
+      if (subsElm && !$subsRefs.current.includes(subsElm)) {
+        $subsRefs.current.push(subsElm);
+      }
+    };
 
     const onKeyDown = useCallback(
       (event) => {
-        const sub = currentSubs[lastIndex];
+        const sub = selectedSpeaker.visibleSubs[lastIndex];
         if (sub && lastTarget) {
           const keyCode = getKeyCode(event);
           switch (keyCode) {
             case 37:
               const overflow = sub.startTime - 0.1 <= 0;
-              updateSub(sub, {
+              dispatch(patchSub(sub, {
                 start: DT.d2t(overflow ? 0 : sub.startTime - 0.1),
                 end: DT.d2t(overflow ? sub.endTime - sub.startTime : sub.endTime - 0.1),
-              });
+              }));
               player.currentTime = sub.startTime - 0.1;
               break;
             case 39:
-              updateSub(sub, {
+              dispatch(patchSub(sub, {
                 start: DT.d2t(sub.startTime + 0.1),
                 end: DT.d2t(sub.endTime + 0.1),
-              });
+              }));
               player.currentTime = sub.startTime + 0.1;
               break;
             case 8:
             case 46:
-              removeSub(sub);
+              dispatch(removeSub(sub));
               break;
             default:
               break;
           }
         }
       },
-      [currentSubs, player, removeSub, updateSub],
+      [selectedSpeaker, player, dispatch],
+    );
+
+    const onSubClick = (sub) => {
+      if (player.duration >= sub.startTime) {
+        player.currentTime = sub.startTime + 0.001;
+      }
+    };
+
+    const checkSub = useCallback(
+      (sub) => {
+        const index = selectedSpeaker.subs.findIndex(x => x.id === sub.id);
+        if (index < 0) return;
+        const previous = selectedSpeaker.subs[index - 1];
+        return (previous && sub.startTime < previous.endTime) || !sub.isValid || sub.duration < 0.2;
+      },
+      [selectedSpeaker],
     );
 
     useEffect(() => {
@@ -325,132 +336,67 @@ export default React.memo(function(
 
     return (
       <Style ref={$blockRef} className='timeline'>
-        <div ref={$subsRef1} className={settings.currentSpeaker === 1 ? 'active-speaker' : ''}>
-          {currentSubs.filter(sub => sub.speaker === 1).map((sub, key) => {
-            return (
-              <div
-                id={sub.id}
-                className={[
-                  'sub-item',
-                  sub.id === currentSub.id ? 'sub-highlight' : '',
-                  checkSub(sub) ? 'sub-illegal' : '',
-                ].join(' ').trim()}
-                key={key}
-                style={{
-                  left: render.padding * gridGap + (sub.startTime - render.beginTime) * gridGap * 10,
-                  width: (sub.endTime - sub.startTime) * gridGap * 10,
-                }}
-                onClick={() => {
-                  if (player.duration >= sub.startTime) {
-                    player.currentTime = sub.startTime + 0.001;
-                  }
-                }}
-                onDoubleClick={(event) => onDoubleClick(sub, event)}
-              >
-                <ContextMenuTrigger id='contextmenu' holdToDisplay={-1}>
-                  <div
-                    className='sub-handle'
-                    style={{
-                      left: 0,
-                      width: 10,
-                    }}
-                    onMouseDown={(event) => onMouseDown(sub, event, 'left')}
-                  ></div>
-
-                  <div
-                    className='sub-text'
-                    title={sub.text}
-                    onMouseDown={(event) => onMouseDown(sub, event)}
-                  >
-                    {`${sub.text}`.split(/\r?\n/).map((line, index) => (
-                      <p key={index}>{line}</p>
-                    ))}
-                  </div>
-
-                  <div
-                    className='sub-handle'
-                    style={{
-                      right: 0,
-                      width: 10,
-                    }}
-                    onMouseDown={(event) => onMouseDown(sub, event, 'right')}
-                  ></div>
-                  <div className='sub-duration'>{sub.duration}</div>
-                </ContextMenuTrigger>
-              </div>
-            );
-          })}
-        </div>
-        <div ref={$subsRef2} className={settings.currentSpeaker === 2 ? 'subs2 active-speaker' : 'subs2'}>
-          {currentSubs.filter(sub => sub.speaker === 2).map((sub, key) => {
-            return (
-              <div
-                id={sub.id}
-                className={[
-                  'sub-item',
-                  sub.id === currentSub.id ? 'sub-highlight' : '',
-                  checkSub(sub) ? 'sub-illegal' : '',
-                ].join(' ').trim()}
-                key={key}
-                style={{
-                  left: render.padding * gridGap + (sub.startTime - render.beginTime) * gridGap * 10,
-                  width: (sub.endTime - sub.startTime) * gridGap * 10,
-                }}
-                onClick={() => {
-                  if (player.duration >= sub.startTime) {
-                    player.currentTime = sub.startTime + 0.001;
-                  }
-                }}
-                onDoubleClick={(event) => onDoubleClick(sub, event)}
-              >
-                <ContextMenuTrigger id='contextmenu' holdToDisplay={-1}>
-                  <div
-                    className='sub-handle'
-                    style={{
-                      left: 0,
-                      width: 10,
-                    }}
-                    onMouseDown={(event) => onMouseDown(sub, event, 'left')}
-                  ></div>
-
-                  <div
-                    className='sub-text'
-                    title={sub.text}
-                    onMouseDown={(event) => onMouseDown(sub, event)}
-                  >
-                    {`${sub.text}`.split(/\r?\n/).map((line, index) => (
-                      <p key={index}>{line}</p>
-                    ))}
-                  </div>
-
-                  <div
-                    className='sub-handle'
-                    style={{
-                      right: 0,
-                      width: 10,
-                    }}
-                    onMouseDown={(event) => onMouseDown(sub, event, 'right')}
-                  ></div>
-                  <div className='sub-duration'>{sub.duration}</div>
-                </ContextMenuTrigger>
-              </div>
-            );
-          })}
-        </div>
-        <ContextMenu id='contextmenu'>
-          <MenuItem onClick={() => removeSub(lastSub)}>
-            <Translate value='DELETE' />
-          </MenuItem>
-          <MenuItem onClick={() => mergeSub(lastSub)}>
-            <Translate value='MERGE' />
-          </MenuItem>
-        </ContextMenu>
+        {speakers && speakers.map((speaker, index) => (
+          <div key={index} ref={addSubsRef} id={`speaker-${speaker.id}`}
+               className={selectedSpeaker.id === speaker.id ? 'active-speakerId' : ''}>
+            {speaker.subs && speaker.subs.map((sub, index) => {
+              console.log('sub.startTime', sub.startTime);
+              return (
+                <div
+                  key={index}
+                  id={sub.id}
+                  className={[
+                    'sub-item',
+                    sub.id === cursorSubs.id ? 'sub-highlight' : '',
+                    checkSub(sub) ? 'sub-illegal' : '',
+                  ].join(' ').trim()}
+                  style={{
+                    bottom: timelineRowHeight * index + 12,
+                    left: render.padding * gridGap + (sub.startTime - render.beginTime) * gridGap * 10,
+                    width: (sub.endTime - sub.startTime) * gridGap * 10,
+                    height: timelineRowHeight - 4,
+                  }}
+                  onClick={() => onSubClick(sub)}
+                  onDoubleClick={(event) => onDoubleClick(sub, event)}>
+                  <ContextMenuTrigger id='contextmenu' holdToDisplay={-1}>
+                    <div
+                      className='sub-handle'
+                      style={{ left: 0, width: 10 }}
+                      onMouseDown={(event) => onMouseDown(sub, event, 'left')}>
+                    </div>
+                    <div
+                      className='sub-text'
+                      title={sub.text}
+                      onMouseDown={(event) => onMouseDown(sub, event)}>
+                      {`${sub.text}`.split(/\r?\n/).map((line, index) => (
+                        <p key={index}>{line}</p>
+                      ))}
+                    </div>
+                    <div
+                      className='sub-handle'
+                      style={{ right: 0, width: 10 }}
+                      onMouseDown={(event) => onMouseDown(sub, event, 'right')}>
+                    </div>
+                    <div className='sub-duration'>{sub.duration}</div>
+                  </ContextMenuTrigger>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+        {/*<ContextMenu id='contextmenu'>*/}
+        {/*  <MenuItem onClick={() => removeSub(lastSub)}>*/}
+        {/*    <Translate value='DELETE' />*/}
+        {/*  </MenuItem>*/}
+        {/*  <MenuItem onClick={() => mergeSub(lastSub)}>*/}
+        {/*    <Translate value='MERGE' />*/}
+        {/*  </MenuItem>*/}
+        {/*</ContextMenu>*/}
       </Style>
     );
   },
   (prevProps, nextProps) => {
     return (
-      isEqual(prevProps.subtitle, nextProps.subtitle) &&
       isEqual(prevProps.render, nextProps.render) &&
       prevProps.currentTime === nextProps.currentTime
     );

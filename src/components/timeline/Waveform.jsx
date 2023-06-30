@@ -28,12 +28,12 @@ export default memo(function Waveform(
 
     const waveform = new WFPlayer({
       scrollable: settings.scrollableMode || false,
-      scrollbar: true,
+      scrollbar: false,
       ruler: true,
       progress: true,
       useWorker: false,
       duration: 10,
-      padding: 1,
+      padding: 0,
       wave: true,
       pixelRatio: 2,
       container: $waveform.current,

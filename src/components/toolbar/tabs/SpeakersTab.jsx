@@ -69,7 +69,7 @@ export default function SpeakersTab(props) {
                      value={speaker.displayName}
                      onChange={(event) =>
                        dispatch(patchSpeaker(speaker.id, { displayName: event.target.value }))} />
-              <span className='list-item-actions'>
+              <span className='list-item--actions'>
             <button
               className='btn'
               onClick={() => dispatch(removeSpeaker(speaker.id))}>

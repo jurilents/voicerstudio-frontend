@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class Sub {
   constructor(obj) {
     this.id = obj.id || ('sub_' + uuidv4());
-    this.speaker = obj.speaker;
+    this.speakerId = obj.speakerId;
     this.start = obj.start;
     this.end = obj.end;
     this.text = obj.text;

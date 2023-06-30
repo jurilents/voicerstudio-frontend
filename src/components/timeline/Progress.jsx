@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 const Style = styled.div`
   position: absolute;
@@ -22,7 +24,7 @@ const Style = styled.div`
     width: 0%;
     height: 100%;
     display: inline-block;
-    background-color: #730000;
+    background-color: var(--c-primary-dark);
     overflow: visible;
 
     .handle {
@@ -32,7 +34,16 @@ const Style = styled.div`
       bottom: 0;
       width: 10px;
       cursor: ew-resize;
-      background-color: #ff9800;
+      background-color: #c9c9c9;
+      color: black;
+      display: flex;
+      padding: 1px;
+
+      svg {
+        display: inline-block;
+        margin: auto 0;
+        font-size: 9px;
+      }
     }
   }
 
@@ -107,19 +118,21 @@ export default function Progress(props) {
   return (
     <Style className='progress' onClick={onProgressClick}>
       <div className='bar' style={{ width: `${(props.currentTime / props.player.duration) * 100}%` }}>
-        <div className='handle' onMouseDown={onGrabDown}></div>
+        <div className='handle' onMouseDown={onGrabDown}>
+          <FontAwesomeIcon icon={faBars} />
+        </div>
       </div>
       <div className='subtitle'>
         {props.subtitle.length <= 200
-          ? props.subtitle.map((item, index) => {
+          ? props.subtitle.map((x, index) => {
             const { duration } = props.player;
             return (
               <span
                 key={index}
-                className='item'
+                className='x'
                 style={{
-                  left: `${(item.startTime / duration) * 100}%`,
-                  width: `${(item.duration / duration) * 100}%`,
+                  left: `${(x.startTime / duration) * 100}%`,
+                  width: `${(x.duration / duration) * 100}%`,
                 }}
               ></span>
             );

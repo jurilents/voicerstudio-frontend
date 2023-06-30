@@ -45,7 +45,7 @@ const Style = styled.div`
   }
 `;
 
-function AudioVolumeItem({ title, propertyName, type, speakerId }) {
+function AudioVolumeItem({ title, propertyName, type, speaker }) {
   const { settings, patchSettings } = useSettings();
 
   return (

@@ -73,7 +73,7 @@ export default function SubtitleItem(
             note: event.target.value,
           });
         }} />
-      <div className='item-bar item-actions'>
+      <div className='x-bar x-actions'>
         <button className='icon-btn generateVoice'
                 onClick={() => speakSub(props.rowData)}
                 title='Generate speech'>
