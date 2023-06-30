@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useSettings } from '../../../hooks';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSettings } from '../../../store/settingsReducer';
 
 const Style = styled.div`
   display: flex;
@@ -46,7 +47,8 @@ const Style = styled.div`
 `;
 
 function AudioVolumeItem({ title, propertyName, type, speaker }) {
-  const { settings, patchSettings } = useSettings();
+  const dispatch = useDispatch();
+  const settings = useSelector(store => store.settings);
 
   return (
     <div className={type ? 'volume-wrapper ' + type : 'volume-wrapper'}>
@@ -55,7 +57,7 @@ function AudioVolumeItem({ title, propertyName, type, speaker }) {
                min={0} max={1} step={0.01}
                value={settings[propertyName]}
                onChange={(e) =>
-                 patchSettings({ [propertyName]: e.target.value })} />
+                 dispatch(setSettings({ [propertyName]: e.target.value }))} />
       </div>
       <div>
         {Math.round(settings[propertyName] * 100)}%
@@ -65,10 +67,7 @@ function AudioVolumeItem({ title, propertyName, type, speaker }) {
   );
 }
 
-
 export default function MixerTab(props) {
-  const { settings, patchSettings } = useSettings();
-
   return (
     <Style className='mixer'>
       <AudioVolumeItem title='Master' propertyName='masterVolume' type='master' />

@@ -10,6 +10,7 @@ import Progress from './Progress';
 import TimelineHeading from './TimelineHeading';
 import { isEmpty } from 'lodash';
 import { useSettings } from '../../hooks';
+import Zoom from './Zoom';
 
 const Style = styled.div`
   height: 400px;
@@ -18,6 +19,7 @@ const Style = styled.div`
   flex-wrap: nowrap;
   justify-content: center;
   padding-bottom: 35px;
+  margin-top: 10px;
 
   .timeline-outlet {
     position: relative;
@@ -65,18 +67,17 @@ export default function Footer(props) {
     window.addEventListener('wheel', onWheelThrottle, { passive: true });
     return () => window.removeEventListener('wheel', onWheelThrottle);
   }, [onWheel]);
-
-  useEffect(() => {
-    if (props.waveform && !isEmpty(settings)) {
-      console.log('setting waveform');
-      console.log('settings.waveZoom', settings.waveZoom);
-      props.waveform.setOptions({
-        scrollable: settings.scrollableMode || false,
-        duration: +(settings.zoom || 1) * 5,
-        // waveSize: +settings.waveZoom,
-      });
-    }
-  }, [props.waveform, settings]);
+  //
+  // useEffect(() => {
+  //   if (props.waveform && !isEmpty(settings)) {
+  //     console.log('settings.waveZoom', settings.waveZoom);
+  //     props.waveform.setOptions({
+  //       scrollable: settings.scrollableMode || false,
+  //       // duration: +(settings.zoom || 1) * 5,
+  //       // waveSize: +settings.waveZoom,
+  //     });
+  //   }
+  // }, [props.waveform, settings]);
 
   return (
     <Style className='footer' ref={$footer}>
@@ -84,6 +85,7 @@ export default function Footer(props) {
       <div className='timeline-outlet'>
         {props.player ? (
           <>
+            <Zoom {...props} headingWidth={headingWidth} />
             <Waveform {...props} setRender={setRender} />
             <Grab {...props} render={render} headingWidth={headingWidth} />
             <Metronome {...props} render={render} headingWidth={headingWidth} />

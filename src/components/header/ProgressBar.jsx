@@ -15,7 +15,7 @@ const Style = styled.div`
   .inner {
     position: relative;
     height: 100%;
-    background-color: #f00;
+    background-color: var(--c-primary);
     transition: all 0.3s ease 0s;
 
     span {
@@ -30,9 +30,9 @@ const Style = styled.div`
   }
 `;
 
-export default function Component({ processing }) {
+export default function ProgressBar({ processing }) {
   return (
-    <Style>
+    <Style className='app-progress-bar'>
       <div className='inner' style={{ width: `${processing}%` }}>
         <span>{`${processing.toFixed(2)}%`}</span>
       </div>

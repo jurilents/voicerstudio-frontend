@@ -25,7 +25,6 @@ export function getKeyCode(event) {
   const tag = document.activeElement.tagName.toUpperCase();
   const editable = document.activeElement.getAttribute('contenteditable');
   if (tag !== 'INPUT' && tag !== 'TEXTAREA' && editable !== '' && editable !== 'true') {
-    console.log('event', event);
     return Number(event.keyCode);
   }
 }
@@ -46,14 +45,14 @@ export function predictDuration(text, wordsPerMinute) {
   if (!wordsPerMinute) {
     wordsPerMinute = 150;
   }
-  const wordsCount = !text ? 0 : text.trim().split(/\s+/).length;
+  const wordsCount = !text || typeof text !== 'string' ? 0 : text.trim().split(/\s+/).length;
   const wordsPerSecond = wordsPerMinute / 60;
   const predictedSeconds = wordsCount / wordsPerSecond;
   return d2t(predictedSeconds, true);
 }
 
 export function d2t(time, shorten) {
-  time = time === Infinity ? 0 : time;
+  time = typeof time !== 'number' || isNaN(time) || time === Infinity ? 0 : time;
   let displayValue = DT.d2t(time);
   if (shorten) {
     if (displayValue.startsWith('00:00:'))

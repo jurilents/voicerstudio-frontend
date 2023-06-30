@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { useSelector } from 'react-redux';
 
 const Style = styled.div`
   position: absolute;
@@ -47,7 +48,7 @@ const Style = styled.div`
     }
   }
 
-  .subtitle {
+  .subtitle-wrapper {
     position: absolute;
     left: 0;
     top: 0;
@@ -69,6 +70,7 @@ const Style = styled.div`
 
 export default function Progress(props) {
   const [grabbing, setGrabbing] = useState(false);
+  const speakers = useSelector(store => store.session.speakers);
 
   const onProgressClick = useCallback(
     (event) => {
@@ -115,6 +117,7 @@ export default function Progress(props) {
     };
   }, [onDocumentMouseUp, onGrabMove]);
 
+  const { duration } = props.player;
   return (
     <Style className='progress' onClick={onProgressClick}>
       <div className='bar' style={{ width: `${(props.currentTime / props.player.duration) * 100}%` }}>
@@ -122,22 +125,22 @@ export default function Progress(props) {
           <FontAwesomeIcon icon={faBars} />
         </div>
       </div>
-      <div className='subtitle'>
-        {props.subtitle.length <= 200
-          ? props.subtitle.map((x, index) => {
-            const { duration } = props.player;
-            return (
-              <span
-                key={index}
-                className='x'
-                style={{
-                  left: `${(x.startTime / duration) * 100}%`,
-                  width: `${(x.duration / duration) * 100}%`,
-                }}
-              ></span>
-            );
-          })
-          : null}
+      <div className='subtitle-wrapper'>
+        {speakers.map((speaker, speakerIndex) => (
+            <div key={speakerIndex} className='speaker-subtitle'>
+              {speaker.subs.map((sub, index) => (
+                <span
+                  key={index}
+                  className='x'
+                  style={{
+                    left: `${(sub.startTime / duration) * 100}%`,
+                    width: `${(sub.duration / duration) * 100}%`,
+                  }}
+                ></span>
+              ))}
+            </div>
+          ),
+        )}
       </div>
     </Style>
   );

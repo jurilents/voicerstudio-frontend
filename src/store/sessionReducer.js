@@ -46,6 +46,19 @@ function parseSessionJson(json) {
       return new Speaker(speaker);
     });
   }
+  if (obj.selectedSpeaker?.id) {
+    obj.selectedSpeaker = obj.speakers.find(x => x.id === obj.selectedSpeaker.id);
+  }
+  if (!obj.selectedSpeaker && obj.speakers?.length) {
+    obj.selectedSpeaker = obj.speakers[0];
+  }
+  if (obj.selectedSub?.id) {
+    obj.selectedSub = obj.selectedSpeaker.subs.find(x => x.id === obj.selectedSub.id);
+    console.log('obj.selectedSub', obj.selectedSub);
+  }
+  if (!obj.selectedSub && obj.selectedSpeaker?.subs?.length) {
+    obj.selectedSub = obj.selectedSpeaker.subs[0];
+  }
   return obj;
 }
 

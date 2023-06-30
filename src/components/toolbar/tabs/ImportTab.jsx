@@ -74,14 +74,14 @@ export default function ImportTab(props) {
           props.waveform.drawer.update();
           props.waveform.seek(0);
           props.player.currentTime = 0;
-          props.clearSubs();
-          props.setSubtitle([
-            props.newSub({
-              start: '00:00:00.000',
-              end: '00:00:01.000',
-              text: t('SUB_TEXT'),
-            }),
-          ]);
+          // props.clearSubs();
+          // props.setSubtitle([
+          //   props.newSub({
+          //     start: '00:00:00.000',
+          //     end: '00:00:01.000',
+          //     text: t('SUB_TEXT'),
+          //   }),
+          // ]);
           // props.player.src = url;
           dispatch(setVideo(url));
         } else {

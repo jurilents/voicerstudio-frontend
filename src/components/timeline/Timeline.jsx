@@ -9,7 +9,7 @@ import { patchSub, removeSub, selectSpeaker, setAllSubs } from '../../store/sess
 
 const Style = styled.div`
   position: absolute;
-  z-index: 9;
+  z-index: 100;
   top: 0;
   right: 0;
   bottom: 0;
@@ -21,7 +21,7 @@ const Style = styled.div`
 
   .react-contextmenu-wrapper {
     position: absolute;
-    z-index: 9;
+    z-index: 100;
     top: 0;
     right: 0;
     bottom: 0;
@@ -161,13 +161,14 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
     const { selectedSub, speakers, selectedSpeaker } = useSelector(store => store.session);
     const { timelineRowHeight, magnetMode } = useSelector(store => store.settings);
 
-    const cursorSubs = [];
+    const cursorSubIds = [];
     for (const speaker of speakers) {
       speaker.visibleSubs = getVisibleSubs(speaker.subs, render.beginTime, render.duration);
-      cursorSubs.push(...speaker.subs.filter(x => x.startTime <= currentTime && x.endTime > currentTime));
+      cursorSubIds.push(...speaker.subs
+        .filter(x => x.startTime <= currentTime && x.endTime > currentTime)
+        .map(x => x.id));
     }
     const gridGap = (document.body.clientWidth - headingWidth) / render.gridNum;
-    console.log('cursorSubs', cursorSubs);
 
     const onMouseDown = (sub, event, type) => {
       if (sub.speakerId !== selectedSpeaker.id) {
@@ -181,7 +182,6 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
       lastIndex = selectedSpeaker.subs.indexOf(sub);
       const speakerId = `speaker-${lastSub.speakerId}`;
       const $subsRef = $subsRefs.current.find(x => x.id === speakerId);
-      console.log('$subsRef', $subsRef.children);
       lastTarget = Array.from($subsRef.children).find(x => x.id === lastSub.id);
       lastWidth = parseFloat(lastTarget.style.width);
     };
@@ -220,6 +220,8 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
         const index = selectedSpeaker.subs.findIndex(x => x.id === lastSub.id);
         const previous = selectedSpeaker.subs[index - 1];
         const next = selectedSpeaker.subs[index + 1];
+
+        console.log('lastSub', lastSub);
 
         let startTime = lastSub.startTime + timeDiff;
         let endTime = lastSub.endTime + timeDiff;
@@ -336,52 +338,50 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
 
     return (
       <Style ref={$blockRef} className='timeline'>
-        {speakers && speakers.map((speaker, index) => (
-          <div key={index} ref={addSubsRef} id={`speaker-${speaker.id}`}
-               className={selectedSpeaker.id === speaker.id ? 'active-speakerId' : ''}>
-            {speaker.subs && speaker.subs.map((sub, index) => {
-              console.log('sub.startTime', sub.startTime);
-              return (
-                <div
-                  key={index}
-                  id={sub.id}
-                  className={[
-                    'sub-item',
-                    sub.id === cursorSubs.id ? 'sub-highlight' : '',
-                    checkSub(sub) ? 'sub-illegal' : '',
-                  ].join(' ').trim()}
-                  style={{
-                    bottom: timelineRowHeight * index + 12,
-                    left: render.padding * gridGap + (sub.startTime - render.beginTime) * gridGap * 10,
-                    width: (sub.endTime - sub.startTime) * gridGap * 10,
-                    height: timelineRowHeight - 4,
-                  }}
-                  onClick={() => onSubClick(sub)}
-                  onDoubleClick={(event) => onDoubleClick(sub, event)}>
-                  <ContextMenuTrigger id='contextmenu' holdToDisplay={-1}>
-                    <div
-                      className='sub-handle'
-                      style={{ left: 0, width: 10 }}
-                      onMouseDown={(event) => onMouseDown(sub, event, 'left')}>
-                    </div>
-                    <div
-                      className='sub-text'
-                      title={sub.text}
-                      onMouseDown={(event) => onMouseDown(sub, event)}>
-                      {`${sub.text}`.split(/\r?\n/).map((line, index) => (
-                        <p key={index}>{line}</p>
-                      ))}
-                    </div>
-                    <div
-                      className='sub-handle'
-                      style={{ right: 0, width: 10 }}
-                      onMouseDown={(event) => onMouseDown(sub, event, 'right')}>
-                    </div>
-                    <div className='sub-duration'>{sub.duration}</div>
-                  </ContextMenuTrigger>
-                </div>
-              );
-            })}
+        {speakers && speakers.map((speaker, speakerIndex) => (
+          <div key={speakerIndex} ref={addSubsRef} id={`speaker-${speaker.id}`}
+               className={selectedSpeaker.id === speaker.id ? 'active-speaker' : ''}>
+            {speaker.subs && speaker.subs.map((sub, index) => (
+              <div
+                key={index}
+                id={sub.id}
+                className={[
+                  'sub-item',
+                  cursorSubIds.includes(sub.id) ? 'sub-highlight' : '',
+                  checkSub(sub) ? 'sub-illegal' : '',
+                ].join(' ').trim()}
+                style={{
+                  bottom: timelineRowHeight * speakerIndex + 12,
+                  left: render.padding * gridGap + (sub.startTime - render.beginTime) * gridGap * 10,
+                  width: (sub.endTime - sub.startTime) * gridGap * 10,
+                  height: timelineRowHeight - 4,
+                  backgroundColor: speaker.color + 'bb',
+                }}
+                onClick={() => onSubClick(sub)}
+                onDoubleClick={(event) => onDoubleClick(sub, event)}>
+                <ContextMenuTrigger id='contextmenu' holdToDisplay={-1}>
+                  <div
+                    className='sub-handle'
+                    style={{ left: 0, width: 10 }}
+                    onMouseDown={(event) => onMouseDown(sub, event, 'left')}>
+                  </div>
+                  <div
+                    className='sub-text'
+                    title={sub.text}
+                    onMouseDown={(event) => onMouseDown(sub, event)}>
+                    {`${sub.text}`.split(/\r?\n/).map((line, index) => (
+                      <p key={index}>{line}</p>
+                    ))}
+                  </div>
+                  <div
+                    className='sub-handle'
+                    style={{ right: 0, width: 10 }}
+                    onMouseDown={(event) => onMouseDown(sub, event, 'right')}>
+                  </div>
+                  <div className='sub-duration'>{sub.duration}</div>
+                </ContextMenuTrigger>
+              </div>
+            ))}
           </div>
         ))}
         {/*<ContextMenu id='contextmenu'>*/}
