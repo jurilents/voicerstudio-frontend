@@ -43,9 +43,9 @@ const Style = styled.div`
 export default function SpeakersTab(props) {
   const { settings, patchSettings } = useSettings();
   const dispatch = useDispatch();
-  const speakers = useSelector(store => store.session.speakers);
-  const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
+  const { speakers, presets, selectedSpeaker } = useSelector(store => store.session);
   let maxSpeakerId = useSelector(store => Math.max.apply(null, store.session.speakers.map(x => x.id)));
+  console.log('selectedSpeaker', selectedSpeaker.preset);
 
   const createSpeaker = () => new Speaker({
     id: ++maxSpeakerId,
@@ -110,10 +110,14 @@ export default function SpeakersTab(props) {
           <Col>
             <Form.Select
               className='app-select'
-              defaultValue={selectedSpeaker.color}>
-              {Object.entries(colors).map(([name, value], index) => (
-                <option key={index} value={value}>
-                  {name}
+              value={selectedSpeaker.preset.id}
+              onChange={(event) => {
+                return dispatch(patchSpeaker(selectedSpeaker.id,
+                  { preset: presets.find(x => x.id === +event.target.value) }));
+              }}>
+              {presets.map((preset, index) => (
+                <option key={index} value={preset.id}>
+                  {preset.displayName}
                 </option>
               ))}
             </Form.Select>

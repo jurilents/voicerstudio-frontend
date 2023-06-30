@@ -33,6 +33,7 @@ const speakersReducer = {
     return {
       ...state,
       speakers: speakersCopy,
+      selectedSpeaker: speakersCopy[index],
     };
   },
   selectSpeaker: (state, action) => {

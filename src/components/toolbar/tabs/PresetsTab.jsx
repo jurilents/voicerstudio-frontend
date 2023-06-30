@@ -100,7 +100,7 @@ Whose strength's abundance weakens his own heart.`);
     speakAsync();
   }, [lang, voice, text, style, styleDegree, pitch, $audioPlayer]);
 
-  const createPreset = () => new Preset({
+  const createPreset = useCallback(() => new Preset({
     id: ++maxPresetId,
     displayName: `${lang.displayName} ${voice.displayName} ${style ? style : ''} ${maxPresetId}`,
     locate: lang.locale,
@@ -109,7 +109,7 @@ Whose strength's abundance weakens his own heart.`);
     styleDegree,
     pitch,
     wordsPerMinute: voice.wordsPerMinute,
-  });
+  }), [maxPresetId, lang, voice, style, styleDegree, pitch]);
 
   return (
     <Style className='tab-outlet'>
