@@ -115,6 +115,7 @@ const Style = styled.div`
 
 export default function Subtitles({ player }) {
   const dispatch = useDispatch();
+  const exportCodec = useSelector(store => store.settings.exportCodec);
   const { selectedSpeaker, selectedSub } = useSelector(store => store.session);
   const [height, setHeight] = useState(100);
   const resize = useCallback(() => {
@@ -134,20 +135,21 @@ export default function Subtitles({ player }) {
     async function fetch() {
       const speaker = selectedSpeaker;
       const request = {
-        locale: speaker.locale,
-        voice: speaker.voice,
+        locale: selectedSpeaker.preset.locale,
+        voice: selectedSpeaker.preset.voice,
         text: sub.text,
-        style: speaker.speechConfig[3],
-        styleDegree: +speaker.speechConfig[4],
+        style: selectedSpeaker.preset.style,
+        styleDegree: selectedSpeaker.preset.styleDegree,
         // role: 'string',
-        pitch: +speaker.speechConfig[5],
-        volume: +speaker.speechConfig[6],
+        pitch: selectedSpeaker.preset.pitch,
+        volume: 1,
         start: sub.start,
         end: sub.end,
+        format: exportCodec,
         // speed: +speaker.speechConfig[7], // do not apply speed (rate)
       };
       console.log('Single speech request:', request);
-      const audio = await speechApi.single(request, 'test');
+      const audio = await speechApi.single(request, 'dev_placeholder');
       console.log('single audio url', audio);
       dispatch(addAudio(audio.url));
       sub.endTime = sub.startTime + audio.duration;
@@ -161,7 +163,7 @@ export default function Subtitles({ player }) {
       dispatch(removeAudio(sub.voicedStamp.audioUrl));
     }
     fetch();
-  }, [dispatch, selectedSpeaker]);
+  }, [dispatch, selectedSpeaker, exportCodec]);
 
   const playSub = useCallback((sub) => {
     if (sub.voicedStamp?.audioUrl) {
@@ -173,7 +175,7 @@ export default function Subtitles({ player }) {
     if (sub.voicedStamp?.audioUrl) {
       const start = sub.start.replaceAll(':', '-');
       const end = sub.end.replaceAll(':', '-');
-      const fileName = `[${selectedSpeaker.displayName}-${index}] ${start} to ${end}.wav`;
+      const fileName = `[${selectedSpeaker.displayName}-${index}] from ${start} to ${end}.wav`;
       download(sub.voicedStamp.audioUrl, fileName);
     }
   }, [selectedSpeaker]);

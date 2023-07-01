@@ -46,13 +46,9 @@ export class Sub {
   }
 
   get voicedStatus() {
-    if (this.text === this.voicedText) {
-
-    }
-
+    if (this.text === this.voicedStamp?.text) {}
     // TODO: return value here
   }
-
 }
 
 export class VoicedSubStamp {

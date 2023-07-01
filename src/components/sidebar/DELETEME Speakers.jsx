@@ -69,7 +69,7 @@ const Style = styled.div`
   }
 `;
 
-export default function Speakers({ notify, speakers, patchSpeaker, settings, setSettings, preset, setPreset }) {
+export default function DELETEMESpeakers({ notify, speakers, patchSpeaker, settings, setSettings, preset, setPreset }) {
   useEffect(() => {
     const speaker = speakers.find(x => x.id === settings.currentSpeaker);
     if (speaker.preset) {

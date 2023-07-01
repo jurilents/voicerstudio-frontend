@@ -41,11 +41,9 @@ const Style = styled.div`
 `;
 
 export default function SpeakersTab(props) {
-  const { settings, patchSettings } = useSettings();
   const dispatch = useDispatch();
   const { speakers, presets, selectedSpeaker } = useSelector(store => store.session);
   let maxSpeakerId = useSelector(store => Math.max.apply(null, store.session.speakers.map(x => x.id)));
-  console.log('selectedSpeaker', selectedSpeaker.preset);
 
   const createSpeaker = () => new Speaker({
     id: ++maxSpeakerId,

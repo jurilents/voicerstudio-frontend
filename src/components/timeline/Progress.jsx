@@ -57,8 +57,6 @@ const Style = styled.div`
     width: 100%;
     height: 100%;
     pointer-events: none;
-    display: flex;
-    flex-direction: column-reverse;
 
     span {
       position: absolute;
@@ -138,7 +136,7 @@ export default function Progress(props) {
                   className='x'
                   style={{
                     left: `${(sub.startTime / duration) * 100}%`,
-                    top: `${subHeight * speakerIndex}%`,
+                    top: `${subHeight * (speakers.length - speakerIndex - 1)}%`,
                     width: `${(sub.duration / duration) * 100}%`,
                     height: subHeightStyle,
                   }}
