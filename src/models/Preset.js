@@ -3,14 +3,14 @@ import { parsePreset } from '../utils/presetParser';
 export class Preset {
   constructor(obj) {
     this.id = obj.id;
-    this.token = obj.token;
     this.displayName = obj.displayName;
-    this.local = obj.locale;
-    this.voice = obj.locale;
-    this.style = obj.locale;
-    this.styleDegree = obj.locale;
-    this.pitch = obj.locale;
-    this.wordsPerMinute = obj.locale;
+    this.locale = obj.locale;
+    this.voice = obj.voice;
+    this.style = obj.style;
+    this.styleDegree = obj.styleDegree;
+    this.pitch = obj.pitch;
+    this.wordsPerMinute = obj.wordsPerMinute;
+    this.token = obj.token; // buildPreset();
   }
 
   static parse(str) {

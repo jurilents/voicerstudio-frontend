@@ -24,6 +24,7 @@ const rootState = {
   originalVolume: 1,
   exportFormat: 'WAV',
   exportCodec: 'Riff8Khz16BitMonoPcm',
+  exportFileName: '[{L}-{s}] {d}-{t} result.wav',
   timelineRowHeight: 70,
 };
 

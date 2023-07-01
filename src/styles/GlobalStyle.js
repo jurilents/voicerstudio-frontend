@@ -103,6 +103,17 @@ export default createGlobalStyle`
     font-size: inherit;
   }
 
+  .app-input {
+    height: 35px;
+    border-radius: 1px;
+    border-color: rgb(255 255 255 / 30%);
+    color: #ffffff;
+    background-color: transparent;
+    padding: 3px 10px;
+    //margin-right: 10px;
+    font-size: inherit;
+  }
+
   .app-list-group {
     width: 100%;
     border-radius: 0;

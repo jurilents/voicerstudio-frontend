@@ -51,6 +51,7 @@ export default function SpeakersTab(props) {
     id: ++maxSpeakerId,
     displayName: '',
     color: colors.blue,
+    preset: presets?.length ? presets[0] : null,
   });
 
   return (
@@ -110,7 +111,7 @@ export default function SpeakersTab(props) {
           <Col>
             <Form.Select
               className='app-select'
-              value={selectedSpeaker.preset.id}
+              value={selectedSpeaker.preset?.id}
               onChange={(event) => {
                 return dispatch(patchSpeaker(selectedSpeaker.id,
                   { preset: presets.find(x => x.id === +event.target.value) }));

@@ -2,20 +2,22 @@ import { Preset } from '../models';
 
 const presetsReducer = {
   addPreset: (state, action) => {
-    const session = {
+    console.log('action.payload.preset', action.payload.preset);
+    return {
       ...state,
       presets: [...state.presets, action.payload.preset],
     };
-
-    return session;
   },
   removePreset: (state, action) => {
-    const session = {
+    const changeSpeakers = state.speakers.filter(x => x.preset?.id === action.payload.id);
+    const defaultPreset = state.presets?.length ? state.presets[0] : null;
+    for (const changeSpeaker of changeSpeakers) {
+      changeSpeaker.preset = defaultPreset;
+    }
+    return {
       ...state,
       presets: state.presets.filter(x => x.id !== action.payload.id),
     };
-
-    return session;
   },
   patchPreset: (state, action) => {
     const index = state.presets.findIndex(x => x.id === action.payload.id);

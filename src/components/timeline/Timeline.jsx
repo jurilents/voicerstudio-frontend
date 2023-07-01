@@ -48,7 +48,7 @@ const Style = styled.div`
     user-select: none;
     pointer-events: all;
     background-color: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 
     .sub-handle {
       position: absolute;
@@ -108,12 +108,13 @@ const Style = styled.div`
       }
 
       &.sub-highlight {
-        background-color: rgba(33, 150, 243, 0.5);
-        border: 1px solid rgba(33, 150, 243, 0.5);
+        //background-color: rgba(33, 150, 243, 0.5);
+        border-color: rgba(255, 255, 255, 0.5);
+        filter: contrast(110%);
       }
 
       &.sub-illegal {
-        background-color: rgba(199, 81, 35, 0.5);
+        border: var(--c-danger);
       }
 
       .sub-handle {

@@ -6,8 +6,20 @@ import { Col, Container, Form, Row } from 'react-bootstrap';
 import { speechApi } from '../../../api/axios';
 import { download } from '../../../utils';
 import { selectSpeaker } from '../../../store/sessionReducer';
+import { toast } from 'react-toastify';
 
 const Style = styled.div`
+  .app-input {
+    width: 100%;
+  }
+
+  .file-extension {
+    padding: 0;
+  }
+
+  .pattern-key {
+    font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  }
 `;
 
 const codec = {
@@ -15,22 +27,45 @@ const codec = {
     { displayName: 'RIFF 8KHz 16Bit', value: 'Riff8Khz16BitMonoPcm' },
     { displayName: 'RIFF 16KHz 16Bit', value: 'Riff16Khz16BitMonoPcm' },
     { displayName: 'RIFF 24KHz 16Bit', value: 'Riff24Khz16BitMonoPcm' },
-    { displayName: 'RIFF 44.1KHz 16Bit', value: 'Riff44100Hz16BitMonoPcm' },
+    // { displayName: 'RIFF 44.1KHz 16Bit', value: 'Riff44100Hz16BitMonoPcm' },
     { displayName: 'RIFF 48KHz 16Bit', value: 'Riff48Khz16BitMonoPcm', default: true },
   ],
 };
 
 export default function ExportTab(props) {
   const dispatch = useDispatch();
-  const settings = useSelector(store => store.settings);
-  const subs = useSelector(store => store.session.subs);
-  const speakers = useSelector(store => store.session.speakers);
-  const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
+  const { exportCodec, exportFormat, exportFileName } = useSelector(store => store.settings);
+  const { speakers, selectedSpeaker } = useSelector(store => store.session);
+  toast.error('🦄 Wow so easy!');
+
+  const ensureExtension = useCallback((fileName) => {
+    const extension = '.' + exportFormat.toLowerCase();
+    if (typeof fileName === 'string') {
+      if (!fileName.trimEnd().endsWith(extension)) {
+        return fileName + extension;
+      }
+      return fileName;
+    }
+    return extension;
+  }, [exportFormat]);
+
+  const buildExportFileName = useCallback(() => {
+    if (typeof exportFileName === 'string') {
+      const fileName = ensureExtension(exportFileName);
+      const date = new Date(Date.now()).toISOString().split('T');
+      return fileName
+        .replace(/\{[S|s]}/g, selectedSpeaker.displayName)
+        .replace(/\{[L|l]}/g, selectedSpeaker.preset?.locale || '???')
+        .replace(/\{[F|f]}/g, exportCodec)
+        .replace(/\{[D|d]}/g, date[0])
+        .replace(/\{[T|t]}/g, date[1].substring(0, 5).replaceAll(':', '-'));
+    }
+  }, [selectedSpeaker, exportCodec, exportFileName]);
 
   const generateAndExport = useCallback(() => {
     async function fetch() {
-      const speakerSubs = subs.filter(x => x.speaker === selectedSpeaker.id);
-      const request = speakerSubs.map(sub => ({
+      console.log(selectedSpeaker.preset);
+      const request = selectedSpeaker.subs.map(sub => ({
         locale: selectedSpeaker.preset.locale,
         voice: selectedSpeaker.preset.voice,
         text: sub.text,
@@ -41,15 +76,16 @@ export default function ExportTab(props) {
         volume: 1,
         start: sub.start,
         end: sub.end,
+        format: exportCodec,
       }));
       console.log('Batch speech request:', request);
       const audio = await speechApi.batch(request, 'dev_placeholder');
       console.log('result audio url', audio);
-      download(audio.url, `[${selectedSpeaker.displayName}] output.wav`);
+      download(audio.url, buildExportFileName());
     }
 
     fetch();
-  }, [speakers, selectedSpeaker, subs]);
+  }, [exportCodec, speakers, selectedSpeaker]);
 
 
   return (
@@ -64,7 +100,7 @@ export default function ExportTab(props) {
                 className='app-select'
                 onChange={(event) =>
                   dispatch(selectSpeaker(+event.target.value))}
-                defaultValue={settings.exportCodec}>
+                defaultValue={exportCodec}>
                 {speakers.map((speaker, index) =>
                   (<option key={index} value={speaker.id}>
                     {speaker.displayName}
@@ -93,8 +129,8 @@ export default function ExportTab(props) {
                 className='app-select'
                 onChange={(event) =>
                   dispatch(setSettings({ exportCodec: event.target.value }))}
-                defaultValue={settings.exportCodec}>
-                {codec[settings.exportFormat].map((item, index) =>
+                defaultValue={exportCodec}>
+                {codec[exportFormat].map((item, index) =>
                   (<option key={index} value={item.value}>
                     {item.displayName}
                   </option>),
@@ -104,7 +140,35 @@ export default function ExportTab(props) {
           </Row>
           <Row>
             <Col>
-              <button className='btn btn-outline' onClick={generateAndExport}>
+              <input className='app-input' type='text'
+                     onChange={(event) =>
+                       dispatch(setSettings({ exportFileName: ensureExtension(event.target.value) }))}
+                     value={exportFileName} />
+            </Col>
+          </Row>
+          <Row>
+            <Col>Speaker Name</Col>
+            <Col><span className='pattern-key'>{'{S}'}</span></Col>
+          </Row>
+          <Row>
+            <Col>Speaker Language</Col>
+            <Col><span className='pattern-key'>{'{L}'}</span></Col>
+          </Row>
+          <Row>
+            <Col>Export Format</Col>
+            <Col><span className='pattern-key'>{'{F}'}</span></Col>
+          </Row>
+          <Row>
+            <Col>Current Date</Col>
+            <Col><span className='pattern-key'>{'{D}'}</span></Col>
+          </Row>
+          <Row>
+            <Col>Current Time</Col>
+            <Col><span className='pattern-key'>{'{T}'}</span></Col>
+          </Row>
+          <Row className='mt-4'>
+            <Col>
+              <button className='btn btn-primary' onClick={generateAndExport}>
                 Export
               </button>
             </Col>

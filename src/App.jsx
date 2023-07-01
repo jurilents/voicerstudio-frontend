@@ -1,7 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import NotificationSystem from 'react-notification-system';
-import DT from 'duration-time-conversion';
-import isEqual from 'lodash/isEqual';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Toolbar from './components/toolbar/Toolbar';
 import Subtitles from './components/sidebar/Subtitles';
@@ -10,13 +7,11 @@ import Footer from './components/timeline/Footer';
 import Loading from './components/Loading';
 import ProgressBar from './components/header/ProgressBar';
 import { getKeyCode } from './utils';
-import { Settings, Speaker, Sub } from './models';
 import Header from './components/header/Header';
-import Speakers from './components/sidebar/Speakers';
-import { NotificationProvider } from './context/NotificationContext';
 import { useVideoStorage } from './hooks/useVideoStorage';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVideo } from './store/sessionReducer';
+import { toast, ToastContainer } from 'react-toastify';
 
 const Style = styled.div`
   height: 100%;
@@ -77,18 +72,20 @@ export default function App({ defaultLang }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [currentLang, setCurrentLang] = useState(null);
 
+  toast('🦄 Wow so easy!');
+
   const notify = useCallback(
     (obj) => {
       // https://github.com/igorprado/react-notification-system
-      const notification = notificationSystem.current;
-      notification.clearNotifications();
-      notification.addNotification({
-        position: 'tc',
-        dismissible: 'none',
-        autoDismiss: 2,
-        message: obj.message,
-        level: obj.level,
-      });
+      // const notification = notificationSystem.current;
+      // notification.clearNotifications();
+      // notification.addNotification({
+      //   position: 'tc',
+      //   dismissible: 'none',
+      //   autoDismiss: 2,
+      //   message: obj.message,
+      //   level: obj.level,
+      // });
     },
     [notificationSystem],
   );
@@ -194,24 +191,33 @@ export default function App({ defaultLang }) {
 
   return (
     <Style>
-      <NotificationProvider>
-        <div className='main'>
-          <div className='left'>
-            <Header {...props} />
-            <div className='left-content'>
-              <Toolbar {...props} />
-              <Player {...props} />
-            </div>
-          </div>
-          <div className='subtitles'>
-            <Subtitles {...props} />
+      <div className='main'>
+        <div className='left'>
+          <Header {...props} />
+          <div className='left-content'>
+            <Toolbar {...props} />
+            <Player {...props} />
           </div>
         </div>
-        <Footer {...props} />
-        {loading ? <Loading loading={loading} /> : null}
-        {processing > 0 && processing < 100 ? <ProgressBar processing={processing} /> : null}
-      </NotificationProvider>
-      <NotificationSystem ref={notificationSystem} allowHTML={true} />
+        <div className='subtitles'>
+          <Subtitles {...props} />
+        </div>
+      </div>
+      <Footer {...props} />
+      {loading ? <Loading loading={loading} /> : null}
+      {processing > 0 && processing < 100 ? <ProgressBar processing={processing} /> : null}
+      <ToastContainer
+        position='top-center'
+        autoClose={6000}
+        limit={4}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='dark'
+      />
     </Style>
   );
 }

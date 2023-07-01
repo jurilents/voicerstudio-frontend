@@ -57,12 +57,13 @@ const Style = styled.div`
     width: 100%;
     height: 100%;
     pointer-events: none;
+    display: flex;
+    flex-direction: column-reverse;
 
     span {
       position: absolute;
       top: 0;
       bottom: 0;
-      height: 100%;
       background-color: rgb(255 255 255 / 20%);
     }
   }
@@ -117,7 +118,10 @@ export default function Progress(props) {
     };
   }, [onDocumentMouseUp, onGrabMove]);
 
+  const subHeight = 100 / speakers.length;
+  const subHeightStyle = `${subHeight}%`;
   const { duration } = props.player;
+
   return (
     <Style className='progress' onClick={onProgressClick}>
       <div className='bar' style={{ width: `${(props.currentTime / props.player.duration) * 100}%` }}>
@@ -134,7 +138,9 @@ export default function Progress(props) {
                   className='x'
                   style={{
                     left: `${(sub.startTime / duration) * 100}%`,
+                    top: `${subHeight * speakerIndex}%`,
                     width: `${(sub.duration / duration) * 100}%`,
+                    height: subHeightStyle,
                   }}
                 ></span>
               ))}

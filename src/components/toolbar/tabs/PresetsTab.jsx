@@ -103,7 +103,7 @@ Whose strength's abundance weakens his own heart.`);
   const createPreset = useCallback(() => new Preset({
     id: ++maxPresetId,
     displayName: `${lang.displayName} ${voice.displayName} ${style ? style : ''} ${maxPresetId}`,
-    locate: lang.locale,
+    locale: lang.locale,
     voice: voice.key,
     style,
     styleDegree,
@@ -144,9 +144,11 @@ Whose strength's abundance weakens his own heart.`);
             <Col>
               <Form.Select
                 className='app-select'
-                onChange={(event) => setLang(
-                  languages.find(x => x.locale === event.target.value),
-                )}
+                onChange={(event) => {
+                  const newLang = languages.find(x => x.locale === event.target.value);
+                  setLang(newLang);
+                  setVoice(newLang.voices?.length ? newLang.voices[0] : null);
+                }}
                 defaultValue={lang.locale}>
                 {languages.map((lang, index) => (
                   <option key={index} value={lang.locale}>
@@ -164,10 +166,10 @@ Whose strength's abundance weakens his own heart.`);
                 <Form.Select
                   className='app-select'
                   defaultValue=''
-                  onChange={(event) => setVoice(
-                    lang.voices.find(x => x.key === event.target.value),
-                  )}>
-                  {lang.voices.map((voice, index) => (
+                  onChange={(event) =>
+                    setVoice(lang.voices.find(x => x.key === event.target.value))
+                  }>
+                  {lang.voices.map((voice) => (
                     <option key={voice.key}
                             value={voice.key}>
                       {voice.displayName} ({voice.gender}) {voice.styles.length > 0 ? ` ${voice.styles.length} styles` : null}
@@ -185,7 +187,9 @@ Whose strength's abundance weakens his own heart.`);
                 <Form.Select
                   className='app-select'
                   defaultValue={style}
-                  onChange={(event) => setStyle(event.target.value)}>
+                  onChange={(event) =>
+                    setStyle(event.target.value)
+                  }>
                   <option value=''>--- neutral ---</option>
                   {voice.styles.map((style, index) => (
                     <option key={index}
