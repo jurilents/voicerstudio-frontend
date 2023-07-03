@@ -34,9 +34,9 @@ const Style = styled.div`
 function findIndex(subs, startTime) {
   return subs.findIndex((item, index) => {
     return (
-      (startTime >= item.endTime && !subs[index + 1]) ||
-      (item.startTime <= startTime && item.endTime > startTime) ||
-      (startTime >= item.endTime && subs[index + 1] && startTime < subs[index + 1].startTime)
+      (startTime >= item.end && !subs[index + 1]) ||
+      (item.start <= startTime && item.end > startTime) ||
+      (startTime >= item.end && subs[index + 1] && startTime < subs[index + 1].start)
     );
   });
 }
@@ -120,7 +120,7 @@ export default function Metronome(
       // const index = findIndex(subs, dragStartTime) + 1;
       const start = DT.d2t(dragStartTime);
       const end = DT.d2t(dragEndTime);
-      // const sub = newSub({ start, end, text: t('SUB_TEXT') });
+      // const sub = newSub({ startStr, endStr, text: t('SUB_TEXT') });
       dispatch(addSub(new Sub({
         speakerId: selectedSpeaker.id,
         start,

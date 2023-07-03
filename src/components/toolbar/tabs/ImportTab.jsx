@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Col, Container, Row } from 'react-bootstrap';
 import { getExt } from '../../../utils';
 import { setVideo } from '../../../store/sessionReducer';
@@ -13,10 +13,10 @@ const Style = styled.div`
 
 export default function ImportTab(props) {
   const dispatch = useDispatch();
-  const settings = useSelector(store => store.settings);
-  const subs = useSelector(store => store.session.subs);
-  const speakers = useSelector(store => store.session.speakers);
-  const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
+  // const settings = useSelector(store => store.settings);
+  // const subs = useSelector(store => store.session.subs);
+  // const speakers = useSelector(store => store.session.speakers);
+  // const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
   const { saveVideo } = useVideoStorage();
 
   const decodeAudioData = useCallback(
@@ -39,8 +39,8 @@ export default function ImportTab(props) {
         await ffmpeg.run('-i', file.name, '-ac', '1', '-ar', '8000', output);
         const uint8 = ffmpeg.FS('readFile', output);
         // download(URL.createObjectURL(new Blob([uint8])), `${output}`);
-        await props.waveform.decoder.decodeAudioData(uint8);
-        props.waveform.drawer.update();
+        // await props.waveform.decoder.decodeAudioData(uint8);
+        // props.waveform.drawer.update();
         props.setProcessing(100);
         await saveVideo('video1', file);
         props.setProcessing(0);
@@ -58,7 +58,7 @@ export default function ImportTab(props) {
         });
       }
     },
-    [props.waveform, props.notify, props.setProcessing, props.setLoading],
+    [props.notify, props.setProcessing, props.setLoading],
   );
 
   const onVideoChange = useCallback(
@@ -68,17 +68,17 @@ export default function ImportTab(props) {
         const ext = getExt(file.name);
         const canPlayType = props.player.canPlayType(file.type);
         if (canPlayType === 'maybe' || canPlayType === 'probably') {
-          decodeAudioData(file);
+          // decodeAudioData(file);
           const url = URL.createObjectURL(new Blob([file]));
-          props.waveform.decoder.destroy();
-          props.waveform.drawer.update();
-          props.waveform.seek(0);
+          // props.waveform.decoder.destroy();
+          // props.waveform.drawer.update();
+          // props.waveform.seek(0);
           props.player.currentTime = 0;
           // props.clearSubs();
           // props.setSubtitle([
           //   props.newSub({
-          //     start: '00:00:00.000',
-          //     end: '00:00:01.000',
+          //     startStr: '00:00:00.000',
+          //     endStr: '00:00:01.000',
           //     text: t('SUB_TEXT'),
           //   }),
           // ]);
@@ -92,7 +92,7 @@ export default function ImportTab(props) {
         }
       }
     },
-    [dispatch, props.newSub, props.notify, props.player, props.setSubtitle, props.waveform, props.clearSubs, decodeAudioData],
+    [dispatch, props.notify, props.player, decodeAudioData],
   );
 
   const onInputClick = useCallback((event) => {

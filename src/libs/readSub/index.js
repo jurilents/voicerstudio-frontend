@@ -88,7 +88,7 @@ export function sub2vtt(sub) {
     'WEBVTT\n\n' +
     sub
       .map((item, index) => {
-        return index + 1 + '\n' + item.start + ' --> ' + item.end + '\n' + item.text;
+        return index + 1 + '\n' + item.startStr + ' --> ' + item.endStr + '\n' + item.text;
       })
       .join('\n\n')
   );

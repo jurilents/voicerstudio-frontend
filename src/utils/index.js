@@ -25,7 +25,7 @@ export function getKeyCode(event) {
   const tag = document.activeElement.tagName.toUpperCase();
   const editable = document.activeElement.getAttribute('contenteditable');
   if (tag !== 'INPUT' && tag !== 'TEXTAREA' && editable !== '' && editable !== 'true') {
-    return Number(event.keyCode);
+    return event.key.toLowerCase();
   }
 }
 

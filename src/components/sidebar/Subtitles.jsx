@@ -133,7 +133,6 @@ export default function Subtitles({ player }) {
 
   const speakSub = useCallback((sub) => {
     async function fetch() {
-      const speaker = selectedSpeaker;
       const request = {
         locale: selectedSpeaker.preset.locale,
         voice: selectedSpeaker.preset.voice,
@@ -143,8 +142,8 @@ export default function Subtitles({ player }) {
         // role: 'string',
         pitch: selectedSpeaker.preset.pitch,
         volume: 1,
-        start: sub.start,
-        end: sub.end,
+        start: sub.startStr,
+        end: sub.endStr,
         format: exportCodec,
         // speed: +speaker.speechConfig[7], // do not apply speed (rate)
       };
@@ -152,31 +151,31 @@ export default function Subtitles({ player }) {
       const audio = await speechApi.single(request, 'dev_placeholder');
       console.log('single audio url', audio);
       dispatch(addAudio(audio.url));
-      sub.endTime = sub.startTime + audio.duration;
+      sub.endTime = sub.start + audio.duration;
       dispatch(patchSub(sub, {
         end: sub.end,
-        voicedStamp: sub.buildVoicedStamp(audio.url),
+        data: sub.buildVoicedStamp(audio.url),
       }));
     }
 
-    if (sub.voicedStamp?.audioUrl) {
-      dispatch(removeAudio(sub.voicedStamp.audioUrl));
+    if (sub.data?.srv) {
+      dispatch(removeAudio(sub.data.src));
     }
     fetch();
   }, [dispatch, selectedSpeaker, exportCodec]);
 
   const playSub = useCallback((sub) => {
-    if (sub.voicedStamp?.audioUrl) {
-      dispatch(playAudio(sub.voicedStamp.audioUrl, true));
+    if (sub.data?.src) {
+      dispatch(playAudio(sub.data.src, true));
     }
   }, [dispatch]);
 
   const downloadSub = useCallback((sub, index) => {
-    if (sub.voicedStamp?.audioUrl) {
+    if (sub.data?.src) {
       const start = sub.start.replaceAll(':', '-');
       const end = sub.end.replaceAll(':', '-');
       const fileName = `[${selectedSpeaker.displayName}-${index}] from ${start} to ${end}.wav`;
-      download(sub.voicedStamp.audioUrl, fileName);
+      download(sub.data.src, fileName);
     }
   }, [selectedSpeaker]);
 

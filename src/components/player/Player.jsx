@@ -1,4 +1,4 @@
-import React, { createRef, useState } from 'react';
+import React, { createRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { VideoWrap } from './VideoWrap';
 import { AudioWrap } from './AudioWrap';
@@ -90,7 +90,7 @@ const Style = styled.div`
 export default function Player(props) {
   // const [currentSub, setCurrentSub] = useState(null);
   // const [focusing, setFocusing] = useState(false);
-  const [inputItemCursor, setInputItemCursor] = useState(0);
+  // const [inputItemCursor, setInputItemCursor] = useState(0);
   const $player = createRef();
 
   // useEffect(() => {
@@ -141,10 +141,22 @@ export default function Player(props) {
   //   props.splitSub(currentSub, inputItemCursor);
   // }, [props.splitSub, currentSub, inputItemCursor]);
 
+  useEffect(() => {
+    if (!props.player) {
+      return;
+    }
+    if (props.playing) {
+      props.player.play();
+    } else {
+      props.player.pause();
+    }
+  }, [props.player, props.playing]);
+
   return (
     <Style className='player'>
       <div className='video' ref={$player}>
-        <AudioWrap {...props} />
+        {/*<SpeakersAudio {...props} />*/}
+        {/*<AudioWrap {...props} />*/}
         <VideoWrap {...props} />
         <Actions {...props} />
         {/*{props.player && currentSub ? (*/}

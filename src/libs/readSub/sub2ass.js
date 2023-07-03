@@ -30,8 +30,8 @@ Style: Default, Microsoft YaHei, 20, &H00FFFFFF, &H000000FF, &H00000000, &H00000
 Format: Layer, Start, End, Style, Actor, MarginL, MarginR, MarginV, Effect, Text
 ${sub
     .map((item) => {
-        const start = toSubTime(item.start);
-        const end = toSubTime(item.end);
+        const start = toSubTime(item.startStr);
+        const end = toSubTime(item.endStr);
         const text = item.text.replace(/\r?\n/g, '\\N');
         return `Dialogue: 0,${start},${end},Default,NTP,0000,0000,0000,,${text}`;
     })

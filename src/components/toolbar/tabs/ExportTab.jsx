@@ -4,9 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSettings } from '../../../store/settingsReducer';
 import { Col, Container, Form, Row } from 'react-bootstrap';
 import { speechApi } from '../../../api/axios';
-import { download } from '../../../utils';
+import { download, getExt } from '../../../utils';
 import { selectSpeaker } from '../../../store/sessionReducer';
 import { toast } from 'react-toastify';
+import { file2sub, sub2srt, sub2txt, sub2vtt } from '../../../libs/readSub';
+import { t } from 'react-i18nify';
+import sub2ass from '../../../libs/readSub/sub2ass';
 
 const Style = styled.div`
   .app-input {
@@ -38,8 +41,8 @@ export default function ExportTab(props) {
   const { speakers, selectedSpeaker } = useSelector(store => store.session);
   toast.error('🦄 Wow so easy!');
 
-  const ensureExtension = useCallback((fileName) => {
-    const extension = '.' + exportFormat.toLowerCase();
+  const ensureExtension = useCallback((fileName, ext) => {
+    const extension = '.' + ext.toLowerCase();
     if (typeof fileName === 'string') {
       if (!fileName.trimEnd().endsWith(extension)) {
         return fileName + extension;
@@ -47,11 +50,11 @@ export default function ExportTab(props) {
       return fileName;
     }
     return extension;
-  }, [exportFormat]);
+  }, []);
 
-  const buildExportFileName = useCallback(() => {
+  const buildExportFileName = useCallback((ext) => {
     if (typeof exportFileName === 'string') {
-      const fileName = ensureExtension(exportFileName);
+      const fileName = ensureExtension(exportFileName, ext);
       const date = new Date(Date.now()).toISOString().split('T');
       return fileName
         .replace(/\{[S|s]}/g, selectedSpeaker.displayName)
@@ -61,6 +64,64 @@ export default function ExportTab(props) {
         .replace(/\{[T|t]}/g, date[1].substring(0, 5).replaceAll(':', '-'));
     }
   }, [selectedSpeaker, exportCodec, exportFileName]);
+
+  const onSubtitleChange = useCallback(
+    (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const ext = getExt(file.name);
+        if (['ass', 'vtt', 'srt', 'json'].includes(ext)) {
+          file2sub(file)
+            .then((res) => {
+              props.clearSubs();
+              props.setSubtitle(res);
+            })
+            .catch((err) => {
+              props.notify({
+                message: err.message,
+                level: 'error',
+              });
+            });
+        } else {
+          props.notify({
+            message: `${t('SUB_EXT_ERR')}: ${ext}`,
+            level: 'error',
+          });
+        }
+      }
+    },
+    [props.notify, props.setSubtitle, props.clearSubs],
+  );
+
+  const downloadSub = useCallback(
+    (type) => {
+      let text = '';
+      const name = `${Date.now()}.${type}`;
+      switch (type) {
+        case 'vtt':
+          text = sub2vtt(selectedSpeaker.subs);
+          break;
+        case 'srt':
+          text = sub2srt(selectedSpeaker.subs);
+          break;
+        case 'ass':
+          text = sub2ass(selectedSpeaker.subs);
+          break;
+        case 'txt':
+          text = sub2txt(selectedSpeaker.subs);
+          break;
+        case 'json':
+          text = JSON.stringify(selectedSpeaker.subs);
+          break;
+        default:
+          break;
+      }
+      const url = URL.createObjectURL(new Blob([text]));
+      const fileName = buildExportFileName('srt');
+      download(url, fileName);
+    },
+    [selectedSpeaker.subs],
+  );
 
   const generateAndExport = useCallback(() => {
     async function fetch() {
@@ -81,7 +142,7 @@ export default function ExportTab(props) {
       console.log('Batch speech request:', request);
       const audio = await speechApi.batch(request, 'dev_placeholder');
       console.log('result audio url', audio);
-      download(audio.url, buildExportFileName());
+      download(audio.url, buildExportFileName(exportFormat));
     }
 
     fetch();
@@ -142,7 +203,7 @@ export default function ExportTab(props) {
             <Col>
               <input className='app-input' type='text'
                      onChange={(event) =>
-                       dispatch(setSettings({ exportFileName: ensureExtension(event.target.value) }))}
+                       dispatch(setSettings({ exportFileName: event.target.value }))}
                      value={exportFileName} />
             </Col>
           </Row>
@@ -170,6 +231,20 @@ export default function ExportTab(props) {
             <Col>
               <button className='btn btn-primary' onClick={generateAndExport}>
                 Export
+              </button>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <button className='btn btn-outline' onClick={() => downloadSub('srt')}>
+                Export SRT
+              </button>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <button className='btn btn-outline' onClick={() => downloadSub('json')}>
+                Export JSON
               </button>
             </Col>
           </Row>

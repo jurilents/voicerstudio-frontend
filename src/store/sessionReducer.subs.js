@@ -1,4 +1,4 @@
-import { Sub } from '../models';
+import { Speaker, Sub } from '../models';
 
 const subsReducer = {
   setAllSubs: (state, action) => {
@@ -30,9 +30,13 @@ const subsReducer = {
       return state;
     }
     speaker.subs.splice(index, 1);
+    const speakers = [...state.speakers];
+    speakers[index] = new Speaker(speaker);
+
     return {
       ...state,
-      selectedSpeaker: speaker,
+      speakers: speakers,
+      selectedSpeaker: speakers[index],
       selectedSub: speaker.subs.length > index
         ? speaker.subs[index]
         : speaker.subs.length > 0
@@ -174,8 +178,8 @@ const subsReducer = {
       const next = subs[index + 1];
       if (!next) return;
       const merge = newSub({
-        start: sub.start,
-        end: next.end,
+        startStr: sub.startStr,
+        endStr: next.endStr,
         text: sub.text.trim() + '\n' + next.text.trim(),
       });
       subs[index] = merge;
@@ -186,14 +190,14 @@ const subsReducer = {
   );
 
   const splitSub = useCallback(
-    (sub, start) => {
+    (sub, startStr) => {
       const index = hasSub(sub);
-      if (index < 0 || !sub.text || !start) return;
+      if (index < 0 || !sub.text || !startStr) return;
       const subs = copySubs();
-      const text1 = sub.text.slice(0, start).trim();
-      const text2 = sub.text.slice(start).trim();
+      const text1 = sub.text.slice(0, startStr).trim();
+      const text2 = sub.text.slice(startStr).trim();
       if (!text1 || !text2) return;
-      const splitDuration = (sub.duration * (start / sub.text.length)).toFixed(3);
+      const splitDuration = (sub.duration * (startStr / sub.text.length)).toFixed(3);
       if (splitDuration < 0.2 || sub.duration - splitDuration < 0.2) return;
       subs.splice(index, 1);
       const middleTime = DT.d2t(sub.startTime + parseFloat(splitDuration));
@@ -201,8 +205,8 @@ const subsReducer = {
         index,
         0,
         newSub({
-          start: sub.start,
-          end: middleTime,
+          startStr: sub.startStr,
+          endStr: middleTime,
           text: text1,
         }),
       );
@@ -210,8 +214,8 @@ const subsReducer = {
         index + 1,
         0,
         newSub({
-          start: middleTime,
-          end: sub.end,
+          startStr: middleTime,
+          endStr: sub.endStr,
           text: text2,
         }),
       );

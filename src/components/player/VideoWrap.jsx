@@ -1,11 +1,15 @@
-import React, { createRef, memo, useCallback, useEffect } from 'react';
+import React, { createRef, memo, useCallback, useEffect, useState } from 'react';
 import { isPlaying } from '../../utils';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
   const $video = createRef();
+  const dispatch = useDispatch();
   const playbackSpeed = useSelector(store => store.settings.playbackSpeed);
-  const videoUrl = useSelector(store => store.session.videoUrl) || '/samples/sample.mp4?t=1';
+  const videoUrl = useSelector(store => store.session.videoUrl) || '/samples/video_placeholder.mp4?t=1';
+  const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
+  const [playingSub, setPlayingSub] = useState(null);
+  const [endSubTime, setEndSubTime] = useState(0);
 
   useEffect(() => {
     if ($video.current) {
@@ -20,7 +24,18 @@ export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
       window.requestAnimationFrame(() => {
         if ($video.current) {
           setPlaying(isPlaying($video.current));
-          setCurrentTime($video.current.currentTime || 0);
+          const currentTime = $video.current.currentTime || 0;
+          setCurrentTime(currentTime);
+
+          if (playingSub && playingSub.end < currentTime) {
+            setPlayingSub(null);
+            // console.log('next');
+          }
+          if (!playingSub) {
+            const playingSub = selectedSpeaker.subs.find(x => x.start > currentTime);
+            // console.log('playing', playingSub);
+            setPlayingSub(playingSub);
+          }
         }
         loop();
       });

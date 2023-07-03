@@ -6,12 +6,12 @@ import Player from './components/player/Player';
 import Footer from './components/timeline/Footer';
 import Loading from './components/Loading';
 import ProgressBar from './components/header/ProgressBar';
-import { getKeyCode } from './utils';
 import Header from './components/header/Header';
 import { useVideoStorage } from './hooks/useVideoStorage';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVideo } from './store/sessionReducer';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import { useHotkeys } from './hooks/useHotkeys';
 
 const Style = styled.div`
   height: 100%;
@@ -71,8 +71,9 @@ export default function App({ defaultLang }) {
   const [recording, setRecording] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentLang, setCurrentLang] = useState(null);
+  const hotkeysHandler = useHotkeys({ playing, setPlaying });
 
-  toast('🦄 Wow so easy!');
+  // toast('🦄 Wow so easy!');
 
   const notify = useCallback(
     (obj) => {
@@ -90,40 +91,14 @@ export default function App({ defaultLang }) {
     [notificationSystem],
   );
 
-  const onKeyDown = useCallback(
-    (event) => {
-      const keyCode = getKeyCode(event);
-      switch (keyCode) {
-        case 32:
-          event.preventDefault();
-          if (player) {
-            if (playing) {
-              player.pause();
-            } else {
-              player.play();
-            }
-          }
-          break;
-        case 90:
-          event.preventDefault();
-          if (event.metaKey) {
-            // undoSubs(); // TODO: undo
-          }
-          break;
-        default:
-          break;
-      }
-    },
-    [player, playing],
-  );
 
   useEffect(() => {
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [onKeyDown]);
+    window.addEventListener('keydown', hotkeysHandler);
+    return () => window.removeEventListener('keydown', hotkeysHandler);
+  }, [hotkeysHandler]);
 
   // useMemo(() => {
-  //   const sub = subtitle.find((item) => item.startTime <= currentTime && item.endTime > currentTime);
+  //   const sub = subtitle.find((item) => item.startTime <= currentTime && item.end > currentTime);
   //   // setSettings({ currentSubtitle: sub?.id || -1 });
   // }, [currentTime, subtitle, setSettings]);
 
@@ -137,7 +112,6 @@ export default function App({ defaultLang }) {
       load();
     }
   }, []);
-
 
   const props = {
     player,

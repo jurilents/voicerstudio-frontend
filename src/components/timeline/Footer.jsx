@@ -2,15 +2,9 @@ import styled from 'styled-components';
 import React, { createRef, useCallback, useEffect, useState } from 'react';
 import clamp from 'lodash/clamp';
 import throttle from 'lodash/throttle';
-import Timeline from './Timeline';
-import Metronome from '../Metronome';
-import Waveform from './Waveform';
-import Grab from './Grab';
-import Progress from './Progress';
-import TimelineHeading from './TimelineHeading';
-import { isEmpty } from 'lodash';
 import { useSettings } from '../../hooks';
-import Zoom from './Zoom';
+import TimelineEditor from './new/TimelineEditor';
+import { TimelineHeading } from './new/TimelineHeading';
 
 const Style = styled.div`
   height: 400px;
@@ -82,18 +76,19 @@ export default function Footer(props) {
   return (
     <Style className='footer' ref={$footer}>
       <TimelineHeading />
-      <div className='timeline-outlet'>
-        {props.player ? (
-          <>
-            <Zoom {...props} headingWidth={headingWidth} />
-            <Waveform {...props} setRender={setRender} />
-            <Grab {...props} render={render} headingWidth={headingWidth} />
-            <Metronome {...props} render={render} headingWidth={headingWidth} />
-            <Timeline {...props} render={render} headingWidth={headingWidth} />
-            <Progress {...props} headingWidth={headingWidth} />
-          </>
-        ) : null}
-      </div>
+      {/*<div className='timeline-outlet'>*/}
+      <TimelineEditor {...props} headingWidth={headingWidth} />
+      {/*  {props.player ? (*/}
+      {/*    <>*/}
+      {/*      <Zoom {...props} headingWidth={headingWidth} />*/}
+      {/*      <Waveform {...props} setRender={setRender} />*/}
+      {/*      <Grab {...props} render={render} headingWidth={headingWidth} />*/}
+      {/*      <Metronome {...props} render={render} headingWidth={headingWidth} />*/}
+      {/*      <Timeline {...props} render={render} headingWidth={headingWidth} />*/}
+      {/*      <Progress {...props} headingWidth={headingWidth} />*/}
+      {/*    </>*/}
+      {/*  ) : null}*/}
+      {/*</div>*/}
     </Style>
   );
 }

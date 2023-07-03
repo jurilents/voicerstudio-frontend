@@ -1,4 +1,4 @@
-import React, { createRef, useCallback, useEffect, useState } from 'react';
+import React, { createRef, useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -74,7 +74,7 @@ Whose strength's abundance weakens his own heart.`);
       setLang(defaultLang);
       setVoice(defaultLang.voices ? defaultLang.voices[0] : {});
     }
-  }, [languages, dispatch]);
+  }, [languages, lang.locale, dispatch]);
 
   const speak = useCallback(() => {
     async function speakAsync() {

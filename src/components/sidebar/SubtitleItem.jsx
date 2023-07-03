@@ -2,7 +2,7 @@ import { d2t, predictDuration } from '../../utils';
 import unescape from 'lodash/unescape';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faPlay, faRocket } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { patchSub } from '../../store/sessionReducer';
 
@@ -19,6 +19,21 @@ export default function SubtitleItem(
     selectedSpeaker,
   }) {
   const dispatch = useDispatch();
+
+  const speakSubClick = useCallback(() => {
+  }, []);
+
+  const handleSubTextChange = useCallback((event) => {
+    dispatch(patchSub(sub, {
+      text: event.target.value,
+    }));
+  }, [dispatch]);
+
+  const handleSubNoteTextChange = useCallback((event) => {
+    dispatch(patchSub(sub, {
+      note: event.target.value,
+    }));
+  }, [dispatch]);
   return (
     <div
       className={props.className}
@@ -26,8 +41,8 @@ export default function SubtitleItem(
       onClick={() => {
         if (player) {
           player.pause();
-          if (player.duration >= sub.startTime) {
-            player.currentTime = sub.startTime + 0.001;
+          if (player.duration >= sub.start) {
+            player.currentTime = sub.start + 0.001;
           }
         }
       }}>
@@ -37,7 +52,7 @@ export default function SubtitleItem(
           <span>{props.index + 1}</span>
         </div>
         <div className='item-bar item-timing'>
-          <input type='text' value={d2t(sub.startTime)} title='Start time' onChange={() => {
+          <input type='text' value={d2t(sub.start)} title='Start time' onChange={() => {
           }} />
           <input
             className='estimate-duration' type='text'
@@ -46,10 +61,10 @@ export default function SubtitleItem(
             disabled={true} />
           <input
             className='timing-duration' type='text'
-            value={`${d2t(sub.endTime - sub.startTime, true)}`}
+            value={`${d2t(sub.end - sub.start, true)}`}
             title='Current duration'
             disabled={true} />
-          <input type='text' value={d2t(sub.endTime)} title='End time' onChange={() => {
+          <input type='text' value={d2t(sub.end)} title='End time' onChange={() => {
           }} />
         </div>
         <textarea
@@ -61,11 +76,7 @@ export default function SubtitleItem(
             // checkSub(props.rowData) ? 'illegal' : '',
           ].join(' ').trim()}
           value={unescape(sub.text)}
-          onChange={(event) => {
-            dispatch(patchSub(sub, {
-              text: event.target.value,
-            }));
-          }} />
+          onChange={handleSubTextChange} />
         <textarea
           maxLength={400}
           spellCheck={false}
@@ -75,15 +86,12 @@ export default function SubtitleItem(
             // checkSub(props.rowData) ? 'illegal' : '',
           ].join(' ').trim()}
           value={unescape(sub.note)}
-          onChange={(event) => {
-            dispatch(patchSub(sub, {
-              note: event.target.value,
-            }));
-          }} />
+          onChange={handleSubNoteTextChange} />
         <div className='item-bar item-actions'>
           <button className='icon-btn generateVoice'
                   onClick={() => speakSub(sub)}
-                  title='Generate speech'>
+                  title='Generate speech'
+                  style={{ color: sub.voicedStatusColor }}>
             <FontAwesomeIcon icon={faRocket} />
           </button>
           <button className='icon-btn playVoice'

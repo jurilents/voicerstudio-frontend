@@ -135,7 +135,7 @@ export default function Progress(props) {
                   key={index}
                   className='x'
                   style={{
-                    left: `${(sub.startTime / duration) * 100}%`,
+                    left: `${(sub.start / duration) * 100}%`,
                     top: `${subHeight * (speakers.length - speakerIndex - 1)}%`,
                     width: `${(sub.duration / duration) * 100}%`,
                     height: subHeightStyle,

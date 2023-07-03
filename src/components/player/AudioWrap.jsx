@@ -11,6 +11,8 @@ export const AudioWrap = memo(({}) => {
 
   useEffect(() => {
     if (playingAudio) {
+      console.log('playingAudio', playingAudio);
+
       $audio.current.src = playingAudio.url;
       $audio.current.play();
       const onEnd = () => {
@@ -26,7 +28,9 @@ export const AudioWrap = memo(({}) => {
     }
   }, [$audio, playingAudio]);
 
-  return <audio ref={$audio}>
-    {/*<source ref={$audioSource} type='audio/wav' />*/}
-  </audio>;
+  return (
+    <audio ref={$audio}>
+      {/*<source ref={$audioSource} type='audio/wav' />*/}
+    </audio>
+  );
 }, () => true);

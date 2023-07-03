@@ -52,6 +52,8 @@ export default memo(function Waveform(
     setWaveform(waveform);
     waveform.on('update', setRender);
     waveform.load('/samples/sample.mp3');
+
+    console.log('waveform', waveform);
   }, []);
 
   return (

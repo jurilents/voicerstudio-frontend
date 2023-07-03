@@ -43,6 +43,10 @@ export default function GeneralTab(props) {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
 
+  function speakAll() {
+
+  }
+
   return (
     <Style className='tab-outlet'>
       <div>
@@ -89,6 +93,13 @@ export default function GeneralTab(props) {
                 onChange={(event) =>
                   dispatch(setSettings({ waveZoom: +event.target.value }))} />
               <span>{toPercentsDelta(settings.waveZoom)}</span>
+            </Col>
+          </Row>
+          <Row className='mt-4'>
+            <Col>
+              <button className='btn btn-outline' onClick={() => speakAll()}>
+                Speak All
+              </button>
             </Col>
           </Row>
         </Container>

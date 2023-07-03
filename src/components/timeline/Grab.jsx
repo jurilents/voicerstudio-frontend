@@ -26,7 +26,6 @@ export default function Grab(props) {
 
   const onGrabDown = useCallback(
     (event) => {
-      console.log('event', event);
       if (event.button !== 0) return;
       setGrabStartX(event.pageX - props.headingWidth);
       setGrabStartTime(props.player.currentTime);
@@ -35,7 +34,21 @@ export default function Grab(props) {
     [props.player],
   );
 
-  const onGrabUp = () => {
+  const onGrabUp = (event) => {
+    if (props.player && props.waveform) {
+      let screenDelta = (event.pageX - props.headingWidth - grabStartX) / (document.body.clientWidth - props.headingWidth);
+      if (!scrollableMode) {
+        screenDelta = -screenDelta / 2;
+      }
+      const currentTime = clamp(
+        grabStartTime - screenDelta * 10,
+        0,
+        props.player.duration,
+      );
+      props.player.currentTime = currentTime;
+      props.waveform.seek(currentTime);
+    }
+
     setGrabStartX(0);
     setGrabStartTime(0);
     setGrabbing(false);

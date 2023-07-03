@@ -31,69 +31,12 @@ import { useSelector } from 'react-redux';
 
 
 FFmpeg.createFFmpeg({ log: process.env.REACT_APP_LOG_FFMPEG === 'true' }).load();
-const fs = new SimpleFS.FileSystem();
+// const fs = new SimpleFS.FileSystem();
 
 export default function Toolbar(props) {
   const singleRecordMode = useSelector(store => store.settings.singleRecordMode);
   const [translate, setTranslate] = useState('en');
-  const [videoFile, setVideoFile] = useState(null);
-
-  const onSubtitleChange = useCallback(
-    (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const ext = getExt(file.name);
-        if (['ass', 'vtt', 'srt', 'json'].includes(ext)) {
-          file2sub(file)
-            .then((res) => {
-              props.clearSubs();
-              props.setSubtitle(res);
-            })
-            .catch((err) => {
-              props.notify({
-                message: err.message,
-                level: 'error',
-              });
-            });
-        } else {
-          props.notify({
-            message: `${t('SUB_EXT_ERR')}: ${ext}`,
-            level: 'error',
-          });
-        }
-      }
-    },
-    [props.notify, props.setSubtitle, props.clearSubs],
-  );
-
-  const downloadSub = useCallback(
-    (type) => {
-      let text = '';
-      const name = `${Date.now()}.${type}`;
-      switch (type) {
-        case 'vtt':
-          text = sub2vtt(props.subtitle);
-          break;
-        case 'srt':
-          text = sub2srt(props.subtitle);
-          break;
-        case 'ass':
-          text = sub2ass(props.subtitle);
-          break;
-        case 'txt':
-          text = sub2txt(props.subtitle);
-          break;
-        case 'json':
-          text = JSON.stringify(props.subtitle);
-          break;
-        default:
-          break;
-      }
-      const url = URL.createObjectURL(new Blob([text]));
-      download(url, name);
-    },
-    [props.subtitle],
-  );
+  // const [videoFile, setVideoFile] = useState(null);
 
   const onTranslate = useCallback(() => {
     props.setLoading(t('TRANSLATING'));

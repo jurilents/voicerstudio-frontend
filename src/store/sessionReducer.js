@@ -40,7 +40,7 @@ function parseSessionJson(json) {
   const obj = JSON.parse(json);
   if (obj.speakers && Array.isArray(obj.speakers)) {
     obj.speakers = obj.speakers.map(speaker => {
-      if (speaker.subs && Array.isArray(speaker.subs)) {
+      if (speaker?.subs && Array.isArray(speaker.subs)) {
         speaker.subs = speaker.subs.map(sub => new Sub(sub));
       }
       return new Speaker(speaker);
@@ -153,7 +153,7 @@ export const setAllSubs = (speakerId, subs) => ({ type: ADD_SPEAKER_SUB, payload
 export const addSub = (sub) => ({ type: ADD_SPEAKER_SUB, payload: { sub } });
 export const removeSub = (sub) => ({ type: REMOVE_SPEAKER_SUB, payload: { sub } });
 export const patchSub = (sub, patch) => ({ type: PATCH_SPEAKER_SUB, payload: { sub, patch } });
-export const selectSub = (speakerId, id) => ({ type: SELECT_SPEAKER_SUB, payload: { speakerId, id } });
+export const selectSub = (sub) => ({ type: SELECT_SPEAKER_SUB, payload: { sub } });
 
 export const addPreset = (preset) => ({ type: ADD_PRESET, payload: { preset } });
 export const removePreset = (id) => ({ type: REMOVE_PRESET, payload: { id } });

@@ -45,7 +45,7 @@ const Style = styled.div`
 export default function Zoom({ waveform, player, headingWidth }) {
   const [grabbing, setGrabbing] = useState(false);
   const dispatch = useDispatch();
-  const timelineZoom = useSelector(store => store.settings.timelineZoom);
+  const { timelineZoom, waveZoom } = useSelector(store => store.settings);
   const [zoom, setZoom] = useState(timelineZoom);
 
   const onProgressClick = useCallback(
@@ -103,6 +103,14 @@ export default function Zoom({ waveform, player, headingWidth }) {
       });
     }
   }, [timelineZoom]);
+
+  useEffect(() => {
+    if (waveform) {
+      waveform.setOptions({
+        waveScale: waveZoom,
+      });
+    }
+  }, [waveZoom]);
 
   return (
     <Style className='progress' onClick={onProgressClick}>

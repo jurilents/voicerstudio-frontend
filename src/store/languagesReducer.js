@@ -1,3 +1,5 @@
+import { createSelector } from 'reselect';
+
 const SET_LANGUAGES = 'SET_LANGUAGES';
 
 const STORAGE_KEY = 'languages';
@@ -25,3 +27,8 @@ export default function languagesReducer(state = defaultState, action) {
 }
 
 export const setLanguages = (langs) => ({ type: SET_LANGUAGES, payload: langs });
+
+// export const selectLanguages = createSelector(
+//   [state => state.languages],
+//   (languages) => languages || [],
+// );

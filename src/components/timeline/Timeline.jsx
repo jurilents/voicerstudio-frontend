@@ -109,8 +109,8 @@ const Style = styled.div`
 
       &.sub-highlight {
         //background-color: rgba(33, 150, 243, 0.5);
-        border-color: rgba(255, 255, 255, 0.5);
-        filter: contrast(110%);
+        border-color: rgba(255, 255, 255, 0.75);
+        //filter: contrast(110%);
       }
 
       &.sub-illegal {
@@ -129,9 +129,9 @@ const Style = styled.div`
 function getVisibleSubs(subs, beginTime, duration) {
   return subs.filter((item) => {
     return (
-      (item.startTime >= beginTime && item.startTime <= beginTime + duration) ||
-      (item.endTime >= beginTime && item.endTime <= beginTime + duration) ||
-      (item.startTime < beginTime && item.endTime > beginTime + duration)
+      (item.start >= beginTime && item.start <= beginTime + duration) ||
+      (item.end >= beginTime && item.end <= beginTime + duration) ||
+      (item.start < beginTime && item.end > beginTime + duration)
     );
   });
 }
@@ -166,7 +166,7 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
     for (const speaker of speakers) {
       speaker.visibleSubs = getVisibleSubs(speaker.subs, render.beginTime, render.duration);
       cursorSubIds.push(...speaker.subs
-        .filter(x => x.startTime <= currentTime && x.endTime > currentTime)
+        .filter(x => x.start <= currentTime && x.end > currentTime)
         .map(x => x.id));
     }
     const gridGap = (document.body.clientWidth - headingWidth) / render.gridNum;
@@ -193,10 +193,10 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
       const prev = selectedSpeaker.subs[index - 1];
       const next = selectedSpeaker.subs[index + 1];
       if (prev && next) {
-        const width = (next.startTime - prev.endTime) * 10 * gridGap;
+        const width = (next.start - prev.end) * 10 * gridGap;
         $subs.style.width = `${width}px`;
-        const start = DT.d2t(prev.endTime);
-        const end = DT.d2t(next.startTime);
+        const start = DT.d2t(prev.end);
+        const end = DT.d2t(next.start);
         dispatch(patchSub(sub, { start, end }));
       }
     };
@@ -224,28 +224,28 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
 
         console.log('lastSub', lastSub);
 
-        let startTime = lastSub.startTime + timeDiff;
-        let endTime = lastSub.endTime + timeDiff;
+        let startTime = lastSub.start + timeDiff;
+        let endTime = lastSub.end + timeDiff;
         if (magnetMode) {
-          startTime = magnetically(startTime, previous ? previous.endTime : null);
-          endTime = magnetically(endTime, next ? next.startTime : null);
+          startTime = magnetically(startTime, previous ? previous.end : null);
+          endTime = magnetically(endTime, next ? next.start : null);
         }
 
         const width = (endTime - startTime) * 10 * gridGap;
 
-        if ((previous && endTime < previous.startTime) || (next && startTime > next.endTime)) {
-          dispatch(setAllSubs(selectedSpeaker.subs.sort((a, b) => parseFloat(a.startTime) - parseFloat(b.startTime))));
+        if ((previous && endTime < previous.start) || (next && startTime > next.end)) {
+          dispatch(setAllSubs(selectedSpeaker.subs.sort((a, b) => parseFloat(a.start) - parseFloat(b.start))));
         }
 
         if (lastType === 'left') {
-          if (startTime >= 0 && lastSub.endTime - startTime >= 0.2) {
+          if (startTime >= 0 && lastSub.end - startTime >= 0.2) {
             const start = DT.d2t(startTime);
             dispatch(patchSub(lastSub, { start }));
           } else {
             lastTarget.style.width = `${width}px`;
           }
         } else if (lastType === 'right') {
-          if (endTime >= 0 && endTime - lastSub.startTime >= 0.2) {
+          if (endTime >= 0 && endTime - lastSub.start >= 0.2) {
             const end = DT.d2t(endTime);
             dispatch(patchSub(lastSub, { end }));
           } else {
@@ -284,19 +284,19 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
           const keyCode = getKeyCode(event);
           switch (keyCode) {
             case 37:
-              const overflow = sub.startTime - 0.1 <= 0;
+              const overflow = sub.start - 0.1 <= 0;
               dispatch(patchSub(sub, {
-                start: DT.d2t(overflow ? 0 : sub.startTime - 0.1),
-                end: DT.d2t(overflow ? sub.endTime - sub.startTime : sub.endTime - 0.1),
+                start: DT.d2t(overflow ? 0 : sub.start - 0.1),
+                end: DT.d2t(overflow ? sub.endTime - sub.start : sub.end - 0.1),
               }));
-              player.currentTime = sub.startTime - 0.1;
+              player.currentTime = sub.start - 0.1;
               break;
             case 39:
               dispatch(patchSub(sub, {
-                start: DT.d2t(sub.startTime + 0.1),
-                end: DT.d2t(sub.endTime + 0.1),
+                start: DT.d2t(sub.start + 0.1),
+                end: DT.d2t(sub.end + 0.1),
               }));
-              player.currentTime = sub.startTime + 0.1;
+              player.currentTime = sub.start + 0.1;
               break;
             case 8:
             case 46:
@@ -311,8 +311,8 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
     );
 
     const onSubClick = (sub) => {
-      if (player.duration >= sub.startTime) {
-        player.currentTime = sub.startTime + 0.001;
+      if (player.duration >= sub.start) {
+        player.currentTime = sub.start + 0.001;
       }
     };
 
@@ -321,7 +321,7 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
         const index = selectedSpeaker.subs.findIndex(x => x.id === sub.id);
         if (index < 0) return;
         const previous = selectedSpeaker.subs[index - 1];
-        return (previous && sub.startTime < previous.endTime) || !sub.isValid || sub.duration < 0.2;
+        return (previous && sub.start < previous.end) || !sub.isValid || sub.duration < 0.2;
       },
       [selectedSpeaker],
     );
@@ -353,8 +353,8 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
                 ].join(' ').trim()}
                 style={{
                   bottom: timelineRowHeight * speakerIndex + 12,
-                  left: render.padding * gridGap + (sub.startTime - render.beginTime) * gridGap * 10,
-                  width: (sub.endTime - sub.startTime) * gridGap * 10,
+                  left: render.padding * gridGap + (sub.start - render.beginTime) * gridGap * 10,
+                  width: (sub.end - sub.start) * gridGap * 10,
                   height: timelineRowHeight - 4,
                   backgroundColor: speaker.color + 'bb',
                 }}
