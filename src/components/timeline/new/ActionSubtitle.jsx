@@ -1,4 +1,11 @@
+import { useSelector } from 'react-redux';
+
 const ActionSubtitle = ({ action, row }) => {
+  const { selectedSub, selectedSpeaker } = useSelector(store => store.session);
+  action.selected = action.id === selectedSub?.id;
+  row.selected = row.id === selectedSpeaker?.id;
+
+  console.log('action', row);
   return (
     <div className={[
       'timeline-sub',

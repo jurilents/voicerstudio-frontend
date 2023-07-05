@@ -158,15 +158,15 @@ export default function Subtitles({ player }) {
       }));
     }
 
-    if (sub.data?.srv) {
-      dispatch(removeAudio(sub.data.src));
+    if (sub.audioUrl) {
+      dispatch(removeAudio(sub.audioUrl));
     }
     fetch();
   }, [dispatch, selectedSpeaker, exportCodec]);
 
   const playSub = useCallback((sub) => {
     if (sub.data?.src) {
-      dispatch(playAudio(sub.data.src, true));
+      dispatch(playAudio(sub.audioUrl, true));
     }
   }, [dispatch]);
 
@@ -175,7 +175,7 @@ export default function Subtitles({ player }) {
       const start = sub.start.replaceAll(':', '-');
       const end = sub.end.replaceAll(':', '-');
       const fileName = `[${selectedSpeaker.displayName}-${index}] from ${start} to ${end}.wav`;
-      download(sub.data.src, fileName);
+      download(sub.audioUrl, fileName);
     }
   }, [selectedSpeaker]);
 

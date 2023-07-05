@@ -52,7 +52,7 @@ export class Sub {
     if (this.data) {
       if (this.text === this.data.text
         && Math.abs((this.end - this.start) - (this.data.end - this.data.start)) < 0.001
-        && this.data.src) {
+        && this.audioUrl) {
         return VoicedStatuses.voiced;
       } else if (this.text !== this.data.text) {
         return VoicedStatuses.obsolete;

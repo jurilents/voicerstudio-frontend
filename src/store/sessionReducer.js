@@ -21,6 +21,7 @@ const REMOVE_PRESET = 'REMOVE_PRESET';
 const PATCH_PRESET = 'PATCH_PRESET';
 
 const SET_VIDEO = 'SET_VIDEO';
+const SET_VIDEO_DURATION = 'SET_VIDEO_DURATION';
 
 // Storage keys
 const STORAGE_KEY = 'session';
@@ -33,6 +34,7 @@ const rootState = {
   selectedSub: null,
   presets: [],
   videoUrl: null,
+  videoDuration: 60,
   subsHistory: [],
 };
 
@@ -54,7 +56,6 @@ function parseSessionJson(json) {
   }
   if (obj.selectedSub?.id) {
     obj.selectedSub = obj.selectedSpeaker.subs.find(x => x.id === obj.selectedSub.id);
-    console.log('obj.selectedSub', obj.selectedSub);
   }
   if (!obj.selectedSub && obj.selectedSpeaker?.subs?.length) {
     obj.selectedSub = obj.selectedSpeaker.subs[0];
@@ -138,7 +139,16 @@ export default function sessionReducer(state = defaultState, action) {
       };
       return saveToLocalStorage(session);
     }
-
+    case SET_VIDEO_DURATION: {
+      if (isNaN(+action.payload.videoDuration)) {
+        throw new Error(`Invalid duration provided: '${action.payload.videoDuration}'`);
+      }
+      const session = {
+        ...state,
+        videoDuration: +action.payload.videoDuration,
+      };
+      return saveToLocalStorage(session);
+    }
     default:
       return state;
   }
@@ -160,3 +170,4 @@ export const removePreset = (id) => ({ type: REMOVE_PRESET, payload: { id } });
 export const patchPreset = (id, patch) => ({ type: PATCH_PRESET, payload: { id, patch } });
 
 export const setVideo = (videoUrl) => ({ type: SET_VIDEO, payload: { videoUrl } });
+export const setVideoDuration = (videoDuration) => ({ type: SET_VIDEO_DURATION, payload: { videoDuration } });

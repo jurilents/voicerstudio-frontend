@@ -1,6 +1,7 @@
 import React, { createRef, memo, useCallback, useEffect, useState } from 'react';
 import { isPlaying } from '../../utils';
 import { useDispatch, useSelector } from 'react-redux';
+import { setVideoDuration } from '../../store/sessionReducer';
 
 export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
   const $video = createRef();
@@ -17,6 +18,29 @@ export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
     }
   }, [$video, playbackSpeed]);
 
+  useEffect(() => {
+    if ($video.current) {
+      const videoElm = $video.current;
+      const setupDuration = () => {
+        if (!isNaN(videoElm.duration)) {
+          dispatch(setVideoDuration(videoElm.duration));
+        }
+      };
+
+      const handleTimeUpdate = () => {
+        // if (window.timelineEngine) {
+        //   window.timelineEngine.setTime(videoElm.currentTime);
+        // }
+      };
+
+      videoElm.onloadedmetadata = setupDuration;
+      videoElm.addEventListener('timeupdate', handleTimeUpdate);
+      return () => {
+        setupDuration();
+        videoElm.removeEventListener('timeupdate', handleTimeUpdate);
+      };
+    }
+  }, [$video]);
 
   useEffect(() => {
     setPlayer($video.current);

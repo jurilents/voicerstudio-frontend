@@ -7,11 +7,12 @@ export const effectKeys = {
 export const timelineEffects = {
   audioTrack: {
     id: effectKeys.audioTrack,
-    name: '播放音效',
+    name: 'AudioTrack',
     source: {
       start: ({ action, engine, isPlaying, time }) => {
+        console.log('start effect 0');
         if (isPlaying) {
-          const src = action.data.src;
+          const src = action.audioUrl;
           audioController.start({
             id: src,
             src,
@@ -23,7 +24,7 @@ export const timelineEffects = {
       },
       enter: ({ action, engine, isPlaying, time }) => {
         if (isPlaying) {
-          const src = action.data.src;
+          const src = action.audioUrl;
           audioController.start({
             id: src,
             src,
@@ -34,14 +35,14 @@ export const timelineEffects = {
         }
       },
       leave: ({ action, engine }) => {
-        const src = action.data.src;
+        const src = action.audioUrl;
         audioController.stop({
           id: src,
           engine,
         });
       },
       stop: ({ action, engine }) => {
-        const src = action.data.src;
+        const src = action.audioUrl;
         audioController.stop({
           id: src,
           engine,

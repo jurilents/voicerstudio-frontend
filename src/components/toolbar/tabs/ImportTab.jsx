@@ -42,7 +42,7 @@ export default function ImportTab(props) {
         // await props.waveform.decoder.decodeAudioData(uint8);
         // props.waveform.drawer.update();
         props.setProcessing(100);
-        await saveVideo('video1', file);
+        // await saveVideo('video1', file);
         props.setProcessing(0);
         ffmpeg.setProgress(() => null);
         props.notify({
@@ -69,6 +69,7 @@ export default function ImportTab(props) {
         const canPlayType = props.player.canPlayType(file.type);
         if (canPlayType === 'maybe' || canPlayType === 'probably') {
           // decodeAudioData(file);
+          saveVideo('video1', file);
           const url = URL.createObjectURL(new Blob([file]));
           // props.waveform.decoder.destroy();
           // props.waveform.drawer.update();

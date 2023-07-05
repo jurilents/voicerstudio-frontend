@@ -1,14 +1,14 @@
-import { Timeline } from '@xzdarcy/react-timeline-editor';
 import styled from 'styled-components';
-import ScaleMarker from './ScaleMarker';
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import ActionSubtitle from './ActionSubtitle';
-import ActionAudio from './ActionAudio';
 import { addSub, patchSub, selectSpeaker, selectSub } from '../../../store/sessionReducer';
 import { Sub } from '../../../models';
 import { t } from 'react-i18nify';
-import { effectKeys, timelineEffects } from '../../../utils/timelineEffects';
+import { effectKeys } from '../../../utils/timelineEffects';
+import { setPlaying, setTime } from '../../../store/timelineReducer';
+import TimelineWrap from './TimelineWrap';
+import ActionAudio from './ActionAudio';
+import ActionSubtitle from './ActionSubtitle';
 
 const Style = styled.div`
   width: 100%;
@@ -92,6 +92,7 @@ const Style = styled.div`
 
     .sub-time {
       font-size: 10px;
+      opacity: 60%;
     }
   }
 `;
@@ -131,11 +132,13 @@ function calcScaleCount(duration, scale) {
   return (duration / scale) + 1;
 }
 
-const TimelineEditor = ({ playing, setPlaying, player, headingWidth }) => {
-  const timeline = useRef();
+let playing = false; // useSelector(store => store.timeline.playing);
+let timelineEngine = null;
+
+const TimelineEditor = ({ player, headingWidth }) => {
   const dispatch = useDispatch();
   const { speakers, selectedSpeaker, selectedSub, videoUrl } = useSelector(store => store.session);
-  const settings = useSelector(store => store.settings);
+  const [isPlaying, setIsPlaying] = useState(false);
   // const [time, setTime] = useState(0);
   const [insertStarPosition, setInsertStartPosition] = useState(0);
   const [recordStartTime, setRecordStartTime] = useState(0);
@@ -144,7 +147,68 @@ const TimelineEditor = ({ playing, setPlaying, player, headingWidth }) => {
   const data = getTimelineData(speakers, selectedSpeaker, originalVideoUrl, 100);
   // const [leftTime, setLeftTime] = useState(0);
   // const [rightTime, setRightTime] = useState();
-  console.log('redraw');
+
+  useEffect(() => {
+    if (!window.timelineEngine) return;
+    const engine = window.timelineEngine;
+
+    engine.listener.on('play', () => {
+      dispatch(setPlaying(true));
+      player.currentTime = engine.getTime();
+    });
+    engine.listener.on('paused', () => {
+      dispatch(setPlaying(false));
+      player.currentTime = engine.getTime();
+    });
+    engine.listener.on('afterSetTime', ({ time }) => dispatch(setTime(time)));
+    engine.listener.on('setTimeByTick', ({ time }) => {
+      dispatch(setTime(time));
+      // if (true) {
+      //   const autoScrollFrom = 500;
+      //   const left = time * (scaleWidth / scale) + startLeft - autoScrollFrom;
+      //   timelineState.setScrollLeft(left);
+      // }
+    });
+
+    return () => {
+      if (!engine) return;
+      engine.pause();
+      engine.listener.offAll();
+      // lottieControl.destroy();
+    };
+  }, [window.timelineEngine, playing]);
+
+  const handlePlayOrPause = useCallback(() => {
+    if (!window.timelineEngine) return;
+    const engine = window.timelineEngine;
+    playing = !playing;
+    if (engine.isPlaying !== playing) {
+      if (engine.isPlaying) {
+        console.log('-----pause');
+        engine.pause();
+        player.pause();
+      } else {
+        console.log('-----play');
+        engine.play({ autoEnd: true });
+        player.play();
+      }
+    }
+  }, [window.timelineEngine]);
+
+  useEffect(() => {
+    if (!window.timelineEngine) return;
+    const listener = (event) => {
+      const keyName = event.key.toLowerCase();
+      if (keyName === ' ') {
+        handlePlayOrPause();
+      }
+    };
+    document.addEventListener('keydown', listener, false);
+
+    return () => {
+      document.removeEventListener('keydown', listener);
+    };
+  }, [window.timelineEngine]);
 
   const startRecord = useCallback((event, params) => {
     const selectedAction = params.row.actions.find(x => x.selected);
@@ -159,7 +223,7 @@ const TimelineEditor = ({ playing, setPlaying, player, headingWidth }) => {
     if (recordStartTime > 0 && recordStartTime < param.scrollLeft) {
       console.log('scroll select');
     }
-  }, []);
+  }, [recordStartTime]);
 
   const completeRecord = useCallback((params) => {
     const selectedAction = params.row.actions.find(x => x.selected);
@@ -182,19 +246,21 @@ const TimelineEditor = ({ playing, setPlaying, player, headingWidth }) => {
       });
       dispatch(addSub(newSub));
     }
-  }, [dispatch]);
+  }, [dispatch, selectedSpeaker]);
 
   const setSubtitle = useCallback((param) => {
     if (param.row.id !== origAudioRowName) {
       dispatch(selectSub(param.action));
     }
-  }, []);
+  }, [dispatch]);
 
   const setSpeaker = useCallback((param) => {
+    console.log('set speaker');
+    console.log('param.row.id', param.row.id);
     if (param.row.id !== origAudioRowName) {
       dispatch(selectSpeaker(param.row.id));
     }
-  }, []);
+  }, [dispatch]);
 
   const setSubStartEndTime = useCallback((param) => {
     if (param.row.id !== origAudioRowName) {
@@ -203,54 +269,24 @@ const TimelineEditor = ({ playing, setPlaying, player, headingWidth }) => {
         end: param.action.end,
       }));
     }
-  }, []);
+  }, [dispatch]);
 
-  useEffect(() => {
-    if (timeline) {
-      console.log('timeline', timeline);
+  const onTimeChange = useCallback((time) => {
+    if (player) {
+      console.log('set time', time);
+      dispatch(setTime(time));
+      player.currentTime = time;
     }
-  }, [timeline]);
+  }, [dispatch, player]);
 
-  useEffect(() => {
-    if (!timeline.current) {
-      return;
+  const getActionRender = useCallback((action, row) => {
+    console.log('render component');
+    if (action.effectId === effectKeys.audioTrack) {
+      return <ActionAudio action={action} row={row} />;
     }
-    if (playing !== timeline.current.isPlaying) {
-      console.log('timeline.current.isPlaying', timeline.current.isPlaying);
-      console.log('set playing:', playing);
-      if (timeline.current.isPlaying) {
-        console.log('pause');
-        timeline.current.pause();
-      } else {
-        console.log('play');
-        // timeline.current.setPlayRate(1.0);
-        console.log(' timeline.current.play', timeline.current.play());
-        timeline.current.play();
-      }
-    }
-  }, [timeline.current, playing]);
+    return <ActionSubtitle action={action} row={row} />;
+  }, [selectedSpeaker, selectedSub]);
 
-  useEffect(() => {
-    if (!timeline.current) return;
-    const engine = timeline.current;
-    // engine.listener.on('play', () => setPlaying(true));
-    // engine.listener.on('paused', () => setPlaying(false));
-    // engine.listener.on('afterSetTime', ({ time }) => setTime(time));
-    engine.listener.on('setTimeByTick', ({ time }) => {
-      // setTime(time);
-      // const autoScrollFrom = 500;
-      // const left = time * (scaleWidth / scale) + startLeft - autoScrollFrom;
-      // timeline.current.setScrollLeft(left);
-    });
-
-    return () => {
-      if (!engine) return;
-      console.log('stop --------------');
-      engine.pause();
-      engine.listener.offAll();
-      // lottieControl.destroy();
-    };
-  }, []);
 
   const scaleCount = calcScaleCount(player?.duration, 1);
 
@@ -262,46 +298,55 @@ const TimelineEditor = ({ playing, setPlaying, player, headingWidth }) => {
           style={{ left: insertStarPosition }}
         ></div>
       )}
-      {player &&
-        <Timeline
-          ref={timeline}
-          startLeft={10}
-          scale={1}
-          scaleWidth={100}
-          autoScroll={true}
-          dragLine={settings.scrollableMode}
-          gridSnap={settings.magnetMode}
-          rowHeight={50}
-          editorData={data}
-          effects={timelineEffects}
-          minScaleCount={scaleCount}
-          maxScaleCount={scaleCount}
-          onChange={() => {
-          }}
-          onClickTimeArea={(event, param) => {
-          }}
-          onClickAction={(event, param) => setSubtitle(param)}
-          onActionResizeStart={(param) => setSubtitle(param)}
-          onActionMoveStart={(param) => setSubtitle(param)}
-          onClickRow={(event, param) => {
-            setSpeaker(param);
-          }}
-          onDoubleClickRow={(event, param) => {
-            addSubtitle(param);
-          }}
-          onActionResizeEnd={(param) => {
-            setSubStartEndTime(param);
-          }}
-          onScroll={(param) => handleScroll(param)}
-          getScaleRender={(scale) => <ScaleMarker scale={scale} />}
-          getActionRender={(action, row) => {
-            if (action.effectId === effectKeys.audioTrack) {
-              return <ActionAudio action={action} row={row} />;
-            }
-            action.selected = action.id === selectedSub?.id;
-            return <ActionSubtitle action={action} row={row} />;
-          }}
-        />}
+      <TimelineWrap
+        player={player}
+        data={data}
+        scaleCount={scaleCount}
+        onTimeChange={onTimeChange}
+        onClickAction={setSubtitle}
+        onClickRow={setSpeaker}
+        getActionRender={getActionRender}
+      />
+      {/*{player &&*/}
+      {/*  <Timeline*/}
+      {/*    ref={timelineState}*/}
+      {/*    startLeft={20}*/}
+      {/*    scale={1}*/}
+      {/*    scaleWidth={100}*/}
+      {/*    autoScroll={true}*/}
+      {/*    dragLine={settings.scrollableMode}*/}
+      {/*    gridSnap={settings.magnetMode}*/}
+      {/*    rowHeight={50}*/}
+      {/*    editorData={data}*/}
+      {/*    effects={timelineEffects}*/}
+      {/*    minScaleCount={scaleCount}*/}
+      {/*    maxScaleCount={scaleCount}*/}
+      {/*    onChange={() => {*/}
+      {/*    }}*/}
+      {/*    onClickTimeArea={(event, param) => {*/}
+      {/*    }}*/}
+      {/*    onClickAction={(event, param) => setSubtitle(param)}*/}
+      {/*    onActionResizeStart={(param) => setSubtitle(param)}*/}
+      {/*    onActionMoveStart={(param) => setSubtitle(param)}*/}
+      {/*    onClickRow={(event, param) => {*/}
+      {/*      setSpeaker(param);*/}
+      {/*    }}*/}
+      {/*    onDoubleClickRow={(event, param) => {*/}
+      {/*      addSubtitle(param);*/}
+      {/*    }}*/}
+      {/*    onActionResizeEnd={(param) => {*/}
+      {/*      setSubStartEndTime(param);*/}
+      {/*    }}*/}
+      {/*    onScroll={(param) => handleScroll(param)}*/}
+      {/*    getScaleRender={(scale) => <ScaleMarker scale={scale} />}*/}
+      {/*    getActionRender={(action, row) => {*/}
+      {/*      if (action.effectId === effectKeys.audioTrack) {*/}
+      {/*        return <ActionAudio action={action} row={row} />;*/}
+      {/*      }*/}
+      {/*      action.selected = action.id === selectedSub?.id;*/}
+      {/*      return <ActionSubtitle action={action} row={row} />;*/}
+      {/*    }}*/}
+      {/*  />}*/}
     </Style>
   );
 };
@@ -309,10 +354,8 @@ const TimelineEditor = ({ playing, setPlaying, player, headingWidth }) => {
 export default memo(
   TimelineEditor,
   (prevProps, nextProps) => {
-    const res = prevProps.playing === nextProps.playing &&
-      nextProps.player && prevProps.player?.duration === nextProps.player.duration;
-    console.log('copm res:', res);
-    console.log('nextProps.player.duration', nextProps.player.duration);
+    const res = //prevProps.playing === nextProps.playing &&
+      nextProps.player && prevProps.player?.src === nextProps.player.src;
     return res;
   },
 );
