@@ -4,6 +4,7 @@ import clamp from 'lodash/clamp';
 import throttle from 'lodash/throttle';
 import TimelineEditor from './new/TimelineEditor';
 import { TimelineHeading } from './new/TimelineHeading';
+import Progress from './Progress';
 
 const Style = styled.div`
   height: 400px;
@@ -13,13 +14,6 @@ const Style = styled.div`
   justify-content: center;
   padding-bottom: 35px;
   margin-top: 10px;
-
-  .timeline-outlet {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: calc(100% - 200px);
-  }
 `;
 
 export default function Footer(props) {
@@ -83,7 +77,11 @@ export default function Footer(props) {
       {/*      <Grab {...props} render={render} headingWidth={headingWidth} />*/}
       {/*      <Metronome {...props} render={render} headingWidth={headingWidth} />*/}
       {/*      <Timeline {...props} render={render} headingWidth={headingWidth} />*/}
-      {/*      <Progress {...props} headingWidth={headingWidth} />*/}
+
+      {props.player && (
+        <Progress {...props} headingWidth={headingWidth} />
+      )}
+
       {/*    </>*/}
       {/*  ) : null}*/}
       {/*</div>*/}

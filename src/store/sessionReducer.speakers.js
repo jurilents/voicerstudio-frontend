@@ -2,6 +2,10 @@ import { Speaker } from '../models';
 
 const speakersReducer = {
   addSpeaker: (state, action) => {
+    // Limit 10 speakers
+    if (state.speakers.length >= 10) {
+      return state;
+    }
     const session = {
       ...state,
       speakers: [...state.speakers, action.payload.speaker],
@@ -37,7 +41,10 @@ const speakersReducer = {
     };
   },
   selectSpeaker: (state, action) => {
-    const selectedSpeaker = state.speakers.find(x => x.id === action.payload.id);
+    let selectedSpeaker = state.speakers.find(x => x.id === action.payload.id);
+    if (!selectedSpeaker) {
+      selectedSpeaker = state.speakers.length ? state.speakers[0] : null;
+    }
     if (state.selectedSub?.speakerId !== selectedSpeaker.id) {
       return {
         ...state,

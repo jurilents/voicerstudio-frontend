@@ -76,13 +76,15 @@ export default function SpeakersTab(props) {
           </span>
             </ListGroup.Item>
           ))}
-          <ListGroup.Item>
-            <button
-              className='btn add-button'
-              onClick={() => dispatch(addSpeaker(createSpeaker()))}>
-              <FontAwesomeIcon icon={faAdd} />
-            </button>
-          </ListGroup.Item>
+          {speakers.length < 10 && (
+            <ListGroup.Item>
+              <button
+                className='btn add-button'
+                onClick={() => dispatch(addSpeaker(createSpeaker()))}>
+                <FontAwesomeIcon icon={faAdd} />
+              </button>
+            </ListGroup.Item>
+          )}
         </ListGroup>
       </div>
       {selectedSpeaker && <Container className='speaker-form'>

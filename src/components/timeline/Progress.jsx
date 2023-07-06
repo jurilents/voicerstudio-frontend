@@ -2,14 +2,15 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setTime } from '../../store/timelineReducer';
 
 const Style = styled.div`
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -35px;
-  z-index: 11;
+  bottom: 0;
+  z-index: 1000;
   width: 100%;
   height: 35px;
   user-select: none;
@@ -35,8 +36,8 @@ const Style = styled.div`
       bottom: 0;
       width: 10px;
       cursor: ew-resize;
-      background-color: #c9c9c9;
-      color: black;
+      background-color: #282c2b;
+      color: #c9c9c9;
       display: flex;
       padding: 1px;
 
@@ -67,20 +68,20 @@ const Style = styled.div`
   }
 `;
 
-export default function Progress(props) {
+export default function Progress({ player, headingWidth }) {
   const [grabbing, setGrabbing] = useState(false);
+  const dispatch = useDispatch();
   const speakers = useSelector(store => store.session.speakers);
+  const currentTime = useSelector(store => store.timeline.time);
 
-  const onProgressClick = useCallback(
-    (event) => {
-      if (event.button !== 0) return;
-      const screenDelta = (event.pageX - props.headingWidth) / (document.body.clientWidth - props.headingWidth);
-      const currentTime = screenDelta * props.player.duration;
-      props.player.currentTime = currentTime;
-      props.waveform.seek(currentTime);
-    },
-    [props],
-  );
+  const onProgressClick = useCallback((event) => {
+    if (event.button !== 0) return;
+    const screenDelta = (event.pageX) / (document.body.clientWidth);
+    const newTime = screenDelta * player.duration;
+    player.currentTime = newTime;
+    dispatch(setTime(newTime));
+    // props.waveform.seek(currentTime);
+  }, [dispatch, headingWidth, player]);
 
   const onGrabDown = useCallback(
     (event) => {
@@ -93,19 +94,21 @@ export default function Progress(props) {
   const onGrabMove = useCallback(
     (event) => {
       if (grabbing) {
-        const screenDelta = (event.pageX - props.headingWidth) / (document.body.clientWidth - props.headingWidth);
-        props.player.currentTime = screenDelta * props.player.duration;
+        const screenDelta = (event.pageX) / (document.body.clientWidth);
+        const newTime = screenDelta * player.duration;
+        player.currentTime = newTime;
+        dispatch(setTime(newTime));
       }
     },
-    [grabbing, props.player, props.headingWidth],
+    [grabbing, player, headingWidth],
   );
 
   const onDocumentMouseUp = useCallback(() => {
     if (grabbing) {
       setGrabbing(false);
-      props.waveform.seek(props.player.currentTime);
+      // waveform.seek(player.currentTime);
     }
-  }, [grabbing, props.waveform, props.player.currentTime]);
+  }, [grabbing, player?.currentTime]);
 
   useEffect(() => {
     document.addEventListener('mouseup', onDocumentMouseUp);
@@ -118,11 +121,11 @@ export default function Progress(props) {
 
   const subHeight = 100 / speakers.length;
   const subHeightStyle = `${subHeight}%`;
-  const { duration } = props.player;
+  const { duration } = player;
 
   return (
     <Style className='progress' onClick={onProgressClick}>
-      <div className='bar' style={{ width: `${(props.currentTime / props.player.duration) * 100}%` }}>
+      <div className='bar' style={{ width: `${(currentTime / player.duration) * 100}%` }}>
         <div className='handle' onMouseDown={onGrabDown}>
           <FontAwesomeIcon icon={faBars} />
         </div>
@@ -136,7 +139,7 @@ export default function Progress(props) {
                   className='x'
                   style={{
                     left: `${(sub.start / duration) * 100}%`,
-                    top: `${subHeight * (speakers.length - speakerIndex - 1)}%`,
+                    top: `${subHeight * speakerIndex}%`,
                     width: `${(sub.duration / duration) * 100}%`,
                     height: subHeightStyle,
                   }}

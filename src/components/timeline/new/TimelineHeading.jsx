@@ -32,6 +32,7 @@ const Style = styled.div`
 
   .app-list-group {
     flex-direction: column;
+    overflow-y: scroll;
   }
 
   .list-group-item {
