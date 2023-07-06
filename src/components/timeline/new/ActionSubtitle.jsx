@@ -5,7 +5,6 @@ const ActionSubtitle = ({ action, row }) => {
   action.selected = action.id === selectedSub?.id;
   row.selected = row.id === selectedSpeaker?.id;
 
-  console.log('action', row);
   return (
     <div className={[
       'timeline-sub',

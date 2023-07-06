@@ -6,7 +6,7 @@ import { getExt } from '../../../utils';
 import { setVideo } from '../../../store/sessionReducer';
 import { t } from 'react-i18nify';
 import FFmpeg from '@ffmpeg/ffmpeg';
-import { useVideoStorage } from '../../../hooks/useVideoStorage';
+import { useVideoStorage } from '../../../hooks';
 
 const Style = styled.div`
 `;

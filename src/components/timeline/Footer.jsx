@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import React, { createRef, useCallback, useEffect, useState } from 'react';
 import clamp from 'lodash/clamp';
 import throttle from 'lodash/throttle';
-import { useSettings } from '../../hooks';
 import TimelineEditor from './new/TimelineEditor';
 import { TimelineHeading } from './new/TimelineHeading';
 
@@ -33,7 +32,6 @@ export default function Footer(props) {
     gridNum: 110,
     beginTime: -5,
   });
-  const { settings } = useSettings();
 
   const onWheel = useCallback(
     (event) => {

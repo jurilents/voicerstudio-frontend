@@ -54,11 +54,13 @@ function parseSessionJson(json) {
   if (!obj.selectedSpeaker && obj.speakers?.length) {
     obj.selectedSpeaker = obj.speakers[0];
   }
-  if (obj.selectedSub?.id) {
-    obj.selectedSub = obj.selectedSpeaker.subs.find(x => x.id === obj.selectedSub.id);
-  }
-  if (!obj.selectedSub && obj.selectedSpeaker?.subs?.length) {
-    obj.selectedSub = obj.selectedSpeaker.subs[0];
+  if (obj.selectedSpeaker) {
+    if (obj.selectedSub?.id) {
+      obj.selectedSub = obj.selectedSpeaker.subs.find(x => x.id === obj.selectedSub.id);
+    }
+    if (!obj.selectedSub && obj.selectedSpeaker?.subs?.length) {
+      obj.selectedSub = obj.selectedSpeaker.subs[0];
+    }
   }
   return obj;
 }

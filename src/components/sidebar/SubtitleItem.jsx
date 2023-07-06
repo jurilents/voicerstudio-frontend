@@ -72,7 +72,7 @@ export default function SubtitleItem(
           spellCheck={false}
           className={[
             'textarea',
-            selectedSub.id === sub.id ? 'highlight' : '',
+            selectedSub?.id === sub.id ? 'highlight' : '',
             // checkSub(props.rowData) ? 'illegal' : '',
           ].join(' ').trim()}
           value={unescape(sub.text)}
@@ -82,7 +82,7 @@ export default function SubtitleItem(
           spellCheck={false}
           className={[
             'textarea',
-            selectedSub.id === sub.id ? 'highlight' : '',
+            selectedSub?.id === sub.id ? 'highlight' : '',
             // checkSub(props.rowData) ? 'illegal' : '',
           ].join(' ').trim()}
           value={unescape(sub.note)}

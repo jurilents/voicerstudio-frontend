@@ -7,7 +7,7 @@ const speakersReducer = {
       speakers: [...state.speakers, action.payload.speaker],
     };
     if (!state.selectedSpeaker) {
-      session.selectedSpeaker = session.data[0];
+      session.selectedSpeaker = session.speakers[0];
     }
     return session;
   },
@@ -38,6 +38,13 @@ const speakersReducer = {
   },
   selectSpeaker: (state, action) => {
     const selectedSpeaker = state.speakers.find(x => x.id === action.payload.id);
+    if (state.selectedSub?.speakerId !== selectedSpeaker.id) {
+      return {
+        ...state,
+        selectedSpeaker: selectedSpeaker,
+        selectedSub: null,
+      };
+    }
     return {
       ...state,
       selectedSpeaker: selectedSpeaker,

@@ -7,11 +7,10 @@ import Footer from './components/timeline/Footer';
 import Loading from './components/Loading';
 import ProgressBar from './components/header/ProgressBar';
 import Header from './components/header/Header';
-import { useVideoStorage } from './hooks/useVideoStorage';
+import { useHotkeys, useVideoStorage } from './hooks';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVideo } from './store/sessionReducer';
 import { ToastContainer } from 'react-toastify';
-import { useHotkeys } from './hooks/useHotkeys';
 
 const Style = styled.div`
   height: 100%;

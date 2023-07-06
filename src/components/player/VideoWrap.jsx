@@ -50,16 +50,6 @@ export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
           setPlaying(isPlaying($video.current));
           const currentTime = $video.current.currentTime || 0;
           setCurrentTime(currentTime);
-
-          if (playingSub && playingSub.end < currentTime) {
-            setPlayingSub(null);
-            // console.log('next');
-          }
-          if (!playingSub) {
-            const playingSub = selectedSpeaker.subs.find(x => x.start > currentTime);
-            // console.log('playing', playingSub);
-            setPlayingSub(playingSub);
-          }
         }
         loop();
       });

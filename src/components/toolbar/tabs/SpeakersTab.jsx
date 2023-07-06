@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useSettings } from '../../../hooks';
 import { Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -59,7 +58,7 @@ export default function SpeakersTab(props) {
         <ListGroup className='app-list-group'>
           {speakers.map((speaker) => (
             <ListGroup.Item
-              className={(selectedSpeaker?.id && speaker.id === selectedSpeaker.id ? 'selected' : '')}
+              className={(selectedSpeaker?.id && speaker.id === selectedSpeaker?.id ? 'selected' : '')}
               key={speaker.id}
               onClick={() => dispatch(selectSpeaker(speaker.id))}>
               <div className='color-preview' style={{ backgroundColor: speaker.color || '#000' }}></div>
@@ -86,7 +85,7 @@ export default function SpeakersTab(props) {
           </ListGroup.Item>
         </ListGroup>
       </div>
-      <Container className='speaker-form'>
+      {selectedSpeaker && <Container className='speaker-form'>
         <Row>
           <Col className='label'>Color</Col>
           <Col>
@@ -122,7 +121,7 @@ export default function SpeakersTab(props) {
             </Form.Select>
           </Col>
         </Row>
-      </Container>
+      </Container>}
     </Style>
   );
 }

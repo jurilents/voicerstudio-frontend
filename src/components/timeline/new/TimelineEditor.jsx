@@ -125,28 +125,18 @@ function getTimelineData(speakers, selectedSpeaker, videoUrl, audioDuration) {
   return data;
 }
 
-function calcScaleCount(duration, scale) {
-  if (!duration || isNaN(duration)) {
-    duration = 60;
-  }
-  return (duration / scale) + 1;
-}
 
-let playing = false; // useSelector(store => store.timeline.playing);
-let timelineEngine = null;
+let playing = false;
 
 const TimelineEditor = ({ player, headingWidth }) => {
   const dispatch = useDispatch();
   const { speakers, selectedSpeaker, selectedSub, videoUrl } = useSelector(store => store.session);
-  const [isPlaying, setIsPlaying] = useState(false);
-  // const [time, setTime] = useState(0);
+  // const {  } = useSelector(store => store.timeline);
   const [insertStarPosition, setInsertStartPosition] = useState(0);
   const [recordStartTime, setRecordStartTime] = useState(0);
   // const [recordEndTime, setRecordEndTime] = useState(0);
   const originalVideoUrl = videoUrl || '/samples/video_placeholder.mp4?t=1';
   const data = getTimelineData(speakers, selectedSpeaker, originalVideoUrl, 100);
-  // const [leftTime, setLeftTime] = useState(0);
-  // const [rightTime, setRightTime] = useState();
 
   useEffect(() => {
     if (!window.timelineEngine) return;
@@ -203,10 +193,10 @@ const TimelineEditor = ({ player, headingWidth }) => {
         handlePlayOrPause();
       }
     };
-    document.addEventListener('keydown', listener, false);
+    window.addEventListener('keydown', listener, false);
 
     return () => {
-      document.removeEventListener('keydown', listener);
+      window.removeEventListener('keydown', listener);
     };
   }, [window.timelineEngine]);
 
@@ -272,7 +262,11 @@ const TimelineEditor = ({ player, headingWidth }) => {
   }, [dispatch]);
 
   const onTimeChange = useCallback((time) => {
+    if (window.timelineEngine) {
+      window.timelineEngine.pause();
+    }
     if (player) {
+      player.pause();
       console.log('set time', time);
       dispatch(setTime(time));
       player.currentTime = time;
@@ -280,15 +274,12 @@ const TimelineEditor = ({ player, headingWidth }) => {
   }, [dispatch, player]);
 
   const getActionRender = useCallback((action, row) => {
-    console.log('render component');
     if (action.effectId === effectKeys.audioTrack) {
       return <ActionAudio action={action} row={row} />;
     }
     return <ActionSubtitle action={action} row={row} />;
   }, [selectedSpeaker, selectedSub]);
 
-
-  const scaleCount = calcScaleCount(player?.duration, 1);
 
   return (
     <Style className='noselect'>
@@ -301,11 +292,11 @@ const TimelineEditor = ({ player, headingWidth }) => {
       <TimelineWrap
         player={player}
         data={data}
-        scaleCount={scaleCount}
         onTimeChange={onTimeChange}
         onClickAction={setSubtitle}
         onClickRow={setSpeaker}
         getActionRender={getActionRender}
+        onDoubleClickRow={addSubtitle}
       />
       {/*{player &&*/}
       {/*  <Timeline*/}

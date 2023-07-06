@@ -39,7 +39,6 @@ export default function ExportTab(props) {
   const dispatch = useDispatch();
   const { exportCodec, exportFormat, exportFileName } = useSelector(store => store.settings);
   const { speakers, selectedSpeaker } = useSelector(store => store.session);
-  toast.error('🦄 Wow so easy!');
 
   const ensureExtension = useCallback((fileName, ext) => {
     const extension = '.' + ext.toLowerCase();
@@ -73,8 +72,8 @@ export default function ExportTab(props) {
         if (['ass', 'vtt', 'srt', 'json'].includes(ext)) {
           file2sub(file)
             .then((res) => {
-              props.clearSubs();
-              props.setSubtitle(res);
+              // props.clearSubs();
+              // props.setSubtitle(res);
             })
             .catch((err) => {
               props.notify({
@@ -90,7 +89,7 @@ export default function ExportTab(props) {
         }
       }
     },
-    [props.notify, props.setSubtitle, props.clearSubs],
+    [props.notify],
   );
 
   const downloadSub = useCallback(
@@ -120,7 +119,7 @@ export default function ExportTab(props) {
       const fileName = buildExportFileName('srt');
       download(url, fileName);
     },
-    [selectedSpeaker.subs],
+    [selectedSpeaker],
   );
 
   const generateAndExport = useCallback(() => {

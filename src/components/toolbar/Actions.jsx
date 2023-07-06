@@ -1,15 +1,13 @@
 import styled from 'styled-components';
 import { faLocationCrosshairs, faMagnet, faPause, faPencil, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useSettings } from '../../hooks';
 import Duration from '../timeline/Duration';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { setPlaying } from '../../store/timelineReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSettings } from '../../store/settingsReducer';
 
 const Style = styled.div`
-  //display: flex;
-  //flex-direction: column;
-  //justify-content: center;
-  //align-items: center;
   position: absolute;
   z-index: 20;
   left: 0;
@@ -64,31 +62,33 @@ const Style = styled.div`
 export function Actions(
   {
     currentTime,
-    playing,
-    setPlaying,
-    recording,
     setRecording,
     player,
-    subtitle,
-    speakers,
   }) {
-  const { settings, patchSettings } = useSettings();
+  const dispatch = useDispatch();
+  const settings = useSelector(store => store.settings);
+  const { playing, recording } = useSelector(store => store.timeline);
 
   const startRecording = () => {
     setRecording(true);
-    setPlaying(true);
+    dispatch(setPlaying(true));
     player.play();
   };
 
   const togglePlay = () => {
     if (playing) {
-      setPlaying(false);
+      dispatch(setPlaying(false));
       player.pause();
     } else {
-      setPlaying(true);
+      dispatch(setPlaying(true));
       player.play();
     }
   };
+
+  const patchSettings = useCallback((patch) => {
+    dispatch(setSettings(patch));
+  }, [dispatch]);
+
 
   return (
     <Style className='actions-wrapper'>
@@ -111,10 +111,6 @@ export function Actions(
           <FontAwesomeIcon icon={playing ? faPause : faPlay} />
         </div>
         <div className='separator'></div>
-        {/*<div className={'btn btn-icon focus' + (settings.magnet ? ' record' : '')}*/}
-        {/*     onClick={() => generateAndDownloadFinal()}>*/}
-        {/*  <FontAwesomeIcon icon={faCloudDownload} />*/}
-        {/*</div>*/}
         <div className={'btn btn-icon focus' + (recording ? ' record' : '')}
              onMouseDown={() => startRecording()}>
           <FontAwesomeIcon icon={faStop} />

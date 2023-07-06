@@ -186,8 +186,8 @@ export default function Subtitles({ player }) {
         width={600}
         height={height}
         rowHeight={80}
-        scrollToIndex={selectedSpeaker.subs.findIndex(x => x.id === selectedSub?.id) || 0}
-        rowCount={selectedSpeaker.subs.length}
+        scrollToIndex={selectedSpeaker?.subs.findIndex(x => x.id === selectedSub?.id) || 0}
+        rowCount={selectedSpeaker?.subs.length || 0}
         rowGetter={({ index }) => selectedSpeaker.subs[index]}
         headerRowRenderer={() => null}
         rowRenderer={(props) => {

@@ -22,7 +22,7 @@ export const useHotkeys = ({}) => {
         }
         break;
       case ' ':
-        event.preventDefault();
+        // event.preventDefault();
         // dis
         break;
       case 'z':

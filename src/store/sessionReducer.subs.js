@@ -16,6 +16,8 @@ const subsReducer = {
       throw new Error('Cannot add subs to undefined speaker.');
     }
     speaker.subs = [...(speaker.subs || []), action.payload.sub];
+    speaker.subs.sort((a, b) => a.start - b.start);
+
     const session = { ...state };
     session.selectedSub = action.payload.sub;
     return session;
@@ -56,6 +58,9 @@ const subsReducer = {
     }
     const sub = speaker.subs[subIndex];
     speaker.subs[subIndex] = new Sub({ ...sub, ...action.payload.patch });
+    if (action.payload.start) {
+      speaker.subs.sort((a, b) => a.start - b.start);
+    }
     return { ...state };
   },
   selectSub: (state, action) => {
@@ -66,6 +71,7 @@ const subsReducer = {
     if (!state.selectedSpeaker || state.selectedSpeaker.id !== action.payload.sub.speakerId) {
       speaker = state.speakers.find(x => x.id === action.payload.sub.speakerId);
     }
+    console.log('selecting subbb', action.payload.sub);
     return {
       ...state,
       selectedSpeaker: speaker,

@@ -44,10 +44,11 @@ const TimelineWrap = (props) => {
   // const { selectedSub } = useSelector(store => store.session);
   let ref = null;
 
-  console.log('render inner');
   if (!props.player) {
     return <></>;
   }
+
+  const scaleCount = calcScaleCount(props.player.duration, 1);
   return (
     <Timeline
       ref={(newRef) => {
@@ -65,8 +66,8 @@ const TimelineWrap = (props) => {
       rowHeight={50}
       editorData={props.data}
       effects={timelineEffects}
-      minScaleCount={props.scaleCount}
-      maxScaleCount={props.scaleCount}
+      minScaleCount={scaleCount}
+      maxScaleCount={scaleCount}
       onChange={() => {
       }}
       onCursorDragEnd={props.onTimeChange}
@@ -75,30 +76,20 @@ const TimelineWrap = (props) => {
       // onClickTimeArea={(event, param) => {
       // }}
       onClickAction={(event, param) => {
-        // if (window.timelineEngine) {
-        if (ref) {
-          console.log('rerender:', ref);
-          ref.reRender();
-        }
-        // window.timelineEngine.reRender();
-        // }
+        if (ref) ref.reRender();
         props.onClickAction(param);
       }}
       // onActionResizeStart={(param) => setSubtitle(param)}
       // onActionMoveStart={(param) => setSubtitle(param)}
       onClickRow={(event, param) => {
-        if (ref) {
-          console.log('rerender:', ref);
-          ref.reRender();
-        }
-        // if (window.timelineEngine) {
-        window.timelineEngine.reRender();
-        // }
+        if (ref) ref.reRender();
         props.onClickRow(param);
       }}
-      // onDoubleClickRow={(event, param) => {
-      //   addSubtitle(param);
-      // }}
+      onDoubleClickRow={(event, param) => {
+        if (ref) ref.reRender();
+        window.timelineEngine.reRender();
+        props.onDoubleClickRow(param);
+      }}
       // onActionResizeEnd={(param) => {
       //   setSubStartEndTime(param);
       // }}
@@ -112,6 +103,7 @@ const TimelineWrap = (props) => {
 export default memo(
   TimelineWrap,
   (prevProps, nextProps) => {
-    return nextProps.player && prevProps.player?.src === nextProps.player.src;
+    return prevProps.data === nextProps.data
+      && nextProps.player && prevProps.player?.src === nextProps.player.src;
   },
 );

@@ -1,1 +1,2 @@
-export { useSettings } from './useSettings';
+export { useHotkeys } from './useHotkeys';
+export { useVideoStorage } from './useVideoStorage';
