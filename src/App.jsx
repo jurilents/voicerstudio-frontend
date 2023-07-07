@@ -7,10 +7,12 @@ import Footer from './components/timeline/Footer';
 import Loading from './components/Loading';
 import ProgressBar from './components/header/ProgressBar';
 import Header from './components/header/Header';
-import { useVideoStorage } from './hooks';
+import { useSubsAudioStorage, useVideoStorage } from './hooks';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVideo } from './store/sessionReducer';
 import { ToastContainer } from 'react-toastify';
+import { VoicedStatuses } from './models/Sub';
+import { addAudio } from './store/audioReducer';
 
 const Style = styled.div`
   height: 100%;
@@ -55,8 +57,9 @@ const Style = styled.div`
 
 export default function App({ defaultLang }) {
   const dispatch = useDispatch();
-  const videoUrl = useSelector(store => store.session.videoUrl);
+  const { videoUrl, speakers } = useSelector(store => store.session);
   const { loadVideo } = useVideoStorage();
+  const { loadSubAudio } = useSubsAudioStorage();
 
   const subtitleHistory = useRef([]);
   const notificationSystem = useRef(null);
@@ -98,6 +101,16 @@ export default function App({ defaultLang }) {
     async function load() {
       const url = await loadVideo('video1');
       dispatch(setVideo(url));
+
+      for (const speaker of speakers) {
+        for (const sub of speaker.subs) {
+          if (sub.data && sub.voicedStatus === VoicedStatuses.voiced) {
+            sub.data.src = await loadSubAudio(sub.id);
+            dispatch(addAudio(sub.data.src));
+          }
+        }
+
+      }
     }
 
     if (videoUrl) {

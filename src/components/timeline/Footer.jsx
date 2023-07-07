@@ -1,7 +1,5 @@
 import styled from 'styled-components';
-import React, { createRef, useCallback, useEffect, useState } from 'react';
-import clamp from 'lodash/clamp';
-import throttle from 'lodash/throttle';
+import React, { createRef, useState } from 'react';
 import TimelineEditor from './new/TimelineEditor';
 import { TimelineHeading } from './new/TimelineHeading';
 import Progress from './Progress';
@@ -21,40 +19,40 @@ const Style = styled.div`
 export default function Footer(props) {
   const $footer = createRef();
   const [headingWidth, setHeadingWidth] = useState(200);
-  const [render, setRender] = useState({
-    padding: 2,
-    duration: 10,
-    gridGap: 10,
-    gridNum: 110,
-    beginTime: -5,
-  });
+  // const [render, setRender] = useState({
+  //   padding: 2,
+  //   duration: 10,
+  //   gridGap: 10,
+  //   gridNum: 110,
+  //   beginTime: -5,
+  // });
 
-  const onWheel = useCallback(
-    (event) => {
-      if (
-        !props.player ||
-        !props.waveform ||
-        props.player.playing ||
-        !$footer.current ||
-        !$footer.current.contains(event.target)
-      ) {
-        return;
-      }
-
-      const direction = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-      const scrollDelta = Math.sign(direction) / 5;
-      const currentTime = clamp(props.player.currentTime + scrollDelta, 0, props.player.duration);
-      props.player.currentTime = currentTime;
-      props.waveform.seek(currentTime);
-    },
-    [props.waveform, props.player, $footer],
-  );
-
-  useEffect(() => {
-    const onWheelThrottle = throttle(onWheel, 100);
-    window.addEventListener('wheel', onWheelThrottle, { passive: true });
-    return () => window.removeEventListener('wheel', onWheelThrottle);
-  }, [onWheel]);
+  // const onWheel = useCallback(
+  //   (event) => {
+  //     if (
+  //       !props.player ||
+  //       !props.waveform ||
+  //       props.player.playing ||
+  //       !$footer.current ||
+  //       !$footer.current.contains(event.target)
+  //     ) {
+  //       return;
+  //     }
+  //
+  //     const direction = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+  //     const scrollDelta = Math.sign(direction) / 5;
+  //     const currentTime = clamp(props.player.currentTime + scrollDelta, 0, props.player.duration);
+  //     props.player.currentTime = currentTime;
+  //     props.waveform.seek(currentTime);
+  //   },
+  //   [props.waveform, props.player, $footer],
+  // );
+  //
+  // useEffect(() => {
+  //   const onWheelThrottle = throttle(onWheel, 100);
+  //   window.addEventListener('wheel', onWheelThrottle, { passive: true });
+  //   return () => window.removeEventListener('wheel', onWheelThrottle);
+  // }, [onWheel]);
   //
   // useEffect(() => {
   //   if (props.waveform && !isEmpty(settings)) {

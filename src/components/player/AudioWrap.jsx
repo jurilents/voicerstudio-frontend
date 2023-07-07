@@ -7,17 +7,18 @@ export const AudioWrap = memo(({}) => {
   const playingAudio = useSelector(store => store.audio.players.find(x => x.playing === true));
   const $audio = createRef();
   // const $audioSource = createRef();
-  console.log('playingAudio', playingAudio);
 
   useEffect(() => {
     if (playingAudio) {
-      console.log('playingAudio', playingAudio);
+      // console.log('playingAudio', playingAudio);
 
       $audio.current.src = playingAudio.url;
       $audio.current.play();
       const onEnd = () => {
-        playingAudio.playing = false;
-        dispatch(playAudio(playingAudio.url, false));
+        if (playingAudio) {
+          playingAudio.playing = false;
+          dispatch(playAudio(playingAudio.url, false));
+        }
       };
       $audio.current.addEventListener('ended', onEnd);
       return () => {

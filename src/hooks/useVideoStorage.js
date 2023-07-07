@@ -1,25 +1,16 @@
-import { openDB } from 'idb';
-
-const DB_NAME = 'voicerDB';
-const TABLE_NAME = 'videos';
+import { useIndexedDB, VIDEOS_TABLE } from './useIndexedDB';
 
 export function useVideoStorage() {
-  const openDatabase = async () => {
-    return await openDB(DB_NAME, 1, {
-      upgrade(db) {
-        db.createObjectStore(TABLE_NAME, { keyPath: 'id' });
-      },
-    });
-  };
+  const { openDatabase } = useIndexedDB();
 
   const saveVideo = async (id, videoBlob) => {
     const db = await openDatabase();
-    const data = await db.get(TABLE_NAME, id);
+    const data = await db.get(VIDEOS_TABLE, id);
     if (data) {
-      await db.delete(TABLE_NAME, id);
+      await db.delete(VIDEOS_TABLE, id);
     }
 
-    await db.add('videos', {
+    await db.add(VIDEOS_TABLE, {
       id: id,
       video: videoBlob,
     });
@@ -27,7 +18,7 @@ export function useVideoStorage() {
 
   const loadVideo = async (id) => {
     const db = await openDatabase();
-    const data = await db.get(TABLE_NAME, id);
+    const data = await db.get(VIDEOS_TABLE, id);
     return data ? URL.createObjectURL(data.video) : null;
   };
 

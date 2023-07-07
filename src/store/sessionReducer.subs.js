@@ -1,4 +1,4 @@
-import { Speaker, Sub } from '../models';
+import { Sub } from '../models';
 
 const subsReducer = {
   setAllSubs: (state, action) => {
@@ -28,17 +28,12 @@ const subsReducer = {
       throw new Error('Cannot remove subs of undefined speaker.');
     }
     const index = speaker.subs.findIndex(x => x.id === action.payload.sub.id);
-    if (index < 0) {
-      return state;
-    }
+    if (index < 0) return state;
     speaker.subs.splice(index, 1);
-    const speakers = [...state.speakers];
-    speakers[index] = new Speaker(speaker);
 
     return {
       ...state,
-      speakers: speakers,
-      selectedSpeaker: speakers[index],
+      selectedSpeaker: speaker,
       selectedSub: speaker.subs.length > index
         ? speaker.subs[index]
         : speaker.subs.length > 0
@@ -53,7 +48,7 @@ const subsReducer = {
     }
     // speaker.subs = [...(speaker.subs || [])];
     const subIndex = speaker.subs.findIndex(x => x.id === action.payload.sub.id);
-    if (subIndex === -1) return;
+    if (subIndex === -1) return state;
     const sub = speaker.subs[subIndex];
     speaker.subs[subIndex] = new Sub({ ...sub, ...action.payload.patch });
     if (action.payload.patch.start) {

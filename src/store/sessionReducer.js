@@ -3,6 +3,7 @@ import colors from '../utils/colors';
 import speakersReducer from './sessionReducer.speakers';
 import subsReducer from './sessionReducer.subs';
 import presetsReducer from './sessionReducer.presets';
+import { VoicedStatuses } from '../models/Sub';
 
 // Commands
 const ADD_SPEAKER = 'ADD_SPEAKER';
@@ -43,7 +44,15 @@ function parseSessionJson(json) {
   if (obj.speakers && Array.isArray(obj.speakers)) {
     obj.speakers = obj.speakers.map(speaker => {
       if (speaker?.subs && Array.isArray(speaker.subs)) {
-        speaker.subs = speaker.subs.map(sub => new Sub(sub));
+        speaker.subs = speaker.subs.map(sub => {
+          if (sub.data === VoicedStatuses.processing) {
+            sub.data = null;
+          }
+          if (sub.data?.src) {
+            sub.data.src = VoicedStatuses.voiced;
+          }
+          return new Sub(sub);
+        });
       }
       return new Speaker(speaker);
     });
@@ -61,6 +70,9 @@ function parseSessionJson(json) {
     if (!obj.selectedSub && obj.selectedSpeaker?.subs?.length) {
       obj.selectedSub = obj.selectedSpeaker.subs[0];
     }
+  }
+  if (obj.videoUrl) {
+    obj.videoUrl = VoicedStatuses.processing;
   }
   return obj;
 }

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faPlay, faRocket } from '@fortawesome/free-solid-svg-icons';
 import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { patchSub } from '../../store/sessionReducer';
+import { patchSub, selectSub } from '../../store/sessionReducer';
 
 export default function SubtitleItem(
   {
@@ -20,8 +20,9 @@ export default function SubtitleItem(
   }) {
   const dispatch = useDispatch();
 
-  const speakSubClick = useCallback(() => {
-  }, []);
+  const handleSubClick = useCallback(() => {
+    dispatch(selectSub(sub));
+  }, [dispatch]);
 
   const handleSubTextChange = useCallback((event) => {
     dispatch(patchSub(sub, {
@@ -34,19 +35,21 @@ export default function SubtitleItem(
       note: event.target.value,
     }));
   }, [dispatch]);
+
   return (
     <div
       className={props.className}
       style={props.style}
-      onClick={() => {
-        if (player) {
-          player.pause();
-          if (player.duration >= sub.start) {
-            player.currentTime = sub.start + 0.001;
-          }
-        }
-      }}>
-      <div className='item'>
+      onClick={handleSubClick}>
+      <div
+        style={{
+          '--c-speaker': color,
+        }}
+        className={[
+          'item',
+          selectedSub?.id === sub.id ? 'highlight' : '',
+          // checkSub(props.rowData) ? 'illegal' : '',
+        ].join(' ')}>
         <div className='item-bar item-index'
              style={{ borderColor: color }}>
           <span>{props.index + 1}</span>
@@ -70,21 +73,13 @@ export default function SubtitleItem(
         <textarea
           maxLength={400}
           spellCheck={false}
-          className={[
-            'textarea',
-            selectedSub?.id === sub.id ? 'highlight' : '',
-            // checkSub(props.rowData) ? 'illegal' : '',
-          ].join(' ').trim()}
+          className='textarea'
           value={unescape(sub.text)}
           onChange={handleSubTextChange} />
         <textarea
           maxLength={400}
           spellCheck={false}
-          className={[
-            'textarea',
-            selectedSub?.id === sub.id ? 'highlight' : '',
-            // checkSub(props.rowData) ? 'illegal' : '',
-          ].join(' ').trim()}
+          className='textarea'
           value={unescape(sub.note)}
           onChange={handleSubNoteTextChange} />
         <div className='item-bar item-actions'>

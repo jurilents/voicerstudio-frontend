@@ -54,7 +54,6 @@ export const useHotkeys = ({ player }) => {
 
     switch (key) {
       case HOTKEYS.deleteSub.key:
-        console.log('deleting');
         if (!checkMetaKeys(event, HOTKEYS.deleteSub)) break;
         if (selectedSub) {
           console.log('selectedSub', selectedSub.duration);

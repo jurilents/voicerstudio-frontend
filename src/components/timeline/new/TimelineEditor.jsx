@@ -22,10 +22,6 @@ const Style = styled.div`
     z-index: 100;
   }
 
-  .timeline-audio {
-    background-color: red;
-  }
-
   .timeline-editor-action-right-stretch,
   .timeline-editor-action-left-stretch {
     //z-index: 1000;
@@ -59,6 +55,10 @@ const Style = styled.div`
     &:has(.selected-sub) {
       z-index: 900;
     }
+  }
+
+  .timeline-audio {
+    //background-color: red;
   }
 
   .timeline-sub {
@@ -106,15 +106,14 @@ function getTimelineData(speakers, selectedSpeaker, videoUrl, audioDuration) {
     id: speaker.id,
     selected: speaker.id === selectedSpeaker?.id,
     actions: speaker.subs,
-    effectId: 'textsub',
     color: speaker.color,
   }));
   data.unshift({
-    id: 'original-audio-row',
-    effectId: effectKeys.audioTrack,
+    id: origAudioRowName,
     actions: [
       {
         id: 'original-audio',
+        effectId: effectKeys.audioTrack,
         start: 0,
         end: audioDuration,
         disableDrag: true,
@@ -274,7 +273,7 @@ const TimelineEditor = ({ player, headingWidth }) => {
   }, [dispatch, player]);
 
   const getActionRender = useCallback((action, row) => {
-    if (action.effectId === effectKeys.audioTrack) {
+    if (row.id === origAudioRowName) {
       return <ActionAudio action={action} row={row} />;
     }
     return <ActionSubtitle action={action} row={row} />;

@@ -156,7 +156,7 @@ export default function Player(props) {
     <Style className='player'>
       <div className='video' ref={$player}>
         {/*<SpeakersAudio {...props} />*/}
-        {/*<AudioWrap {...props} />*/}
+        <AudioWrap {...props} />
         <VideoWrap {...props} />
         <Actions {...props} />
         {/*{props.player && currentSub ? (*/}

@@ -21,8 +21,10 @@ export const speechApi = {
       headers: { 'X-Credentials': credentials },
       responseType: 'blob',
     });
+    const blob = new Blob([result.data]);
     return {
-      url: URL.createObjectURL(new Blob([result.data])),
+      blob: blob,
+      url: URL.createObjectURL(blob),
       duration: +result.headers['x-duration'],
     };
   },

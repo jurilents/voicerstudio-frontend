@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addAudio, playAudio, removeAudio } from '../../store/audioReducer';
 import SubtitleItem from './SubtitleItem';
 import { patchSub } from '../../store/sessionReducer';
+import { useSubsAudioStorage } from '../../hooks';
+import { VoicedStatuses } from '../../models/Sub';
 
 const Style = styled.div`
   .ReactVirtualized__Table__row:nth-child(2n) {
@@ -30,6 +32,22 @@ const Style = styled.div`
         flex-direction: row;
         flex-wrap: nowrap;
 
+        &.highlight {
+          background-color: rgba(255, 255, 255, 0.08);
+
+          textarea {
+            border: 2px solid var(--c-speaker);
+            //border: 1px solid rgba(255, 255, 255, 0.3);
+          }
+        }
+
+        &.illegal {
+          textarea {
+            background-color: var(--c-danger);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+          }
+        }
+
         .textarea {
           flex: 1;
           width: 100%;
@@ -39,20 +57,10 @@ const Style = styled.div`
           padding: 10px;
           text-align: center;
           background-color: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 2px solid rgba(255, 255, 255, 0.1);
           transition: all 0.2s ease;
           resize: none;
           outline: none;
-
-          &.highlight {
-            background-color: var(--c-primary-dark);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-          }
-
-          &.illegal {
-            background-color: var(--c-danger);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-          }
         }
 
         .item-bar {
@@ -118,6 +126,7 @@ export default function Subtitles({ player }) {
   const exportCodec = useSelector(store => store.settings.exportCodec);
   const { selectedSpeaker, selectedSub } = useSelector(store => store.session);
   const [height, setHeight] = useState(100);
+  const { saveSubAudio } = useSubsAudioStorage();
   const resize = useCallback(() => {
     setHeight(document.body.clientHeight - 335);
   }, [setHeight]);
@@ -148,25 +157,33 @@ export default function Subtitles({ player }) {
         // speed: +speaker.speechConfig[7], // do not apply speed (rate)
       };
       console.log('Single speech request:', request);
+      dispatch(patchSub(sub, {
+        data: VoicedStatuses.processing,
+      }));
       const audio = await speechApi.single(request, 'dev_placeholder');
       console.log('single audio url', audio);
       dispatch(addAudio(audio.url));
       sub.endTime = sub.start + audio.duration;
+      await saveSubAudio(sub.id, audio.blob);
       dispatch(patchSub(sub, {
         end: sub.end,
         data: sub.buildVoicedStamp(audio.url),
       }));
     }
 
+    console.log('sub status:', sub.voicedStatus);
+    if (!sub.canBeVoiced) return;
+    if (!selectedSpeaker?.preset) return;
     if (sub.audioUrl) {
       dispatch(removeAudio(sub.audioUrl));
     }
+
     fetch();
-  }, [dispatch, selectedSpeaker, exportCodec]);
+  }, [dispatch, saveSubAudio, selectedSpeaker, exportCodec]);
 
   const playSub = useCallback((sub) => {
     if (sub.data?.src) {
-      dispatch(playAudio(sub.audioUrl, true));
+      dispatch(playAudio(sub.data.src, true));
     }
   }, [dispatch]);
 
@@ -175,7 +192,7 @@ export default function Subtitles({ player }) {
       const start = sub.start.replaceAll(':', '-');
       const end = sub.end.replaceAll(':', '-');
       const fileName = `[${selectedSpeaker.displayName}-${index}] from ${start} to ${end}.wav`;
-      download(sub.audioUrl, fileName);
+      download(sub.data.src, fileName);
     }
   }, [selectedSpeaker]);
 

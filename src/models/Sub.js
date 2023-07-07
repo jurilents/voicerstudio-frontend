@@ -1,6 +1,7 @@
 import DT from 'duration-time-conversion';
 import { v4 as uuidv4 } from 'uuid';
 import { clamp } from 'lodash';
+import { effectKeys } from '../utils/timelineEffects';
 
 export const VoicedStatuses = {
   none: 'none',
@@ -13,12 +14,14 @@ export class Sub {
   constructor(obj) {
     this.id = obj.id || ('sub_' + uuidv4());
     this.speakerId = obj.speakerId;
+    this.effectId = effectKeys.audioTrack;
     this.start = obj.start;
     this.startStr = DT.d2t(this.start);
     this.end = obj.end;
     this.endStr = DT.d2t(this.end);
     this.text = obj.text;
     this.note = obj.note;
+    this.data = obj.data;
   }
 
   get isValid() {
@@ -49,14 +52,27 @@ export class Sub {
 
   get voicedStatus() {
     if (this.data) {
-      if (this.text === this.data.text
+      if (this.data === VoicedStatuses.processing) {
+        return VoicedStatuses.processing;
+      }
+      if (this.data.src === VoicedStatuses.voiced) {
+        return VoicedStatuses.voiced;
+      }
+      if (this.text.trim() === this.data.text
         && Math.abs((this.end - this.start) - (this.data.end - this.data.start)) < 0.001
-        && this.audioUrl) {
+        && this.data.src) {
         return VoicedStatuses.voiced;
       } else if (this.text !== this.data.text) {
         return VoicedStatuses.obsolete;
       }
     }
+
+    return VoicedStatuses.none;
+  }
+
+  get canBeVoiced() {
+    const status = this.voicedStatus;
+    return status === VoicedStatuses.none || status === VoicedStatuses.obsolete;
   }
 
   get voicedStatusColor() {
@@ -79,7 +95,7 @@ export class Sub {
 
 export class VoicedSubStamp {
   constructor(obj, audioUrl) {
-    this.text = obj.text;
+    this.text = obj.text?.trim();
     this.start = obj.start;
     this.end = obj.end;
     this.src = audioUrl || obj.src;

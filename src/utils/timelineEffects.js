@@ -7,7 +7,7 @@ export const effectKeys = {
 export const timelineEffects = {
   audioTrack: {
     id: effectKeys.audioTrack,
-    name: 'AudioTrack',
+    name: effectKeys.audioTrack,
     source: {
       start: ({ action, engine, isPlaying, time }) => {
         console.log('start effect 0');
@@ -24,6 +24,7 @@ export const timelineEffects = {
       },
       enter: ({ action, engine, isPlaying, time }) => {
         if (isPlaying) {
+          console.log('enter effect 0');
           const src = action.audioUrl;
           audioController.start({
             id: src,
@@ -35,6 +36,7 @@ export const timelineEffects = {
         }
       },
       leave: ({ action, engine }) => {
+        console.log('leave effect 0');
         const src = action.audioUrl;
         audioController.stop({
           id: src,
@@ -42,6 +44,7 @@ export const timelineEffects = {
         });
       },
       stop: ({ action, engine }) => {
+        console.log('stop effect 0');
         const src = action.audioUrl;
         audioController.stop({
           id: src,
