@@ -1,4 +1,4 @@
-import Howl from 'howler';
+import { Howl } from 'howler';
 
 class AudioController {
   cacheMap = {};
@@ -6,13 +6,22 @@ class AudioController {
 
   start({ id, src, startTime, time, engine }) {
     let item;
+    console.log('audio soruce:', id);
     if (this.cacheMap[id]) {
       item = this.cacheMap[id];
       item.rate(engine.getPlayRate());
       item.seek((time - startTime) % item.duration());
       item.play();
     } else {
-      item = new Howl({ src, loop: true, autoplay: true });
+      item = new Howl({
+        src: src,
+        format: 'wav',
+        loop: false,
+        autoplay: true,
+        volume: 1,
+        // html5: true,
+      });
+      console.log('item', item);
       this.cacheMap[id] = item;
       item.on('load', () => {
         item.rate(engine.getPlayRate());

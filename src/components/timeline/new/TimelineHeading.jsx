@@ -69,7 +69,7 @@ export const TimelineHeading = () => {
     <Style className='timeline-heading'>
       <ListGroup className='app-list-group'>
         <ListGroup.Item
-          style={{ borderColor: '#5e5e5e', height: timelineRowHeight }}>
+          style={{ borderColor: '#5e5e5e', height: timelineRowHeight * 2 }}>
           <div className='speaker-actions'>
             <button className='btn speaker-btn'>M</button>
           </div>

@@ -67,17 +67,21 @@ const TimelineWrap = (props) => {
       editorData={props.data}
       effects={timelineEffects}
       minScaleCount={scaleCount}
-      maxScaleCount={scaleCount}
+      maxScaleCount={scaleCount * 10}
       // ----- Event Handlers -----
-      onChange={() => {
+      onChange={(data) => {
+      }}
+      onScroll={(param) => {
+        // console.log('scroll', param);
       }}
       // Cursor
       onCursorDragEnd={props.onTimeChange}
       onCursorDrag={props.onTimeChange}
       // Time area
-      onClickTimeArea={props.onTimeChange}
-      // onClickTimeArea={(event, param) => {
-      // }}
+      onClickTimeArea={(time) => {
+        console.log('click!', time);
+        props.onTimeChange(time);
+      }}
       // Action
       onClickAction={(event, param) => {
         if (ref) ref.reRender();

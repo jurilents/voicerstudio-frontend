@@ -15,6 +15,7 @@ export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
   useEffect(() => {
     if ($video.current) {
       $video.current.playbackRate = playbackSpeed;
+      $video.current.volume = 0;
     }
   }, [$video, playbackSpeed]);
 

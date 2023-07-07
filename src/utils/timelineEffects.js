@@ -1,7 +1,7 @@
 import audioController from './AudioController';
 
 export const effectKeys = {
-  audioTrack: 'audio-track',
+  audioTrack: 'audioTrack',
 };
 
 export const timelineEffects = {
@@ -10,9 +10,10 @@ export const timelineEffects = {
     name: effectKeys.audioTrack,
     source: {
       start: ({ action, engine, isPlaying, time }) => {
-        console.log('start effect 0');
         if (isPlaying) {
-          const src = action.audioUrl;
+          console.log('start effect 0', action.data?.src);
+          const src = action.data?.src;
+          if (!action.data?.src) return;
           audioController.start({
             id: src,
             src,
@@ -25,7 +26,8 @@ export const timelineEffects = {
       enter: ({ action, engine, isPlaying, time }) => {
         if (isPlaying) {
           console.log('enter effect 0');
-          const src = action.audioUrl;
+          const src = action.data?.src;
+          if (!action.data?.src) return;
           audioController.start({
             id: src,
             src,
@@ -37,7 +39,8 @@ export const timelineEffects = {
       },
       leave: ({ action, engine }) => {
         console.log('leave effect 0');
-        const src = action.audioUrl;
+        const src = action.data?.src;
+        if (!action.data?.src) return;
         audioController.stop({
           id: src,
           engine,
@@ -45,7 +48,8 @@ export const timelineEffects = {
       },
       stop: ({ action, engine }) => {
         console.log('stop effect 0');
-        const src = action.audioUrl;
+        const src = action.data?.src;
+        if (!action.data?.src) return;
         audioController.stop({
           id: src,
           engine,

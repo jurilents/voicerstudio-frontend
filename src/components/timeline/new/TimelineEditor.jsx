@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addSub, patchSub, selectSpeaker, selectSub } from '../../../store/sessionReducer';
 import { Sub } from '../../../models';
 import { t } from 'react-i18nify';
-import { effectKeys } from '../../../utils/timelineEffects';
 import { setPlaying, setTime } from '../../../store/timelineReducer';
 import TimelineWrap from './TimelineWrap';
 import ActionAudio from './ActionAudio';
@@ -101,25 +100,29 @@ const Style = styled.div`
 
 const origAudioRowName = 'original-audio-row';
 
-function getTimelineData(speakers, selectedSpeaker, videoUrl, audioDuration) {
+function getTimelineData(speakers, selectedSpeaker, player) {
+  console.log('plat', player);
   const data = speakers.map((speaker) => ({
     id: speaker.id,
     selected: speaker.id === selectedSpeaker?.id,
     actions: speaker.subs,
     color: speaker.color,
   }));
+  if (!player || isNaN(+player.duration)) return data;
+
   data.unshift({
     id: origAudioRowName,
+    rowHeight: 100,
     actions: [
       {
         id: 'original-audio',
-        effectId: effectKeys.audioTrack,
+        // effectId: effectKeys.audioTrack,
         start: 0,
-        end: audioDuration,
+        end: player.duration,
         disableDrag: true,
-        data: {
-          src: videoUrl,
-        },
+        movable: false,
+        flexible: false,
+        data: { player },
       },
     ],
   });
@@ -130,12 +133,12 @@ const TimelineEditor = ({ player, headingWidth }) => {
   const hotkeysHandler = useHotkeys({ player });
   const dispatch = useDispatch();
   const { speakers, selectedSpeaker, selectedSub, videoUrl } = useSelector(store => store.session);
-  // const {  } = useSelector(store => store.timeline);
+  const totalTime = useSelector(store => store.timeline.totalTime);
   const [insertStarPosition, setInsertStartPosition] = useState(0);
   const [recordStartTime, setRecordStartTime] = useState(0);
   // const [recordEndTime, setRecordEndTime] = useState(0);
-  const originalVideoUrl = videoUrl || '/samples/video_placeholder.mp4?t=1';
-  const data = getTimelineData(speakers, selectedSpeaker, originalVideoUrl, 100);
+  // const originalVideoUrl = videoUrl || '/samples/video_placeholder.mp4?t=1';
+  const data = getTimelineData(speakers, selectedSpeaker, player);
 
   useEffect(() => {
     if (!window.timelineEngine) return;
