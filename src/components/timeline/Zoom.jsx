@@ -7,10 +7,10 @@ const Style = styled.div`
   position: absolute;
   left: 0;
   right: 0;
-  top: -10px;
+  top: -8px;
   z-index: 11;
   width: 100%;
-  height: 10px;
+  height: 8px;
   user-select: none;
   border-top: 1px solid rgb(255 255 255 / 20%);
   background-color: rgb(0 0 0 / 50%);
@@ -51,7 +51,7 @@ export default function Zoom({ waveform, player, headingWidth }) {
   const onProgressClick = useCallback(
     (event) => {
       if (event.button !== 0) return;
-      const screenDelta = (event.pageX - headingWidth) / (document.body.clientWidth - headingWidth);
+      const screenDelta = (event.pageX) / (document.body.clientWidth);
       const zoomValue = +(Math.max(screenDelta, 0.01)).toFixed(3);
       setZoom(zoomValue);
       dispatch(setSettings({ timelineZoom: zoomValue }));
@@ -70,7 +70,7 @@ export default function Zoom({ waveform, player, headingWidth }) {
   const onGrabMove = useCallback(
     (event) => {
       if (grabbing) {
-        const zoomValue = (event.pageX - headingWidth) / (document.body.clientWidth - headingWidth);
+        const zoomValue = (event.pageX) / (document.body.clientWidth);
         setZoom(+zoomValue.toFixed(3));
       }
     },
@@ -113,7 +113,7 @@ export default function Zoom({ waveform, player, headingWidth }) {
   }, [waveZoom]);
 
   return (
-    <Style className='progress' onClick={onProgressClick}>
+    <Style className='zoom' onClick={onProgressClick}>
       <div className='bar' style={{ width: `${zoom * 100}%` }}>
         <div className='handle' onMouseDown={onGrabDown}></div>
       </div>

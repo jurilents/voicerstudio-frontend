@@ -51,17 +51,20 @@ const subsReducer = {
     if (!speaker) {
       throw new Error('Cannot remove subs of undefined speaker.');
     }
-    speaker.subs = [...(speaker.subs || [])];
+    // speaker.subs = [...(speaker.subs || [])];
     const subIndex = speaker.subs.findIndex(x => x.id === action.payload.sub.id);
-    if (subIndex === -1) {
-      return;
-    }
+    if (subIndex === -1) return;
     const sub = speaker.subs[subIndex];
     speaker.subs[subIndex] = new Sub({ ...sub, ...action.payload.patch });
-    if (action.payload.start) {
+    if (action.payload.patch.start) {
       speaker.subs.sort((a, b) => a.start - b.start);
     }
-    return { ...state };
+    return {
+      ...state,
+      // speakers: [...state.speakers],
+      selectedSpeaker: speaker,
+      selectedSub: speaker.subs[subIndex],
+    };
   },
   selectSub: (state, action) => {
     let speaker = state.speakers.find(x => x.id === action.payload.sub.speakerId);
@@ -71,7 +74,6 @@ const subsReducer = {
     if (!state.selectedSpeaker || state.selectedSpeaker.id !== action.payload.sub.speakerId) {
       speaker = state.speakers.find(x => x.id === action.payload.sub.speakerId);
     }
-    console.log('selecting subbb', action.payload.sub);
     return {
       ...state,
       selectedSpeaker: speaker,

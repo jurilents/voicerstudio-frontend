@@ -9,6 +9,7 @@ import { setPlaying, setTime } from '../../../store/timelineReducer';
 import TimelineWrap from './TimelineWrap';
 import ActionAudio from './ActionAudio';
 import ActionSubtitle from './ActionSubtitle';
+import { useHotkeys } from '../../../hooks';
 
 const Style = styled.div`
   width: 100%;
@@ -126,10 +127,8 @@ function getTimelineData(speakers, selectedSpeaker, videoUrl, audioDuration) {
   return data;
 }
 
-
-let playing = false;
-
 const TimelineEditor = ({ player, headingWidth }) => {
+  const hotkeysHandler = useHotkeys({ player });
   const dispatch = useDispatch();
   const { speakers, selectedSpeaker, selectedSub, videoUrl } = useSelector(store => store.session);
   // const {  } = useSelector(store => store.timeline);
@@ -167,39 +166,13 @@ const TimelineEditor = ({ player, headingWidth }) => {
       engine.listener.offAll();
       // lottieControl.destroy();
     };
-  }, [window.timelineEngine, playing]);
-
-  const handlePlayOrPause = useCallback(() => {
-    if (!window.timelineEngine) return;
-    const engine = window.timelineEngine;
-    playing = !playing;
-    if (engine.isPlaying !== playing) {
-      if (engine.isPlaying) {
-        console.log('-----pause');
-        engine.pause();
-        player.pause();
-      } else {
-        console.log('-----play');
-        engine.play({ autoEnd: true });
-        player.play();
-      }
-    }
   }, [window.timelineEngine]);
 
+  // ---------- Timeline Hotkeys ----------
   useEffect(() => {
-    if (!window.timelineEngine) return;
-    const listener = (event) => {
-      const keyName = event.key.toLowerCase();
-      if (keyName === ' ') {
-        handlePlayOrPause();
-      }
-    };
-    window.addEventListener('keydown', listener, false);
-
-    return () => {
-      window.removeEventListener('keydown', listener);
-    };
-  }, [window.timelineEngine]);
+    window.addEventListener('keydown', hotkeysHandler);
+    return () => window.removeEventListener('keydown', hotkeysHandler);
+  }, [hotkeysHandler]);
 
   const startRecord = useCallback((event, params) => {
     const selectedAction = params.row.actions.find(x => x.selected);
@@ -229,6 +202,9 @@ const TimelineEditor = ({ player, headingWidth }) => {
     if (!selectedAction) {
       const startTime = +(Math.round(param.time * 10) / 10).toFixed(2);
       console.log('startTime', startTime);
+      if (selectedSpeaker.subs.find(x => x.start < startTime && x.end > startTime)) {
+        return;
+      }
       const newSub = new Sub({
         speakerId: selectedSpeaker.id,
         start: startTime,
@@ -239,26 +215,50 @@ const TimelineEditor = ({ player, headingWidth }) => {
     }
   }, [dispatch, selectedSpeaker]);
 
-  const setSubtitle = useCallback((param) => {
+  const setSubtitle = useCallback((param, lockCursor) => {
     if (param.row.id !== origAudioRowName) {
+      if (window.timelineEngine) {
+        const cursorTime = window.timelineEngine.getTime();
+        if (!lockCursor && (param.action.start >= cursorTime || param.action.end <= cursorTime)) {
+          dispatch(setTime(param.action.start));
+          window.timelineEngine.setTime(param.action.start);
+        }
+      }
       dispatch(selectSub(param.action));
     }
   }, [dispatch]);
 
-  const setSpeaker = useCallback((param) => {
-    console.log('set speaker');
-    console.log('param.row.id', param.row.id);
+  const setTimeToSubEnd = useCallback((param) => {
     if (param.row.id !== origAudioRowName) {
+      dispatch(setTime(param.action.end));
+      if (window.timelineEngine) {
+        window.timelineEngine.setTime(param.action.end);
+      }
+    }
+  }, [dispatch]);
+
+  const setSpeaker = useCallback((param) => {
+    if (param.row.id && param.row.id !== origAudioRowName) {
       dispatch(selectSpeaker(param.row.id));
     }
   }, [dispatch]);
 
   const setSubStartEndTime = useCallback((param) => {
     if (param.row.id !== origAudioRowName) {
-      dispatch(patchSub(param.action, {
-        start: param.action.start,
-        end: param.action.end,
-      }));
+      if (param.dir === 'left') {
+        dispatch(patchSub(param.action, {
+          start: param.start,
+        }));
+      } else if (param.dir === 'right') {
+        dispatch(patchSub(param.action, {
+          end: param.end,
+        }));
+      } else {
+        dispatch(patchSub(param.action, {
+          start: param.start,
+          end: param.end,
+        }));
+      }
     }
   }, [dispatch]);
 
@@ -268,7 +268,6 @@ const TimelineEditor = ({ player, headingWidth }) => {
     }
     if (player) {
       player.pause();
-      console.log('set time', time);
       dispatch(setTime(time));
       player.currentTime = time;
     }
@@ -295,6 +294,11 @@ const TimelineEditor = ({ player, headingWidth }) => {
         data={data}
         onTimeChange={onTimeChange}
         onClickAction={setSubtitle}
+        onDoubleClickAction={setTimeToSubEnd}
+        onActionResizeStart={(param) => setSubtitle(param, true)}
+        onActionResizing={setSubStartEndTime}
+        onActionMoveStart={(param) => setSubtitle(param, true)}
+        onActionMoving={setSubStartEndTime}
         onClickRow={setSpeaker}
         getActionRender={getActionRender}
         onDoubleClickRow={addSubtitle}

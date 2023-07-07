@@ -1,4 +1,4 @@
-import React, { createRef, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { createRef, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -102,7 +102,7 @@ Whose strength's abundance weakens his own heart.`);
 
   const createPreset = useCallback(() => new Preset({
     id: ++maxPresetId,
-    displayName: `${lang.displayName} ${voice.displayName} ${style ? style : ''} ${maxPresetId}`,
+    displayName: `${lang.displayName.split(' ')[0]} / ${voice.displayName} ${style ? style + ' ' : ''}${maxPresetId}`,
     locale: lang.locale,
     voice: voice.key,
     style,

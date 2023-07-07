@@ -5,6 +5,7 @@ import throttle from 'lodash/throttle';
 import TimelineEditor from './new/TimelineEditor';
 import { TimelineHeading } from './new/TimelineHeading';
 import Progress from './Progress';
+import Zoom from './Zoom';
 
 const Style = styled.div`
   height: 400px;
@@ -14,6 +15,7 @@ const Style = styled.div`
   justify-content: center;
   padding-bottom: 35px;
   margin-top: 10px;
+  position: relative;
 `;
 
 export default function Footer(props) {
@@ -72,14 +74,16 @@ export default function Footer(props) {
       <TimelineEditor {...props} headingWidth={headingWidth} />
       {/*  {props.player ? (*/}
       {/*    <>*/}
-      {/*      <Zoom {...props} headingWidth={headingWidth} />*/}
       {/*      <Waveform {...props} setRender={setRender} />*/}
       {/*      <Grab {...props} render={render} headingWidth={headingWidth} />*/}
       {/*      <Metronome {...props} render={render} headingWidth={headingWidth} />*/}
       {/*      <Timeline {...props} render={render} headingWidth={headingWidth} />*/}
 
       {props.player && (
-        <Progress {...props} headingWidth={headingWidth} />
+        <>
+          <Zoom {...props} headingWidth={headingWidth} />
+          <Progress {...props} headingWidth={headingWidth} />
+        </>
       )}
 
       {/*    </>*/}

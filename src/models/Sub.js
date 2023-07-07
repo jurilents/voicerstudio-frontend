@@ -19,7 +19,6 @@ export class Sub {
     this.endStr = DT.d2t(this.end);
     this.text = obj.text;
     this.note = obj.note;
-    this.data = obj.data;
   }
 
   get isValid() {

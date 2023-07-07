@@ -10,7 +10,7 @@ const Style = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1000;
+  z-index: 120;
   width: 100%;
   height: 35px;
   user-select: none;
@@ -80,6 +80,7 @@ export default function Progress({ player, headingWidth }) {
     const newTime = screenDelta * player.duration;
     player.currentTime = newTime;
     dispatch(setTime(newTime));
+    window.timelineEngine.setTime(newTime);
     // props.waveform.seek(currentTime);
   }, [dispatch, headingWidth, player]);
 
@@ -98,6 +99,9 @@ export default function Progress({ player, headingWidth }) {
         const newTime = screenDelta * player.duration;
         player.currentTime = newTime;
         dispatch(setTime(newTime));
+        if (window.timelineEngine) {
+          window.timelineEngine.setTime(newTime);
+        }
       }
     },
     [grabbing, player, headingWidth],

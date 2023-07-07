@@ -7,7 +7,7 @@ import Footer from './components/timeline/Footer';
 import Loading from './components/Loading';
 import ProgressBar from './components/header/ProgressBar';
 import Header from './components/header/Header';
-import { useHotkeys, useVideoStorage } from './hooks';
+import { useVideoStorage } from './hooks';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVideo } from './store/sessionReducer';
 import { ToastContainer } from 'react-toastify';
@@ -70,7 +70,6 @@ export default function App({ defaultLang }) {
   const [recording, setRecording] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentLang, setCurrentLang] = useState(null);
-  const hotkeysHandler = useHotkeys({ playing, setPlaying });
 
   // toast('🦄 Wow so easy!');
 
@@ -89,12 +88,6 @@ export default function App({ defaultLang }) {
     },
     [notificationSystem],
   );
-
-
-  useEffect(() => {
-    window.addEventListener('keydown', hotkeysHandler);
-    return () => window.removeEventListener('keydown', hotkeysHandler);
-  }, [hotkeysHandler]);
 
   // useMemo(() => {
   //   const sub = subtitle.find((item) => item.startTime <= currentTime && item.end > currentTime);
@@ -117,8 +110,8 @@ export default function App({ defaultLang }) {
     setPlayer,
     // subtitle,
     // setSubtitle,
-    waveform,
-    setWaveform,
+    // waveform,
+    // setWaveform,
     currentTime,
     setCurrentTime,
     // currentIndex,

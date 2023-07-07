@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { faLocationCrosshairs, faMagnet, faPause, faPencil, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
+import { faLocationCrosshairs, faMagnet, faPause, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Duration from '../timeline/Duration';
 import React, { useCallback } from 'react';
@@ -93,26 +93,30 @@ export function Actions(
   return (
     <Style className='actions-wrapper'>
       <div className='actions-container'>
-        <div className={'btn btn-icon focus' + (settings.drawingMode ? ' active' : '')}
-             onClick={() => patchSettings({ drawingMode: !settings.drawingMode })}>
-          <FontAwesomeIcon icon={faPencil} />
-        </div>
+        {/*<div className={'btn btn-icon focus' + (settings.drawingMode ? ' active' : '')}*/}
+        {/*     onClick={() => patchSettings({ drawingMode: !settings.drawingMode })}>*/}
+        {/*  <FontAwesomeIcon icon={faPencil} />*/}
+        {/*</div>*/}
         <div className={'btn btn-icon focus' + (settings.scrollableMode ? ' active' : '')}
-             onClick={() => patchSettings({ scrollableMode: !settings.scrollableMode })}>
+             onClick={() => patchSettings({ scrollableMode: !settings.scrollableMode })}
+             title='Navigation lines'>
           <FontAwesomeIcon icon={faLocationCrosshairs} />
         </div>
         <div className={'btn btn-icon focus' + (settings.magnetMode ? ' active' : '')}
-             onClick={() => patchSettings({ magnetMode: !settings.magnetMode })}>
+             onClick={() => patchSettings({ magnetMode: !settings.magnetMode })}
+             title='Move by fixed timesteps'>
           <FontAwesomeIcon icon={faMagnet} />
         </div>
         <div className='separator'></div>
         <div className={'btn btn-icon' + (settings.magnetMode ? ' record' : '')}
-             onClick={() => togglePlay()} title='Hotkey: SPASE'>
+             onClick={() => togglePlay()}
+             title='Play/Pause (SPASE)'>
           <FontAwesomeIcon icon={playing ? faPause : faPlay} />
         </div>
         <div className='separator'></div>
         <div className={'btn btn-icon focus' + (recording ? ' record' : '')}
-             onMouseDown={() => startRecording()}>
+             onMouseDown={() => startRecording()}
+             title='Hold to record subtitle'>
           <FontAwesomeIcon icon={faStop} />
         </div>
       </div>

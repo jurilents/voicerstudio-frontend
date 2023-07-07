@@ -1,12 +1,8 @@
 import languages from '../../libs/languages';
 import { t, Translate } from 'react-i18nify';
 import React, { useCallback, useEffect, useState } from 'react';
-import { download, getExt } from '../../utils';
-import { file2sub, sub2srt, sub2txt, sub2vtt } from '../../libs/readSub';
-import sub2ass from '../../libs/readSub/sub2ass';
 import googleTranslate from '../../libs/googleTranslate';
 import FFmpeg from '@ffmpeg/ffmpeg';
-import SimpleFS from '@forlagshuset/simple-fs';
 import { Nav, Tab } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -99,11 +95,11 @@ export default function Toolbar(props) {
               <FontAwesomeIcon icon={faHeadphonesAlt} />
             </Nav.Link>
           </Nav.Item>
-          <Nav.Item>
-            <Nav.Link as='span' eventKey='translate' title='Translate'>
-              <FontAwesomeIcon icon={faLanguage} />
-            </Nav.Link>
-          </Nav.Item>
+          {/*<Nav.Item>*/}
+          {/*  <Nav.Link as='span' eventKey='translate' title='Translate'>*/}
+          {/*    <FontAwesomeIcon icon={faLanguage} />*/}
+          {/*  </Nav.Link>*/}
+          {/*</Nav.Item>*/}
           <Nav.Item>
             <Nav.Link as='span' eventKey='import' title='Import'>
               <FontAwesomeIcon icon={faFileImport} />
@@ -115,7 +111,7 @@ export default function Toolbar(props) {
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link as='span' eventKey='help' title='Help'>
+            <Nav.Link as='span' eventKey='help' title='Hotkeys & Help'>
               <FontAwesomeIcon icon={faCircleQuestion} />
             </Nav.Link>
           </Nav.Item>
@@ -133,20 +129,20 @@ export default function Toolbar(props) {
           <Tab.Pane eventKey='mixer'>
             <MixerTab {...props} />
           </Tab.Pane>
-          <Tab.Pane eventKey='translate'>
-            <div className='translate'>
-              <select value={translate} onChange={(event) => setTranslate(event.target.value)}>
-                {(languages[props.language] || languages.en).map((item) => (
-                  <option key={item.key} value={item.key}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-              <div className='btn' onClick={onTranslate}>
-                <Translate value='TRANSLATE' />
-              </div>
-            </div>
-          </Tab.Pane>
+          {/*<Tab.Pane eventKey='translate'>*/}
+          {/*  <div className='translate'>*/}
+          {/*    <select value={translate} onChange={(event) => setTranslate(event.target.value)}>*/}
+          {/*      {(languages[props.language] || languages.en).map((item) => (*/}
+          {/*        <option key={item.key} value={item.key}>*/}
+          {/*          {item.name}*/}
+          {/*        </option>*/}
+          {/*      ))}*/}
+          {/*    </select>*/}
+          {/*    <div className='btn' onClick={onTranslate}>*/}
+          {/*      <Translate value='TRANSLATE' />*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+          {/*</Tab.Pane>*/}
           <Tab.Pane eventKey='import'>
             <ImportTab {...props} />
           </Tab.Pane>

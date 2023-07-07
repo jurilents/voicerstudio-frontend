@@ -68,19 +68,32 @@ const TimelineWrap = (props) => {
       effects={timelineEffects}
       minScaleCount={scaleCount}
       maxScaleCount={scaleCount}
+      // ----- Event Handlers -----
       onChange={() => {
       }}
+      // Cursor
       onCursorDragEnd={props.onTimeChange}
       onCursorDrag={props.onTimeChange}
+      // Time area
       onClickTimeArea={props.onTimeChange}
       // onClickTimeArea={(event, param) => {
       // }}
+      // Action
       onClickAction={(event, param) => {
         if (ref) ref.reRender();
         props.onClickAction(param);
       }}
-      // onActionResizeStart={(param) => setSubtitle(param)}
-      // onActionMoveStart={(param) => setSubtitle(param)}
+      onDoubleClickAction={(event, param) => {
+        if (ref) ref.reRender();
+        props.onDoubleClickAction(param);
+      }}
+      onActionResizing={props.onActionResizing}
+      onActionResizeEnd={props.onActionResizing}
+      onActionResizeStart={props.onActionResizeStart}
+      onActionMoveStart={props.onActionMoveStart}
+      // onActionMoving={props.onActionMoving}
+      onActionMoveEnd={props.onActionMoving}
+      // Row
       onClickRow={(event, param) => {
         if (ref) ref.reRender();
         props.onClickRow(param);
@@ -94,6 +107,7 @@ const TimelineWrap = (props) => {
       //   setSubStartEndTime(param);
       // }}
       // onScroll={(param) => handleScroll(param)}
+      // ----- Renderers -----
       getScaleRender={(scale) => <ScaleMarker scale={scale} />}
       getActionRender={props.getActionRender}
     />

@@ -43,6 +43,9 @@ export default function SpeakersTab(props) {
   const dispatch = useDispatch();
   const { speakers, presets, selectedSpeaker } = useSelector(store => store.session);
   let maxSpeakerId = useSelector(store => Math.max.apply(null, store.session.speakers.map(x => x.id)));
+  if (!maxSpeakerId || maxSpeakerId < 0 || maxSpeakerId > 100) {
+    maxSpeakerId = 0;
+  }
 
   const createSpeaker = () => new Speaker({
     id: ++maxSpeakerId,
