@@ -1,34 +1,8 @@
 import { Timeline } from '@xzdarcy/react-timeline-editor';
 import React, { memo } from 'react';
-import { effectKeys, timelineEffects } from '../../../utils/timelineEffects';
+import { timelineEffects } from '../../../utils/timelineEffects';
 import { useSelector } from 'react-redux';
 import ScaleMarker from './ScaleMarker';
-
-function getTimelineData(speakers, selectedSpeaker, videoUrl, audioDuration) {
-  const data = speakers.map((speaker) => ({
-    id: speaker.id,
-    selected: speaker.id === selectedSpeaker?.id,
-    actions: speaker.subs,
-    effectId: 'textsub',
-    color: speaker.color,
-  }));
-  data.unshift({
-    id: 'original-audio-row',
-    effectId: effectKeys.audioTrack,
-    actions: [
-      {
-        id: 'original-audio',
-        start: 0,
-        end: audioDuration,
-        disableDrag: true,
-        data: {
-          src: videoUrl,
-        },
-      },
-    ],
-  });
-  return data;
-}
 
 function calcScaleCount(duration, scale) {
   if (!duration || isNaN(duration)) {
@@ -61,6 +35,7 @@ const TimelineWrap = (props) => {
       scale={1}
       scaleWidth={100}
       autoScroll={true}
+      autoReRender={false}
       dragLine={settings.scrollableMode}
       gridSnap={settings.magnetMode}
       rowHeight={50}
@@ -71,9 +46,7 @@ const TimelineWrap = (props) => {
       // ----- Event Handlers -----
       onChange={(data) => {
       }}
-      onScroll={(param) => {
-        // console.log('scroll', param);
-      }}
+      onScroll={props.onScroll}
       // Cursor
       onCursorDragEnd={props.onTimeChange}
       onCursorDrag={props.onTimeChange}
@@ -95,7 +68,6 @@ const TimelineWrap = (props) => {
       onActionResizeEnd={props.onActionResizing}
       onActionResizeStart={props.onActionResizeStart}
       onActionMoveStart={props.onActionMoveStart}
-      // onActionMoving={props.onActionMoving}
       onActionMoveEnd={props.onActionMoving}
       // Row
       onClickRow={(event, param) => {
@@ -107,10 +79,6 @@ const TimelineWrap = (props) => {
         window.timelineEngine.reRender();
         props.onDoubleClickRow(param);
       }}
-      // onActionResizeEnd={(param) => {
-      //   setSubStartEndTime(param);
-      // }}
-      // onScroll={(param) => handleScroll(param)}
       // ----- Renderers -----
       getScaleRender={(scale) => <ScaleMarker scale={scale} />}
       getActionRender={props.getActionRender}

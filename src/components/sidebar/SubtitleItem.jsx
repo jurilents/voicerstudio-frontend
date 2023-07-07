@@ -90,10 +90,12 @@ export default function SubtitleItem(
             <FontAwesomeIcon icon={faRocket} />
           </button>
           <button className='icon-btn playVoice'
+                  title=''
                   onClick={() => playSub(sub)}>
             <FontAwesomeIcon icon={faPlay} />
           </button>
           <button className='icon-btn playVoice'
+                  title='Generate speech'
                   onClick={() => downloadSub(sub, props.index + 1)}>
             <FontAwesomeIcon icon={faDownload} />
           </button>

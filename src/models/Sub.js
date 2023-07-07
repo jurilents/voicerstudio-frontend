@@ -81,13 +81,13 @@ export class Sub {
       return '#32b432';
     }
     if (status === VoicedStatuses.processing) {
-      return '#b4a332';
+      return '#e8cb09';
     }
     if (status === VoicedStatuses.none) {
       return '#817777';
     }
     if (status === VoicedStatuses.obsolete) {
-      return '#b44a32';
+      return '#c93d1e';
     }
     return '#a8a8a8';
   }

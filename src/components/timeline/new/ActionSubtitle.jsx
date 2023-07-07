@@ -10,6 +10,7 @@ const ActionSubtitle = ({ action, row }) => {
       'timeline-sub',
       row.selected ? 'focus-sub' : '',
       action.selected ? 'selected-sub' : '',
+      action.recording ? 'recording-sub' : '¬',
     ].join(' ').trim()} style={{ backgroundColor: row.color }}>
       <span className='sub-text'>{action.text}</span>
       <span className='sub-time'>{(action.end - action.start).toFixed(2)}s</span>

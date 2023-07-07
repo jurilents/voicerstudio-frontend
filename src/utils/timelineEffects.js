@@ -38,7 +38,7 @@ export const timelineEffects = {
         }
       },
       leave: ({ action, engine }) => {
-        console.log('leave effect 0');
+        console.log('leave effect 0', action.data?.src);
         const src = action.data?.src;
         if (!action.data?.src) return;
         audioController.stop({
@@ -47,7 +47,7 @@ export const timelineEffects = {
         });
       },
       stop: ({ action, engine }) => {
-        console.log('stop effect 0');
+        console.log('stop effect 0', action.data?.src);
         const src = action.data?.src;
         if (!action.data?.src) return;
         audioController.stop({

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSub, patchSub, selectSpeaker, selectSub } from '../../../store/sessionReducer';
 import { Sub } from '../../../models';
@@ -82,7 +82,7 @@ const Style = styled.div`
     .sub-text {
       display: block;
       width: calc(100% - 10px);
-      line-height: 1;
+      line-height: 1.8;
       margin-top: 3px;
       text-align: center;
       font-size: 13px;
@@ -96,17 +96,43 @@ const Style = styled.div`
       opacity: 60%;
     }
   }
+
+  .recording-sub {
+    background-color: rgba(200 0 0 / 50%);
+    border-right: 1px solid white;
+    border-left: 1px solid #ff7272;
+  }
+
+  .timeline-audio {
+    wave {
+      overflow: hidden !important;
+    }
+  }
 `;
 
 const origAudioRowName = 'original-audio-row';
 
-function getTimelineData(speakers, selectedSpeaker, player) {
+function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
   const data = speakers.map((speaker) => ({
     id: speaker.id,
     selected: speaker.id === selectedSpeaker?.id,
     actions: speaker.subs,
     color: speaker.color,
   }));
+
+  // if (recordingSub) {
+  //   const recordingSpeaker = data.find(x => x.id === recordingSub.speakerId);
+  //   recordingSpeaker.actions.unshift({
+  //     id: 'recording',
+  //     start: recordingSub.start,
+  //     end: recordingSub.end,
+  //     disableDrag: true,
+  //     movable: false,
+  //     flexible: false,
+  //     data: {},
+  //   });
+  // }
+
   if (!player || isNaN(+player.duration)) return data;
 
   data.unshift({
@@ -128,16 +154,14 @@ function getTimelineData(speakers, selectedSpeaker, player) {
   return data;
 }
 
-const TimelineEditor = ({ player, headingWidth }) => {
+const TimelineEditor = ({ player }) => {
   const hotkeysHandler = useHotkeys({ player });
   const dispatch = useDispatch();
   const { speakers, selectedSpeaker, selectedSub, videoUrl } = useSelector(store => store.session);
-  const totalTime = useSelector(store => store.timeline.totalTime);
-  const [insertStarPosition, setInsertStartPosition] = useState(0);
-  const [recordStartTime, setRecordStartTime] = useState(0);
+  // const recordingSub = useSelector(store => store.timeline.recordingSub);
   // const [recordEndTime, setRecordEndTime] = useState(0);
   // const originalVideoUrl = videoUrl || '/samples/video_placeholder.mp4?t=1';
-  const data = getTimelineData(speakers, selectedSpeaker, player);
+  const data = getTimelineData(speakers, selectedSpeaker, window.recordingSub, player);
 
   useEffect(() => {
     if (!window.timelineEngine) return;
@@ -153,6 +177,9 @@ const TimelineEditor = ({ player, headingWidth }) => {
     });
     engine.listener.on('afterSetTime', ({ time }) => dispatch(setTime(time)));
     engine.listener.on('setTimeByTick', ({ time }) => {
+      if (window.recordingSub) {
+        window.recordingSub.end = time;
+      }
       dispatch(setTime(time));
       // if (true) {
       //   const autoScrollFrom = 500;
@@ -175,28 +202,13 @@ const TimelineEditor = ({ player, headingWidth }) => {
     return () => window.removeEventListener('keydown', hotkeysHandler);
   }, [hotkeysHandler]);
 
-  const startRecord = useCallback((event, params) => {
-    const selectedAction = params.row.actions.find(x => x.selected);
-    if (!selectedAction) {
-      console.log('insert start:', params.time);
-      setRecordStartTime(params.time);
-    }
-  }, [setRecordStartTime]);
-
   const handleScroll = useCallback((param) => {
-    // setLeftTime(param.scrollLeft);
-    if (recordStartTime > 0 && recordStartTime < param.scrollLeft) {
-      console.log('scroll select');
-    }
-  }, [recordStartTime]);
-
-  const completeRecord = useCallback((params) => {
-    const selectedAction = params.row.actions.find(x => x.selected);
-    if (!selectedAction) {
-      console.log('insert start:', params.time);
-      setRecordStartTime(params.time);
-    }
-  }, [setRecordStartTime]);
+    // if (window.recordingSub) {
+    //   console.log('scroll select recordingSub', param);
+    //   window.recordingSub.end = param.scrollLeft;
+    // dispatch(recordSub(recordingSub, param.scrollLeft));
+    // }
+  }, []);
 
   const addSubtitle = useCallback((param) => {
     const selectedAction = param.row.actions.find(x => x.selected);
@@ -272,7 +284,7 @@ const TimelineEditor = ({ player, headingWidth }) => {
       dispatch(setTime(time));
       player.currentTime = time;
     }
-  }, [dispatch, player]);
+  }, [window.recordingSub, dispatch, player]);
 
   const getActionRender = useCallback((action, row) => {
     if (row.id === origAudioRowName) {
@@ -281,19 +293,27 @@ const TimelineEditor = ({ player, headingWidth }) => {
     return <ActionSubtitle action={action} row={row} />;
   }, [selectedSpeaker, selectedSub]);
 
-
   return (
     <Style className='noselect'>
-      {recordStartTime > 0 && (
-        <div
-          className='insert-highlight'
-          style={{ left: insertStarPosition }}
-        ></div>
+      {window.recordingSub && (
+        <div className='insert-highlight'
+             style={{
+               top: `${92 + (50 * selectedSpeaker.id)}px`,
+               left: `${(20 + window.recordingSub.start)}px`,
+               width: `${(window.recordingSub.end - window.recordingSub.start)}px`,
+             }}
+          // style={{
+          //   left: window.recordingSub.start,
+          //   width: (window.recordingSub.end - window.recordingSub.start),
+          //}}
+        >
+        </div>
       )}
       <TimelineWrap
         player={player}
         data={data}
         onTimeChange={onTimeChange}
+        onScroll={handleScroll}
         onClickAction={setSubtitle}
         onDoubleClickAction={setTimeToSubEnd}
         onActionResizeStart={(param) => setSubtitle(param, true)}
@@ -304,46 +324,6 @@ const TimelineEditor = ({ player, headingWidth }) => {
         getActionRender={getActionRender}
         onDoubleClickRow={addSubtitle}
       />
-      {/*{player &&*/}
-      {/*  <Timeline*/}
-      {/*    ref={timelineState}*/}
-      {/*    startLeft={20}*/}
-      {/*    scale={1}*/}
-      {/*    scaleWidth={100}*/}
-      {/*    autoScroll={true}*/}
-      {/*    dragLine={settings.scrollableMode}*/}
-      {/*    gridSnap={settings.magnetMode}*/}
-      {/*    rowHeight={50}*/}
-      {/*    editorData={data}*/}
-      {/*    effects={timelineEffects}*/}
-      {/*    minScaleCount={scaleCount}*/}
-      {/*    maxScaleCount={scaleCount}*/}
-      {/*    onChange={() => {*/}
-      {/*    }}*/}
-      {/*    onClickTimeArea={(event, param) => {*/}
-      {/*    }}*/}
-      {/*    onClickAction={(event, param) => setSubtitle(param)}*/}
-      {/*    onActionResizeStart={(param) => setSubtitle(param)}*/}
-      {/*    onActionMoveStart={(param) => setSubtitle(param)}*/}
-      {/*    onClickRow={(event, param) => {*/}
-      {/*      setSpeaker(param);*/}
-      {/*    }}*/}
-      {/*    onDoubleClickRow={(event, param) => {*/}
-      {/*      addSubtitle(param);*/}
-      {/*    }}*/}
-      {/*    onActionResizeEnd={(param) => {*/}
-      {/*      setSubStartEndTime(param);*/}
-      {/*    }}*/}
-      {/*    onScroll={(param) => handleScroll(param)}*/}
-      {/*    getScaleRender={(scale) => <ScaleMarker scale={scale} />}*/}
-      {/*    getActionRender={(action, row) => {*/}
-      {/*      if (action.effectId === effectKeys.audioTrack) {*/}
-      {/*        return <ActionAudio action={action} row={row} />;*/}
-      {/*      }*/}
-      {/*      action.selected = action.id === selectedSub?.id;*/}
-      {/*      return <ActionSubtitle action={action} row={row} />;*/}
-      {/*    }}*/}
-      {/*  />}*/}
     </Style>
   );
 };

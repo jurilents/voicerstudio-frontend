@@ -78,9 +78,9 @@ export const TimelineHeading = () => {
       <ListGroup className='app-list-group'>
         <ListGroup.Item
           style={{ borderColor: '#5e5e5e', height: timelineRowHeight * 2 }}>
-          <div className='speaker-actions'>
-            <button className='btn speaker-btn'>M</button>
-          </div>
+          {/*<div className='speaker-actions'>*/}
+          {/*  <button className='btn speaker-btn'>M</button>*/}
+          {/*</div>*/}
           <div className='speaker-name'>Original Audio</div>
         </ListGroup.Item>
         {speakers.map((speaker, index) => (
@@ -89,9 +89,9 @@ export const TimelineHeading = () => {
             className={selectedSpeaker.id === speaker.id ? 'selected-speaker' : ''}
             style={{ borderColor: speaker.color, height: timelineRowHeight }}
             onClick={() => dispatch(selectSpeaker(speaker.id))}>
-            <div className='speaker-actions'>
-              <button className='btn speaker-btn'>M</button>
-            </div>
+            {/*<div className='speaker-actions'>*/}
+            {/*  <button className='btn speaker-btn'>M</button>*/}
+            {/*</div>*/}
             <div className='speaker-name'>{speaker.displayName}</div>
           </ListGroup.Item>
         ))}

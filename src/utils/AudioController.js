@@ -21,7 +21,6 @@ class AudioController {
         volume: 1,
         // html5: true,
       });
-      console.log('item', item);
       this.cacheMap[id] = item;
       item.on('load', () => {
         item.rate(engine.getPlayRate());
@@ -42,7 +41,7 @@ class AudioController {
     this.listenerMap[id].rate = rateListener;
   }
 
-  stop(id, engine) {
+  stop({ id, engine }) {
     if (this.cacheMap[id]) {
       const item = this.cacheMap[id];
       item.stop();

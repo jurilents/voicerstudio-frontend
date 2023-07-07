@@ -171,7 +171,7 @@ export default function Subtitles({ player }) {
       }));
     }
 
-    console.log('sub status:', sub.voicedStatus);
+    console.log('sub canBeVoiced:', sub.canBeVoiced);
     if (!sub.canBeVoiced) return;
     if (!selectedSpeaker?.preset) return;
     if (sub.audioUrl) {
@@ -189,8 +189,8 @@ export default function Subtitles({ player }) {
 
   const downloadSub = useCallback((sub, index) => {
     if (sub.data?.src) {
-      const start = sub.start.replaceAll(':', '-');
-      const end = sub.end.replaceAll(':', '-');
+      const start = sub.startStr.replaceAll(':', '-');
+      const end = sub.endStr.replaceAll(':', '-');
       const fileName = `[${selectedSpeaker.displayName}-${index}] from ${start} to ${end}.wav`;
       download(sub.data.src, fileName);
     }
