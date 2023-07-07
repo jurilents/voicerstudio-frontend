@@ -120,19 +120,6 @@ function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
     color: speaker.color,
   }));
 
-  // if (recordingSub) {
-  //   const recordingSpeaker = data.find(x => x.id === recordingSub.speakerId);
-  //   recordingSpeaker.actions.unshift({
-  //     id: 'recording',
-  //     start: recordingSub.start,
-  //     end: recordingSub.end,
-  //     disableDrag: true,
-  //     movable: false,
-  //     flexible: false,
-  //     data: {},
-  //   });
-  // }
-
   if (!player || isNaN(+player.duration)) return data;
 
   data.unshift({
@@ -154,6 +141,12 @@ function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
   return data;
 }
 
+const timelineOptions = {
+  startLeft: 20,
+  scale: 1,
+  scaleWidth: 100,
+};
+
 const TimelineEditor = ({ player }) => {
   const hotkeysHandler = useHotkeys({ player });
   const dispatch = useDispatch();
@@ -166,6 +159,8 @@ const TimelineEditor = ({ player }) => {
   useEffect(() => {
     if (!window.timelineEngine) return;
     const engine = window.timelineEngine;
+
+    const $cursorElm = document.querySelector('.timeline-editor-cursor');
 
     engine.listener.on('play', () => {
       dispatch(setPlaying(true));
@@ -181,11 +176,21 @@ const TimelineEditor = ({ player }) => {
         window.recordingSub.end = time;
       }
       dispatch(setTime(time));
-      // if (true) {
-      //   const autoScrollFrom = 500;
-      //   const left = time * (scaleWidth / scale) + startLeft - autoScrollFrom;
-      //   timelineState.setScrollLeft(left);
-      // }
+
+      const cursorPosition = +$cursorElm.style.left.substring(0, $cursorElm.style.left.length - 2);
+      const cursorDelta = engine.target.clientWidth - cursorPosition;
+      console.log('cursorDelta', cursorDelta);
+
+      function calcLeftOffset() {
+        const pixelPerSecond = timelineOptions.scaleWidth / timelineOptions.scale;
+        return time * pixelPerSecond + timelineOptions.startLeft;
+      }
+
+      if (cursorDelta < 10 && cursorDelta > 0) {
+        engine.setScrollLeft(calcLeftOffset() - 5);
+      } else if (cursorDelta <= 0 || cursorDelta > engine.target.clientWidth) {
+        engine.setScrollLeft(calcLeftOffset() - 200);
+      }
     });
 
     return () => {
@@ -301,17 +306,15 @@ const TimelineEditor = ({ player }) => {
                top: `${92 + (50 * selectedSpeaker.id)}px`,
                left: `${(20 + window.recordingSub.start)}px`,
                width: `${(window.recordingSub.end - window.recordingSub.start)}px`,
-             }}
-          // style={{
-          //   left: window.recordingSub.start,
-          //   width: (window.recordingSub.end - window.recordingSub.start),
-          //}}
-        >
+             }}>
         </div>
       )}
       <TimelineWrap
         player={player}
         data={data}
+        startLeft={timelineOptions.startLeft}
+        scale={timelineOptions.scale}
+        scaleWidth={timelineOptions.scaleWidth}
         onTimeChange={onTimeChange}
         onScroll={handleScroll}
         onClickAction={setSubtitle}

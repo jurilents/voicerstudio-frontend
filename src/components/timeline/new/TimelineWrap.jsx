@@ -31,9 +31,9 @@ const TimelineWrap = (props) => {
           window.timelineEngine = newRef;
         }
       }}
-      startLeft={20}
-      scale={1}
-      scaleWidth={100}
+      startLeft={props.startLeft}
+      scale={props.scale}
+      scaleWidth={props.scaleWidth}
       autoScroll={true}
       autoReRender={false}
       dragLine={settings.scrollableMode}

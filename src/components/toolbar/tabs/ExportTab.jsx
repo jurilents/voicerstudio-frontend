@@ -134,8 +134,8 @@ export default function ExportTab(props) {
         // role: 'string',
         pitch: selectedSpeaker.preset.pitch,
         volume: 1,
-        start: sub.start,
-        end: sub.end,
+        start: sub.startStr,
+        end: sub.endStr,
         format: exportCodec,
       }));
       console.log('Batch speech request:', request);

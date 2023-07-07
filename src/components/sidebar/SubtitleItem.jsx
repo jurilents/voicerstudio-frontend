@@ -21,8 +21,10 @@ export default function SubtitleItem(
   const dispatch = useDispatch();
 
   const handleSubClick = useCallback(() => {
+    if (window.timelineEngine) window.timelineEngine.setTime(sub.start);
+    if (player) player.currentTime = sub.start;
     dispatch(selectSub(sub));
-  }, [dispatch]);
+  }, [window.timelineEngine, dispatch, player]);
 
   const handleSubTextChange = useCallback((event) => {
     dispatch(patchSub(sub, {
@@ -37,19 +39,15 @@ export default function SubtitleItem(
   }, [dispatch]);
 
   return (
-    <div
-      className={props.className}
-      style={props.style}
-      onClick={handleSubClick}>
-      <div
-        style={{
-          '--c-speaker': color,
-        }}
-        className={[
-          'item',
-          selectedSub?.id === sub.id ? 'highlight' : '',
-          // checkSub(props.rowData) ? 'illegal' : '',
-        ].join(' ')}>
+    <div className={props.className}
+         style={props.style}
+         onClick={handleSubClick}>
+      <div style={{ '--c-speaker': color }}
+           className={[
+             'item',
+             selectedSub?.id === sub.id ? 'highlight' : '',
+             // checkSub(props.rowData) ? 'illegal' : '',
+           ].join(' ')}>
         <div className='item-bar item-index'
              style={{ borderColor: color }}>
           <span>{props.index + 1}</span>

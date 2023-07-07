@@ -1,13 +1,18 @@
 import { useCallback } from 'react';
 import { getKeyCode } from '../utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeSub } from '../store/sessionReducer';
+import { patchSub, removeSub } from '../store/sessionReducer';
 
 const HOTKEYS = {
   deleteSub: { key: 'BACKSPACE' },
   playPause: { key: ' ' },
+  pasteSubText: { key: 'V', meta: true },
   undo: { key: 'Z', meta: true },
   redo: { key: 'Z', meta: true, shift: true },
+  moveCursorRight: { key: 'ARROWRIGHT' },
+  moveCursorVeryRight: { key: 'ARROWRIGHT', shift: true },
+  moveCursorLeft: { key: 'ARROWLEFT' },
+  moveCursorVeryLeft: { key: 'ARROWLEFT', shift: true },
 };
 
 let playing = false;
@@ -39,8 +44,9 @@ export const useHotkeys = ({ player }) => {
     }
   }, [player, window.timelineEngine]);
 
-  return useCallback((event) => {
+  return useCallback(async (event) => {
     if (!window.timelineEngine) return;
+    const engine = window.timelineEngine;
     const key = getKeyCode(event);
     if (!key) return;
 
@@ -53,22 +59,69 @@ export const useHotkeys = ({ player }) => {
     event.preventDefault();
 
     switch (key) {
-      case HOTKEYS.deleteSub.key:
+
+      // ----- Delete -----
+      case HOTKEYS.deleteSub.key: {
         if (!checkMetaKeys(event, HOTKEYS.deleteSub)) break;
         if (selectedSub) {
-          console.log('selectedSub', selectedSub.duration);
           dispatch(removeSub(selectedSub));
         } else {
           console.warn('No sub selected!');
         }
         break;
+      }
 
-      case ' ':
-        console.log('space hot');
+      // ----- Paste subtitle text -----
+      case HOTKEYS.pasteSubText.key: {
+        if (!checkMetaKeys(event, HOTKEYS.pasteSubText)) break;
+        if (selectedSub) {
+          try {
+            const text = await navigator.clipboard.readText();
+            dispatch(patchSub(selectedSub, { text }));
+          } catch (e) {
+            console.warn('Cannot paste text from clipboard :(');
+          }
+        } else {
+          console.warn('No sub selected!');
+        }
+        break;
+      }
+
+      // ----- Move cursor right |–>  -----
+      case HOTKEYS.moveCursorRight.key: {
+        if (checkMetaKeys(event, HOTKEYS.moveCursorVeryRight)) {
+          const newTime = Math.min(engine.getTime() + 1, player.duration);
+          engine.setTime(newTime);
+          player.currentTime = newTime;
+        } else if (checkMetaKeys(event, HOTKEYS.moveCursorRight)) {
+          const newTime = Math.min(engine.getTime() + 0.1, player.duration);
+          engine.setTime(newTime);
+          player.currentTime = newTime;
+        }
+        break;
+      }
+      // ----- Move cursor left <–|  -----
+      case HOTKEYS.moveCursorLeft.key: {
+        if (checkMetaKeys(event, HOTKEYS.moveCursorVeryLeft)) {
+          const newTime = Math.max(engine.getTime() - 1, 0);
+          engine.setTime(newTime);
+          player.currentTime = newTime;
+        } else if (checkMetaKeys(event, HOTKEYS.moveCursorLeft)) {
+          const newTime = Math.max(engine.getTime() - 0.1, 0);
+          engine.setTime(newTime);
+          player.currentTime = newTime;
+        }
+        break;
+      }
+
+      // ----- Play / Pause -----
+      case HOTKEYS.playPause.key: {
         if (!checkMetaKeys(event, HOTKEYS.playPause)) break;
         handlePlayOrPause();
         break;
+      }
 
+      // ----- UnDo / ReDo -----
       case 'Z':
         if (checkMetaKeys(event, HOTKEYS.undo)) {
           event.preventDefault();
