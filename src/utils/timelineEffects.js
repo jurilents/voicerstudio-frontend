@@ -4,6 +4,10 @@ export const effectKeys = {
   audioTrack: 'audioTrack',
 };
 
+function getSpeakerVolume(action) {
+  return (window.speakersVolume?.[action.speakerId] || 1) * (window.masterVolume || 1);
+}
+
 export const timelineEffects = {
   audioTrack: {
     id: effectKeys.audioTrack,
@@ -11,15 +15,16 @@ export const timelineEffects = {
     source: {
       start: ({ action, engine, isPlaying, time }) => {
         if (isPlaying) {
-          console.log('start effect 0', action.data?.src);
+          // console.log('start effect 0', action.data?.src);
           const src = action.data?.src;
           if (!action.data?.src) return;
           audioController.start({
             id: src,
             src,
             startTime: action.start,
-            engine,
             time,
+            volume: getSpeakerVolume(action),
+            engine,
           });
         }
       },
@@ -32,8 +37,9 @@ export const timelineEffects = {
             id: src,
             src,
             startTime: action.start,
-            engine,
             time,
+            volume: getSpeakerVolume(action),
+            engine,
           });
         }
       },

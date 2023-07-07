@@ -1,6 +1,6 @@
 import { Speaker, Sub } from '../models';
 import colors from '../utils/colors';
-import speakersReducer from './sessionReducer.speakers';
+import speakersReducer, { setGlobalSpeakerVolume } from './sessionReducer.speakers';
 import subsReducer from './sessionReducer.subs';
 import presetsReducer from './sessionReducer.presets';
 import { VoicedStatuses } from '../models/Sub';
@@ -28,7 +28,11 @@ const SET_VIDEO_DURATION = 'SET_VIDEO_DURATION';
 const STORAGE_KEY = 'session';
 
 // Default state
-const defaultSpeaker = new Speaker({ id: 1, displayName: 'Speaker 1', color: colors.blue });
+const defaultSpeaker = new Speaker({
+  id: 1,
+  displayName: 'Speaker 1',
+  color: colors.blue,
+});
 const rootState = {
   speakers: [defaultSpeaker],
   selectedSpeaker: defaultSpeaker,
@@ -36,13 +40,12 @@ const rootState = {
   presets: [],
   videoUrl: null,
   videoDuration: 60,
-  subsHistory: [],
 };
 
 function parseSessionJson(json) {
   const obj = JSON.parse(json);
   if (obj.speakers && Array.isArray(obj.speakers)) {
-    obj.speakers = obj.speakers.map(speaker => {
+    obj.speakers = obj.speakers.map((speaker) => {
       if (speaker?.subs && Array.isArray(speaker.subs)) {
         speaker.subs = speaker.subs.map(sub => {
           if (sub.data === VoicedStatuses.processing) {
@@ -54,6 +57,7 @@ function parseSessionJson(json) {
           return new Sub(sub);
         });
       }
+      setGlobalSpeakerVolume(speaker.id, speaker.volume || 1);
       return new Speaker(speaker);
     });
   }
@@ -82,7 +86,6 @@ const defaultState = storedState ? { ...rootState, ...parseSessionJson(storedSta
 
 function saveToLocalStorage(session) {
   const sessionCopy = { ...session };
-  delete sessionCopy.subsHistory;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionCopy));
   return session;
 }

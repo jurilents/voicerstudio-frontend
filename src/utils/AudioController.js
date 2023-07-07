@@ -4,12 +4,12 @@ class AudioController {
   cacheMap = {};
   listenerMap = {};
 
-  start({ id, src, startTime, time, engine }) {
+  start({ id, src, startTime, time, volume, engine }) {
     let item;
-    console.log('audio soruce:', id);
     if (this.cacheMap[id]) {
       item = this.cacheMap[id];
       item.rate(engine.getPlayRate());
+      item.volume(volume);
       item.seek((time - startTime) % item.duration());
       item.play();
     } else {
@@ -18,7 +18,7 @@ class AudioController {
         format: 'wav',
         loop: false,
         autoplay: true,
-        volume: 1,
+        volume: volume,
         // html5: true,
       });
       this.cacheMap[id] = item;

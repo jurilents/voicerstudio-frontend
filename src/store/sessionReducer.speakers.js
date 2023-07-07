@@ -1,5 +1,15 @@
 import { Speaker } from '../models';
 
+
+export function setGlobalSpeakerVolume(speakerId, volume) {
+  if (isNaN(+volume)) return;
+  if (window.speakersVolume) {
+    window.speakersVolume[speakerId] = volume;
+  } else {
+    window.speakersVolume = { [speakerId]: volume };
+  }
+}
+
 const speakersReducer = {
   addSpeaker: (state, action) => {
     // Limit 10 speakers
@@ -13,6 +23,7 @@ const speakersReducer = {
     if (!state.selectedSpeaker) {
       session.selectedSpeaker = session.speakers[0];
     }
+    setGlobalSpeakerVolume(action.payload.speaker.id, action.payload.patch.volume || 1);
     return session;
   },
   removeSpeaker: (state, action) => {
@@ -34,6 +45,9 @@ const speakersReducer = {
     const speakersCopy = [...state.speakers];
     const speaker = state.speakers[index];
     speakersCopy[index] = new Speaker({ ...speaker, ...action.payload.patch });
+    if (action.payload.patch.volume) {
+      setGlobalSpeakerVolume(action.payload.id, action.payload.patch.volume);
+    }
     return {
       ...state,
       speakers: speakersCopy,

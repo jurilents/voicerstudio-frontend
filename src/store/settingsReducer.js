@@ -31,12 +31,13 @@ const rootState = {
 
 const storedState = localStorage.getItem(STORAGE_KEY);
 const defaultState = storedState ? { ...rootState, ...JSON.parse(storedState) } : rootState;
-console.log('defaultState', defaultState);
+window.masterVolume = +defaultState.masterVolume || 1;
 
 export default function settingsReducer(state = defaultState, action) {
   switch (action.type) {
     case SET_SETTINGS: {
       const newSettings = { ...state, ...action.payload };
+      if (!isNaN(+action.payload.masterVolume)) window.masterVolume = +action.payload.masterVolume;
       if (!isEqual(newSettings, state)) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
         return newSettings;

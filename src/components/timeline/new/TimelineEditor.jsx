@@ -147,6 +147,11 @@ const timelineOptions = {
   scaleWidth: 100,
 };
 
+function calcLeftOffset(time) {
+  const pixelPerSecond = timelineOptions.scaleWidth / timelineOptions.scale;
+  return time * pixelPerSecond + timelineOptions.startLeft;
+}
+
 const TimelineEditor = ({ player }) => {
   const hotkeysHandler = useHotkeys({ player });
   const dispatch = useDispatch();
@@ -177,19 +182,14 @@ const TimelineEditor = ({ player }) => {
       }
       dispatch(setTime(time));
 
+      const totalWidth = engine.target.clientWidth;
       const cursorPosition = +$cursorElm.style.left.substring(0, $cursorElm.style.left.length - 2);
-      const cursorDelta = engine.target.clientWidth - cursorPosition;
-      console.log('cursorDelta', cursorDelta);
-
-      function calcLeftOffset() {
-        const pixelPerSecond = timelineOptions.scaleWidth / timelineOptions.scale;
-        return time * pixelPerSecond + timelineOptions.startLeft;
-      }
+      const cursorDelta = totalWidth - cursorPosition;
 
       if (cursorDelta < 10 && cursorDelta > 0) {
-        engine.setScrollLeft(calcLeftOffset() - 5);
-      } else if (cursorDelta <= 0 || cursorDelta > engine.target.clientWidth) {
-        engine.setScrollLeft(calcLeftOffset() - 200);
+        engine.setScrollLeft(calcLeftOffset(time) - 5);
+      } else if (cursorDelta <= 0 || cursorDelta > totalWidth) {
+        engine.setScrollLeft(calcLeftOffset(time) - 150);
       }
     });
 

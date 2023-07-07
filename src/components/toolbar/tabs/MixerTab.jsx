@@ -65,7 +65,7 @@ function AudioVolumeItem({ title, propertyName, type, player }) {
           onChange={(e) => {
             if (player) player.volume = settings.masterVolume * e.target.value;
             else if (type === 'master') player.volume = settings.originalVolume * e.target.value;
-            dispatch(setSettings({ [propertyName]: e.target.value }));
+            dispatch(setSettings({ [propertyName]: +e.target.value }));
           }} />
       </div>
       <div>
@@ -88,7 +88,7 @@ function SpeakerAudioVolumeItem({ speaker }) {
           min={0} max={1} step={0.01}
           value={speaker.volume}
           onChange={(e) =>
-            dispatch(patchSpeaker(speaker.id, { volume: e.target.value }))} />
+            dispatch(patchSpeaker(speaker.id, { volume: +e.target.value }))} />
       </div>
       <div>
         {Math.round(speaker.volume * 100)}%
