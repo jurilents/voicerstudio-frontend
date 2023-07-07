@@ -22,6 +22,7 @@ const rootState = {
   // From 0 (mute) to 1 (100%)
   masterVolume: 1,
   originalVolume: 1,
+  originalMute: false,
   exportFormat: 'WAV',
   exportCodec: 'Riff8Khz16BitMonoPcm',
   exportFileName: '[{L}-{s}] {d}-{t} result',

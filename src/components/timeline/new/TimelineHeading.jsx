@@ -32,7 +32,8 @@ const Style = styled.div`
 
   .app-list-group {
     flex-direction: column;
-    overflow-y: scroll;
+    //overflow-y: scroll;
+    width: 200px;
   }
 
   .list-group-item {
@@ -58,6 +59,13 @@ const Style = styled.div`
       background-color: var(--c-primary-dark);
     }
   }
+
+  .speaker-name {
+    text-overflow: ellipsis;
+    max-height: 40px;
+    overflow: hidden;
+    padding: 0 8px;
+  }
 `;
 
 export const TimelineHeading = () => {
@@ -73,7 +81,7 @@ export const TimelineHeading = () => {
           <div className='speaker-actions'>
             <button className='btn speaker-btn'>M</button>
           </div>
-          <div>Original Audio</div>
+          <div className='speaker-name'>Original Audio</div>
         </ListGroup.Item>
         {speakers.map((speaker, index) => (
           <ListGroup.Item
@@ -84,7 +92,7 @@ export const TimelineHeading = () => {
             <div className='speaker-actions'>
               <button className='btn speaker-btn'>M</button>
             </div>
-            <div>{speaker.displayName}</div>
+            <div className='speaker-name'>{speaker.displayName}</div>
           </ListGroup.Item>
         ))}
       </ListGroup>

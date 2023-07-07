@@ -16,7 +16,7 @@ const ActionAudio = ({ action, row }) => {
     }
     const ws = WaveSurfer.create({
       container: $domRef.current,
-      waveColor: 'rgb(200,200,200)',
+      waveColor: 'rgb(175,175,175)',
       progressColor: 'rgb(100,100,100)',
       interact: false,
       // media: action.data.player,

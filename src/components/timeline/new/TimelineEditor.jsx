@@ -56,8 +56,8 @@ const Style = styled.div`
     }
   }
 
-  .timeline-audio {
-    //background-color: red;
+  .timeline-editor-action {
+    background-color: transparent;
   }
 
   .timeline-sub {
@@ -101,7 +101,6 @@ const Style = styled.div`
 const origAudioRowName = 'original-audio-row';
 
 function getTimelineData(speakers, selectedSpeaker, player) {
-  console.log('plat', player);
   const data = speakers.map((speaker) => ({
     id: speaker.id,
     selected: speaker.id === selectedSpeaker?.id,

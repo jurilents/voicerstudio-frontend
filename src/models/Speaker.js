@@ -6,6 +6,7 @@ export class Speaker {
     this.preset = obj.preset;
     this.wordsPerMinute = obj.wordsPerMinute;
     this.subs = obj.subs || [];
+    this.volume = obj.volume || 1;
   }
 
   get clone() {

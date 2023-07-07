@@ -6,7 +6,7 @@ import { setVideoDuration } from '../../store/sessionReducer';
 export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
   const $video = createRef();
   const dispatch = useDispatch();
-  const playbackSpeed = useSelector(store => store.settings.playbackSpeed);
+  const { playbackSpeed, originalVolume, masterVolume } = useSelector(store => store.settings);
   const videoUrl = useSelector(store => store.session.videoUrl) || '/samples/video_placeholder.mp4?t=1';
   const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
   const [playingSub, setPlayingSub] = useState(null);
@@ -15,7 +15,7 @@ export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
   useEffect(() => {
     if ($video.current) {
       $video.current.playbackRate = playbackSpeed;
-      $video.current.volume = 0;
+      $video.current.volume = (originalVolume || 1) * (masterVolume || 1);
     }
   }, [$video, playbackSpeed]);
 
