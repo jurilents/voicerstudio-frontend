@@ -9,6 +9,7 @@ import { addPreset, patchPreset, removePreset } from '../../../store/sessionRedu
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Preset } from '../../../models';
+import { toast } from 'react-toastify';
 
 const Style = styled.div`
   .presets-list {
@@ -59,8 +60,10 @@ Whose strength's abundance weakens his own heart.`);
     async function fetchLanguages() {
       const newLanguages = await languagesApi.getAll('dev_placeholder');
       if (newLanguages.length < 1) {
-        throw new Error('No languages fetched :(');
+        toast.error('No languages fetched :(');
+        return;
       }
+
       dispatch(setLanguages(newLanguages));
       const defaultLang = newLanguages.find(x => x.locale === lang.locale) || newLanguages[0];
       setLang(defaultLang);
@@ -68,7 +71,9 @@ Whose strength's abundance weakens his own heart.`);
     }
 
     if (languages.length === 0) {
-      fetchLanguages();
+      fetchLanguages().catch(err => {
+        toast.error(`Languages did not fetch`);
+      });
     } else {
       const defaultLang = languages.find(x => x.locale === lang.locale) || languages[0];
       setLang(defaultLang);
@@ -95,9 +100,12 @@ Whose strength's abundance weakens his own heart.`);
         $audioPlayer.current.src = response.url;
       }
       console.log('res', response);
+      toast.info('Speak succeeded');
     }
 
-    speakAsync();
+    speakAsync().catch(err => {
+      toast.error(`Speak failed ${err}`);
+    });
   }, [lang, voice, text, style, styleDegree, pitch, $audioPlayer]);
 
   const createPreset = useCallback(() => new Preset({

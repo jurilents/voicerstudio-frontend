@@ -1,8 +1,6 @@
-import { SUBS_AUDIO_TABLE, useIndexedDB } from './useIndexedDB';
+import { openDatabase, SUBS_AUDIO_TABLE } from './openDatabase';
 
 export function useSubsAudioStorage() {
-  const { openDatabase } = useIndexedDB();
-
   const saveSubAudio = async (id, audioBlob) => {
     const db = await openDatabase();
     const data = await db.get(SUBS_AUDIO_TABLE, id);
@@ -14,11 +12,13 @@ export function useSubsAudioStorage() {
       id: id,
       audio: audioBlob,
     });
+    db.close();
   };
 
   const loadSubAudio = async (id) => {
     const db = await openDatabase();
     const data = await db.get(SUBS_AUDIO_TABLE, id);
+    db.close();
     return data ? URL.createObjectURL(data.audio) : null;
   };
 

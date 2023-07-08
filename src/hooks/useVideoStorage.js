@@ -1,8 +1,6 @@
-import { useIndexedDB, VIDEOS_TABLE } from './useIndexedDB';
+import { openDatabase, VIDEOS_TABLE } from './openDatabase';
 
 export function useVideoStorage() {
-  const { openDatabase } = useIndexedDB();
-
   const saveVideo = async (id, videoBlob) => {
     const db = await openDatabase();
     const data = await db.get(VIDEOS_TABLE, id);
@@ -14,11 +12,13 @@ export function useVideoStorage() {
       id: id,
       video: videoBlob,
     });
+    db.close();
   };
 
   const loadVideo = async (id) => {
     const db = await openDatabase();
     const data = await db.get(VIDEOS_TABLE, id);
+    db.close();
     return data ? URL.createObjectURL(data.video) : null;
   };
 

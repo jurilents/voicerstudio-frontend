@@ -13,6 +13,7 @@ import { setVideo } from './store/sessionReducer';
 import { ToastContainer } from 'react-toastify';
 import { VoicedStatuses } from './models/Sub';
 import { addAudio } from './store/audioReducer';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Style = styled.div`
   height: 100%;
@@ -187,15 +188,15 @@ export default function App({ defaultLang }) {
       {processing > 0 && processing < 100 ? <ProgressBar processing={processing} /> : null}
       <ToastContainer
         position='top-center'
+        theme='dark'
         autoClose={6000}
         limit={4}
-        hideProgressBar
         newestOnTop={false}
-        closeOnClick
-        pauseOnFocusLoss
         draggable
+        closeOnClick
         pauseOnHover
-        theme='dark'
+        hideProgressBar
+        pauseOnFocusLoss
       />
     </Style>
   );

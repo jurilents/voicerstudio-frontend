@@ -10,6 +10,7 @@ import SubtitleItem from './SubtitleItem';
 import { patchSub } from '../../store/sessionReducer';
 import { useSubsAudioStorage } from '../../hooks';
 import { VoicedStatuses } from '../../models/Sub';
+import { toast } from 'react-toastify';
 
 const Style = styled.div`
   .ReactVirtualized__Table__row:nth-child(2n) {
@@ -169,30 +170,44 @@ export default function Subtitles({ player }) {
         end: sub.end,
         data: sub.buildVoicedStamp(audio.url),
       }));
+      toast.info('Subtitle voiced');
     }
 
-    console.log('sub canBeVoiced:', sub.canBeVoiced);
-    if (!sub.canBeVoiced) return;
+    if (!sub.canBeVoiced) {
+      toast.warn('Subtitle cannot be voiced, because you already voiced it');
+      return;
+    }
     if (!selectedSpeaker?.preset) return;
     if (sub.audioUrl) {
       dispatch(removeAudio(sub.audioUrl));
     }
 
-    fetch();
+    fetch().catch(err => {
+      toast.error(`Voicing failed: ${err}`);
+    });
   }, [dispatch, saveSubAudio, selectedSpeaker, exportCodec]);
 
   const playSub = useCallback((sub) => {
     if (sub.data?.src) {
       dispatch(playAudio(sub.data.src, true));
+    } else {
+      toast.warn('You must speak subtitle before download its');
     }
   }, [dispatch]);
 
   const downloadSub = useCallback((sub, index) => {
     if (sub.data?.src) {
-      const start = sub.startStr.replaceAll(':', '-');
-      const end = sub.endStr.replaceAll(':', '-');
-      const fileName = `[${selectedSpeaker.displayName}-${index}] from ${start} to ${end}.wav`;
-      download(sub.data.src, fileName);
+      try {
+        const start = sub.startStr.replaceAll(':', '-');
+        const end = sub.endStr.replaceAll(':', '-');
+        const fileName = `[${selectedSpeaker.displayName}-${index}] from ${start} to ${end}.wav`;
+        download(sub.data.src, fileName);
+        toast.info(`Subtitle downloaded '${fileName}'`);
+      } catch (err) {
+        toast.error(`Subtitle download failed: ${err}`);
+      }
+    } else {
+      toast.warn('You must speak subtitle before download its');
     }
   }, [selectedSpeaker]);
 

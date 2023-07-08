@@ -6,10 +6,10 @@ import { Col, Container, Form, Row } from 'react-bootstrap';
 import { speechApi } from '../../../api/axios';
 import { download, getExt } from '../../../utils';
 import { selectSpeaker } from '../../../store/sessionReducer';
-import { toast } from 'react-toastify';
 import { file2sub, sub2srt, sub2txt, sub2vtt } from '../../../libs/readSub';
 import { t } from 'react-i18nify';
 import sub2ass from '../../../libs/readSub/sub2ass';
+import { toast } from 'react-toastify';
 
 const Style = styled.div`
   .app-input {
@@ -92,10 +92,10 @@ export default function ExportTab(props) {
     [props.notify],
   );
 
-  const downloadSub = useCallback(
-    (type) => {
+  const downloadSub = useCallback((type) => {
+    try {
       let text = '';
-      const name = `${Date.now()}.${type}`;
+      // const name = `${Date.now()}.${type}`;
       switch (type) {
         case 'vtt':
           text = sub2vtt(selectedSpeaker.subs);
@@ -116,11 +116,13 @@ export default function ExportTab(props) {
           break;
       }
       const url = URL.createObjectURL(new Blob([text]));
-      const fileName = buildExportFileName('srt');
+      const fileName = buildExportFileName(type);
       download(url, fileName);
-    },
-    [selectedSpeaker],
-  );
+      toast.success(`Export file '${fileName}' succeed`);
+    } catch (e) {
+      toast.error(`Export file failed: ${e}`);
+    }
+  }, [selectedSpeaker]);
 
   const generateAndExport = useCallback(() => {
     async function fetch() {
@@ -141,10 +143,15 @@ export default function ExportTab(props) {
       console.log('Batch speech request:', request);
       const audio = await speechApi.batch(request, 'dev_placeholder');
       console.log('result audio url', audio);
-      download(audio.url, buildExportFileName(exportFormat));
+      const fileName = buildExportFileName(exportFormat);
+      download(audio.url);
+      toast.success(`Export file '${fileName}' succeed`);
     }
 
-    fetch();
+    fetch().catch((e) => {
+      console.log('e', e);
+      toast.error(`Export file failed: ${e}`);
+    });
   }, [exportCodec, speakers, selectedSpeaker]);
 
 

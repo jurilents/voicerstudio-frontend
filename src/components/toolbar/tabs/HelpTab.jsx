@@ -47,6 +47,14 @@ export default function HelpTab() {
           <Col>Undo</Col>
           <Col><span className='hotkey-key'>⌘ + Z</span></Col>
         </Row>
+        <Row>
+          <Col>Move forward</Col>
+          <Col><span className='hotkey-key'>(⇧) + →</span></Col>
+        </Row>
+        <Row>
+          <Col>Move backward</Col>
+          <Col><span className='hotkey-key'>(⇧) + ←</span></Col>
+        </Row>
       </Container>
       <div className='offset'></div>
       <h3>Support</h3>

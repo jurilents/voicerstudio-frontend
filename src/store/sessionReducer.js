@@ -90,6 +90,7 @@ function saveToLocalStorage(session) {
   return session;
 }
 
+
 export default function sessionReducer(state = defaultState, action) {
   switch (action.type) {
     /************************* SPEAKERS *************************/

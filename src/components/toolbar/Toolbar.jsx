@@ -1,6 +1,5 @@
-import languages from '../../libs/languages';
-import { t, Translate } from 'react-i18nify';
-import React, { useCallback, useEffect, useState } from 'react';
+import { t } from 'react-i18nify';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import googleTranslate from '../../libs/googleTranslate';
 import FFmpeg from '@ffmpeg/ffmpeg';
 import { Nav, Tab } from 'react-bootstrap';
@@ -11,7 +10,6 @@ import {
   faFileImport,
   faHeadphonesAlt,
   faHouseChimney,
-  faLanguage,
   faRobot,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
@@ -29,7 +27,7 @@ import { useSelector } from 'react-redux';
 FFmpeg.createFFmpeg({ log: process.env.REACT_APP_LOG_FFMPEG === 'true' }).load();
 // const fs = new SimpleFS.FileSystem();
 
-export default function Toolbar(props) {
+const Toolbar = (props) => {
   const singleRecordMode = useSelector(store => store.settings.singleRecordMode);
   const [translate, setTranslate] = useState('en');
   // const [videoFile, setVideoFile] = useState(null);
@@ -52,7 +50,7 @@ export default function Toolbar(props) {
           level: 'error',
         });
       });
-  }, [props.subtitle, props.setLoading, props.formatSub, props.setSubtitle, props.translate, props.notify]);
+  }, [props.subtitle, props.setLoading, props.translate, props.notify]);
 
   const onDocumentMouseUp = useCallback(() => {
     if (props.recording) {
@@ -193,4 +191,11 @@ export default function Toolbar(props) {
       {/*</div>*/}
     </Style>
   );
-}
+};
+
+export default memo(
+  Toolbar,
+  (prevProps, nextProps) => {
+    return nextProps.player && prevProps.player?.src === nextProps.player?.src;
+  },
+);

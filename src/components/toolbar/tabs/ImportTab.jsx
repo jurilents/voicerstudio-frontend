@@ -7,6 +7,7 @@ import { setVideo } from '../../../store/sessionReducer';
 import { t } from 'react-i18nify';
 import FFmpeg from '@ffmpeg/ffmpeg';
 import { useVideoStorage } from '../../../hooks';
+import { toast } from 'react-toastify';
 
 const Style = styled.div`
 `;
@@ -85,15 +86,13 @@ export default function ImportTab(props) {
           // ]);
           // props.player.src = url;
           dispatch(setVideo(url));
+          toast.success('Video uploaded!');
         } else {
-          props.notify({
-            message: `${t('VIDEO_EXT_ERR')}: ${file.type || ext}`,
-            level: 'error',
-          });
+          toast.error(`${t('VIDEO_EXT_ERR')}: ${file.type || ext}`);
         }
       }
     },
-    [dispatch, props.notify, props.player, decodeAudioData],
+    [dispatch, props.notify, props.player],
   );
 
   const onInputClick = useCallback((event) => {
