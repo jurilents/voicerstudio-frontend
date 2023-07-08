@@ -104,6 +104,8 @@ export function Actions({ player }) {
         dispatch(patchSub(recSub, { end: recSub.end }));
       } else {
         dispatch(removeSub(recSub));
+        if (!player.paused) player.pause();
+        if (window.timelineEngine) window.timelineEngine.pause();
       }
     }
     delete window.recordingSub;

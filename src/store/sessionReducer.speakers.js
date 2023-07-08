@@ -23,7 +23,7 @@ const speakersReducer = {
     if (!state.selectedSpeaker) {
       session.selectedSpeaker = session.speakers[0];
     }
-    setGlobalSpeakerVolume(action.payload.speaker.id, action.payload.patch.volume || 1);
+    setGlobalSpeakerVolume(action.payload.speaker.id, action.payload.speaker.volume || 1);
     return session;
   },
   removeSpeaker: (state, action) => {

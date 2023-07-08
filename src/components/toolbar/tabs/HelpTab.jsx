@@ -44,9 +44,17 @@ export default function HelpTab() {
           <Col><span className='hotkey-key'>Space</span></Col>
         </Row>
         <Row>
-          <Col>Undo</Col>
-          <Col><span className='hotkey-key'>⌘ + Z</span></Col>
+          <Col>Delete subtitle</Col>
+          <Col><span className='hotkey-key'>Backspace</span></Col>
         </Row>
+        <Row>
+          <Col>Paste text from clipboard</Col>
+          <Col><span className='hotkey-key'>⌘ + V</span></Col>
+        </Row>
+        {/*<Row>*/}
+        {/*  <Col>Undo</Col>*/}
+        {/*  <Col><span className='hotkey-key'>⌘ + Z</span></Col>*/}
+        {/*</Row>*/}
         <Row>
           <Col>Move forward</Col>
           <Col><span className='hotkey-key'>(⇧) + →</span></Col>
