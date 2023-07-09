@@ -9,7 +9,7 @@ export class Speaker {
     this.volume = obj.volume || 1;
   }
 
-  get clone() {
-    return new Speaker(this);
+  clone() {
+    return { ...this };
   }
 }

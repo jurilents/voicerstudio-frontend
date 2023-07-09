@@ -32,9 +32,9 @@ const speakersReducer = {
     }
     const session = {
       ...state,
-      speakers: state.speakers.filter(x => x.id !== action.payload.id),
+      speakers: state.speakers.filter(x => x.id !== action.payload.speaker.id),
     };
-    if (state.selectedSpeaker && state.selectedSpeaker.id === action.payload.id) {
+    if (state.selectedSpeaker && state.selectedSpeaker.id === action.payload.speaker.id) {
       session.selectedSpeaker = session.speakers?.length ? session.speakers[0] : null;
     }
     return session;

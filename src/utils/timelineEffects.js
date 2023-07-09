@@ -30,7 +30,7 @@ export const timelineEffects = {
       },
       enter: ({ action, engine, isPlaying, time }) => {
         if (isPlaying) {
-          console.log('enter effect 0');
+          // console.log('enter effect 0');
           const src = action.data?.src;
           if (!action.data?.src) return;
           audioController.start({
@@ -43,8 +43,9 @@ export const timelineEffects = {
           });
         }
       },
-      leave: ({ action, engine }) => {
-        console.log('leave effect 0', action.data?.src);
+      leave: ({ action, engine, isPlaying }) => {
+        // console.log('leave effect 0', action.data?.src);
+        if (!isPlaying) return;
         const src = action.data?.src;
         if (!action.data?.src) return;
         audioController.stop({
@@ -53,7 +54,7 @@ export const timelineEffects = {
         });
       },
       stop: ({ action, engine }) => {
-        console.log('stop effect 0', action.data?.src);
+        // console.log('stop effect 0', action.data?.src);
         const src = action.data?.src;
         if (!action.data?.src) return;
         audioController.stop({

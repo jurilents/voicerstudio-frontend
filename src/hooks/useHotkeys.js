@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { getKeyCode } from '../utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { patchSub, removeSub } from '../store/sessionReducer';
+import timeMachine from '../utils/TimeMachine';
 
 const HOTKEYS = {
   deleteSub: { key: 'BACKSPACE' },
@@ -122,14 +123,13 @@ export const useHotkeys = ({ player }) => {
       }
 
       // ----- UnDo / ReDo -----
-      case 'Z':
-        if (checkMetaKeys(event, HOTKEYS.undo)) {
-          event.preventDefault();
-          if (event.metaKey) {
-            // undoSubs(); // TODO: undo
-          }
-        } else if (checkMetaKeys(event, HOTKEYS.redo)) {
-          // TODO: redo
+      case HOTKEYS.undo.key:
+        if (checkMetaKeys(event, HOTKEYS.redo)) {
+          const redo = timeMachine.redo();
+          if (redo) dispatch(redo);
+        } else if (checkMetaKeys(event, HOTKEYS.undo)) {
+          const undo = timeMachine.undo();
+          if (undo) dispatch(undo);
         }
         break;
 

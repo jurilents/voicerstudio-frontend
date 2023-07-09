@@ -51,10 +51,14 @@ export default function HelpTab() {
           <Col>Paste text from clipboard</Col>
           <Col><span className='hotkey-key'>⌘ + V</span></Col>
         </Row>
-        {/*<Row>*/}
-        {/*  <Col>Undo</Col>*/}
-        {/*  <Col><span className='hotkey-key'>⌘ + Z</span></Col>*/}
-        {/*</Row>*/}
+        <Row>
+          <Col>Undo</Col>
+          <Col><span className='hotkey-key'>⌘ + Z</span></Col>
+        </Row>
+        <Row>
+          <Col>Redo</Col>
+          <Col><span className='hotkey-key'>⌘ + ⇧ + Z</span></Col>
+        </Row>
         <Row>
           <Col>Move forward</Col>
           <Col><span className='hotkey-key'>(⇧) + →</span></Col>
@@ -68,15 +72,25 @@ export default function HelpTab() {
       <h3>Support</h3>
       <Container>
         <Row>
-          <Col>Any questions</Col>
+          <Col>Any questions (priority)</Col>
           <Col>
-            <a href='https://t.me/Lisa_Volkova' target='_blank' className='hotkey-key'>@Lisa_Volkova</a>
+            <a href='https://t.me/Lisa_Volkova'
+               target='_blank'
+               rel='noreferrer'
+               className='hotkey-key'>
+              @Lisa_Volkova
+            </a>
           </Col>
         </Row>
         <Row>
-          <Col>Bugs</Col>
+          <Col>Bugs / Technical support</Col>
           <Col>
-            <a href='https://t.me/jurilents' target='_blank' className='hotkey-key'>@jurilents</a>
+            <a href='https://t.me/jurilents'
+               target='_blank'
+               rel='noreferrer'
+               className='hotkey-key'>
+              @jurilents
+            </a>
           </Col>
         </Row>
       </Container>

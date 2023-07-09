@@ -4,6 +4,8 @@ import speakersReducer, { setGlobalSpeakerVolume } from './sessionReducer.speake
 import subsReducer from './sessionReducer.subs';
 import presetsReducer from './sessionReducer.presets';
 import { VoicedStatuses } from '../models/Sub';
+import timeMachine from '../utils/TimeMachine';
+import { cloneByKeys, objectsHaveSameKeys } from '../utils';
 
 // Commands
 const ADD_SPEAKER = 'ADD_SPEAKER';
@@ -95,18 +97,32 @@ export default function sessionReducer(state = defaultState, action) {
   switch (action.type) {
     /************************* SPEAKERS *************************/
     case ADD_SPEAKER: {
+      timeMachine.push(action, removeSpeaker(action.payload.speaker));
       const session = speakersReducer.addSpeaker(state, action);
       return saveToLocalStorage(session);
     }
     case REMOVE_SPEAKER: {
+      timeMachine.push(action, addSpeaker(action.payload.speaker));
       const session = speakersReducer.removeSpeaker(state, action);
       return saveToLocalStorage(session);
     }
     case PATCH_SPEAKER: {
+      const lastChange = timeMachine.getLast();
+      const speaker = state.speakers.find(x => x.id === action.payload.id);
+      if (lastChange?.undo.type === PATCH_SPEAKER
+        && lastChange.undo.payload.id === action.payload.id
+        && objectsHaveSameKeys(lastChange.undo.payload.patch, action.payload.patch)) {
+        lastChange.undo.patch = cloneByKeys(speaker, Object.keys(action.payload.patch));
+        console.log('action.payload.patch', lastChange.undo.patch);
+      } else {
+        const patch = cloneByKeys(speaker, Object.keys(action.payload.patch));
+        timeMachine.push(action, patchSpeaker(action.payload.id, patch));
+      }
       const session = speakersReducer.patchSpeaker(state, action);
       return saveToLocalStorage(session);
     }
     case SELECT_SPEAKER: {
+      // timeMachine.push(action, selectSpeaker(state.selectedSpeaker?.id));
       const session = speakersReducer.selectSpeaker(state, action);
       return saveToLocalStorage(session);
     }
@@ -173,7 +189,7 @@ export default function sessionReducer(state = defaultState, action) {
 }
 
 export const addSpeaker = (speaker) => ({ type: ADD_SPEAKER, payload: { speaker } });
-export const removeSpeaker = (id) => ({ type: REMOVE_SPEAKER, payload: { id } });
+export const removeSpeaker = (speaker) => ({ type: REMOVE_SPEAKER, payload: { speaker } });
 export const patchSpeaker = (id, patch) => ({ type: PATCH_SPEAKER, payload: { id, patch } });
 export const selectSpeaker = (id) => ({ type: SELECT_SPEAKER, payload: { id } });
 

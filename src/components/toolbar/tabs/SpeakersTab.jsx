@@ -73,7 +73,7 @@ export default function SpeakersTab(props) {
               <span className='list-item--actions'>
             <button
               className='btn'
-              onClick={() => dispatch(removeSpeaker(speaker.id))}>
+              onClick={() => dispatch(removeSpeaker(speaker))}>
               <FontAwesomeIcon icon={faTrashAlt} />
             </button>
           </span>
