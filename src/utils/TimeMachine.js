@@ -1,3 +1,5 @@
+import { settings } from '../settings';
+
 export class TimeMachine {
   constructor() {
     console.log('creating time machine');
@@ -11,9 +13,9 @@ export class TimeMachine {
       undo: undoAction,
       redo: action,
     });
-    console.log('undo:', undoAction);
+    console.log('undo action:', action);
     // Limit history size
-    while (this.history.length > 100) {
+    while (this.history.length > settings.historyLimit) {
       this.history.shift();
     }
     console.log('history size:', this.history);

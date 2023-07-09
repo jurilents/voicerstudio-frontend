@@ -1,4 +1,5 @@
 import { Speaker } from '../models';
+import { settings } from '../settings';
 
 
 export function setGlobalSpeakerVolume(speakerId, volume) {
@@ -13,7 +14,7 @@ export function setGlobalSpeakerVolume(speakerId, volume) {
 const speakersReducer = {
   addSpeaker: (state, action) => {
     // Limit 10 speakers
-    if (state.speakers.length >= 10) {
+    if (state.speakers.length >= settings.speakersLimit) {
       return state;
     }
     const session = {

@@ -5,6 +5,7 @@ import { faDownload, faPlay, faRocket } from '@fortawesome/free-solid-svg-icons'
 import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { patchSub, selectSub } from '../../store/sessionReducer';
+import { settings } from '../../settings';
 
 export default function SubtitleItem(
   {
@@ -69,13 +70,13 @@ export default function SubtitleItem(
           }} />
         </div>
         <textarea
-          maxLength={400}
+          maxLength={settings.subtitleTextLimit}
           spellCheck={false}
           className='textarea'
           value={unescape(sub.text)}
           onChange={handleSubTextChange} />
         <textarea
-          maxLength={400}
+          maxLength={settings.subtitleTextLimit}
           spellCheck={false}
           className='textarea'
           value={unescape(sub.note)}

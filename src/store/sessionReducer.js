@@ -93,6 +93,32 @@ function saveToLocalStorage(session) {
 }
 
 
+function pushSpeakerPatchToHistory(state, action) {
+  const lastChange = timeMachine.getLast();
+  const speaker = state.speakers.find(x => x.id === action.payload.id);
+  if (lastChange?.undo.type === PATCH_SPEAKER
+    && lastChange.undo.payload.id === action.payload.id
+    && objectsHaveSameKeys(lastChange.undo.payload.patch, action.payload.patch)) {
+    lastChange.undo.patch = cloneByKeys(speaker, Object.keys(action.payload.patch));
+  } else {
+    const patch = cloneByKeys(speaker, Object.keys(action.payload.patch));
+    timeMachine.push(action, patchSpeaker(action.payload.id, patch));
+  }
+}
+
+function pushSubPatchToHistory(state, action) {
+  const lastChange = timeMachine.getLast();
+  if (lastChange?.undo.type === PATCH_SPEAKER_SUB
+    && lastChange.undo.payload.id === action.payload.id
+    && objectsHaveSameKeys(lastChange.undo.payload.patch, action.payload.patch)) {
+    lastChange.redo.payload.patch = action.payload.patch;
+  } else {
+    const patch = cloneByKeys(action.payload.sub, Object.keys(action.payload.patch));
+    const undoAction = patchSub(action.payload.sub, patch);
+    timeMachine.push(action, undoAction);
+  }
+}
+
 export default function sessionReducer(state = defaultState, action) {
   switch (action.type) {
     /************************* SPEAKERS *************************/
@@ -107,17 +133,7 @@ export default function sessionReducer(state = defaultState, action) {
       return saveToLocalStorage(session);
     }
     case PATCH_SPEAKER: {
-      const lastChange = timeMachine.getLast();
-      const speaker = state.speakers.find(x => x.id === action.payload.id);
-      if (lastChange?.undo.type === PATCH_SPEAKER
-        && lastChange.undo.payload.id === action.payload.id
-        && objectsHaveSameKeys(lastChange.undo.payload.patch, action.payload.patch)) {
-        lastChange.undo.patch = cloneByKeys(speaker, Object.keys(action.payload.patch));
-        console.log('action.payload.patch', lastChange.undo.patch);
-      } else {
-        const patch = cloneByKeys(speaker, Object.keys(action.payload.patch));
-        timeMachine.push(action, patchSpeaker(action.payload.id, patch));
-      }
+      pushSpeakerPatchToHistory(state, action);
       const session = speakersReducer.patchSpeaker(state, action);
       return saveToLocalStorage(session);
     }
@@ -133,14 +149,17 @@ export default function sessionReducer(state = defaultState, action) {
       return saveToLocalStorage(session);
     }
     case ADD_SPEAKER_SUB: {
+      timeMachine.push(action, removeSub(action.payload.sub));
       const session = subsReducer.addSub(state, action);
       return saveToLocalStorage(session);
     }
     case REMOVE_SPEAKER_SUB: {
+      timeMachine.push(action, addSub(action.payload.sub));
       const session = subsReducer.removeSub(state, action);
       return saveToLocalStorage(session);
     }
     case PATCH_SPEAKER_SUB: {
+      pushSubPatchToHistory(state, action);
       const session = subsReducer.patchSub(state, action);
       return saveToLocalStorage(session);
     }
