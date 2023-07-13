@@ -11,8 +11,11 @@ import { patchSub } from '../../store/sessionReducer';
 import { useSubsAudioStorage } from '../../hooks';
 import { VoicedStatuses } from '../../models/Sub';
 import { toast } from 'react-toastify';
+import { VoicingService } from '../toolbar/tabs/PresetsTab.Editor';
 
 const Style = styled.div`
+  height: 100%;
+
   .ReactVirtualized__Table__row:nth-child(2n) {
     background-color: rgba(12, 12, 12, 0.5);
   }
@@ -23,6 +26,10 @@ const Style = styled.div`
     .ReactVirtualized__Table__Grid {
       outline: none;
       height: 100%;
+    }
+
+    .ReactVirtualized__Grid__innerScrollContainer {
+      padding-bottom: 40px;
     }
 
     .ReactVirtualized__Table__row {
@@ -126,6 +133,7 @@ export default function Subtitles({ player }) {
   const dispatch = useDispatch();
   const exportCodec = useSelector(store => store.settings.exportCodec);
   const { selectedSpeaker, selectedSub } = useSelector(store => store.session);
+  const playingPlayer = useSelector(store => store.audio.players.find(x => x.playing));
   const [height, setHeight] = useState(100);
   const { saveSubAudio } = useSubsAudioStorage();
   const resize = useCallback(() => {
@@ -144,6 +152,7 @@ export default function Subtitles({ player }) {
   const speakSub = useCallback((sub) => {
     async function fetch() {
       const request = {
+        service: selectedSpeaker.preset.service,
         locale: selectedSpeaker.preset.locale,
         voice: selectedSpeaker.preset.voice,
         text: sub.text,
@@ -151,10 +160,12 @@ export default function Subtitles({ player }) {
         styleDegree: selectedSpeaker.preset.styleDegree,
         // role: 'string',
         pitch: selectedSpeaker.preset.pitch,
-        volume: 1,
+        volume: selectedSpeaker.preset.service === VoicingService.VoiceMaker ? 0 : 1,
         start: sub.startStr,
         end: sub.endStr,
-        format: exportCodec,
+        // format: exportCodec,
+        outputFormat: 'wav',
+        sampleRate: 'Rate48000',
         // speed: +speaker.speechConfig[7], // do not apply speed (rate)
       };
       console.log('Single speech request:', request);
@@ -168,7 +179,7 @@ export default function Subtitles({ player }) {
       await saveSubAudio(sub.id, audio.blob);
       dispatch(patchSub(sub, {
         end: sub.end,
-        data: sub.buildVoicedStamp(audio.url),
+        data: sub.buildVoicedStamp(audio.url, audio.baseDuration),
       }));
       toast.info('Subtitle voiced');
     }
@@ -178,16 +189,23 @@ export default function Subtitles({ player }) {
       return;
     }
     if (!selectedSpeaker?.preset) return;
-    if (sub.audioUrl) {
-      dispatch(removeAudio(sub.audioUrl));
+    if (sub.data?.src) {
+      dispatch(removeAudio(sub.data?.src));
     }
 
     fetch().catch(err => {
+      dispatch(patchSub(sub, {
+        data: {},
+      }));
       toast.error(`Voicing failed: ${err}`);
     });
   }, [dispatch, saveSubAudio, selectedSpeaker, exportCodec]);
 
   const playSub = useCallback((sub) => {
+    if (playingPlayer) {
+      dispatch(playAudio(sub.data.src, false));
+      return;
+    }
     if (sub.data?.src) {
       dispatch(playAudio(sub.data.src, true));
     } else {
@@ -216,6 +234,7 @@ export default function Subtitles({ player }) {
       <Table
         headerHeight={40}
         width={600}
+        containerStyle={{ marginBottom: '120px' }}
         height={height}
         rowHeight={80}
         scrollToIndex={selectedSpeaker?.subs.findIndex(x => x.id === selectedSub?.id) || 0}

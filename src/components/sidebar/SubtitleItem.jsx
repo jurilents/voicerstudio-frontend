@@ -25,19 +25,19 @@ export default function SubtitleItem(
     if (window.timelineEngine) window.timelineEngine.setTime(sub.start);
     if (player) player.currentTime = sub.start;
     dispatch(selectSub(sub));
-  }, [window.timelineEngine, dispatch, player]);
+  }, [window.timelineEngine, sub, dispatch, player]);
 
   const handleSubTextChange = useCallback((event) => {
     dispatch(patchSub(sub, {
       text: event.target.value,
     }));
-  }, [dispatch]);
+  }, [dispatch, sub]);
 
   const handleSubNoteTextChange = useCallback((event) => {
     dispatch(patchSub(sub, {
       note: event.target.value,
     }));
-  }, [dispatch]);
+  }, [dispatch, sub]);
 
   return (
     <div className={props.className}
@@ -49,16 +49,20 @@ export default function SubtitleItem(
              selectedSub?.id === sub.id ? 'highlight' : '',
              // checkSub(props.rowData) ? 'illegal' : '',
            ].join(' ')}>
+        {/* ************ Index ************ */}
         <div className='item-bar item-index'
              style={{ borderColor: color }}>
           <span>{props.index + 1}</span>
         </div>
+        {/* ************ Timing ************ */}
         <div className='item-bar item-timing'>
           <input type='text' value={d2t(sub.start)} title='Start time' onChange={() => {
           }} />
           <input
             className='estimate-duration' type='text'
-            value={`${predictDuration(props.rowData.text, selectedSpeaker.lang?.wordsPerMinute)}`}
+            value={props.rowData.data?.baseDuration
+              ? `${d2t(props.rowData.data?.baseDuration, true)}`
+              : `${predictDuration(props.rowData.text, selectedSpeaker.lang?.wordsPerMinute)}`}
             title='Estimate duration'
             disabled={true} />
           <input
@@ -69,18 +73,21 @@ export default function SubtitleItem(
           <input type='text' value={d2t(sub.end)} title='End time' onChange={() => {
           }} />
         </div>
+        {/* ************ Text ************ */}
         <textarea
           maxLength={settings.subtitleTextLimit}
           spellCheck={false}
           className='textarea'
           value={unescape(sub.text)}
           onChange={handleSubTextChange} />
+        {/* ************ Note ************ */}
         <textarea
           maxLength={settings.subtitleTextLimit}
           spellCheck={false}
           className='textarea'
           value={unescape(sub.note)}
           onChange={handleSubNoteTextChange} />
+        {/* ************ Action Buttons ************ */}
         <div className='item-bar item-actions'>
           <button className='icon-btn generateVoice'
                   onClick={() => speakSub(sub)}

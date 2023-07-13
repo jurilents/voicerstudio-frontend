@@ -46,8 +46,8 @@ export class Sub {
     return parseFloat((this.end - this.start).toFixed(3));
   }
 
-  buildVoicedStamp(audioUrl) {
-    return new VoicedSubStamp(this, audioUrl);
+  buildVoicedStamp(audioUrl, baseDuration) {
+    return new VoicedSubStamp(this, audioUrl, baseDuration);
   }
 
   get voicedStatus() {
@@ -94,11 +94,12 @@ export class Sub {
 }
 
 export class VoicedSubStamp {
-  constructor(obj, audioUrl) {
+  constructor(obj, audioUrl, baseDuration) {
     this.text = obj.text?.trim();
     this.start = obj.start;
     this.end = obj.end;
     this.src = audioUrl || obj.src;
+    this.baseDuration = baseDuration || obj.baseDuration;
   }
 
   equalTo(target) {

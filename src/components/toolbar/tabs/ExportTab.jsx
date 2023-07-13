@@ -10,6 +10,7 @@ import { file2sub, sub2srt, sub2txt, sub2vtt } from '../../../libs/readSub';
 import { t } from 'react-i18nify';
 import sub2ass from '../../../libs/readSub/sub2ass';
 import { toast } from 'react-toastify';
+import { VoicingService } from './PresetsTab.Editor';
 
 const Style = styled.div`
   .app-input {
@@ -27,11 +28,11 @@ const Style = styled.div`
 
 const codec = {
   'WAV': [
-    { displayName: 'RIFF 8KHz 16Bit', value: 'Riff8Khz16BitMonoPcm' },
-    { displayName: 'RIFF 16KHz 16Bit', value: 'Riff16Khz16BitMonoPcm' },
-    { displayName: 'RIFF 24KHz 16Bit', value: 'Riff24Khz16BitMonoPcm' },
+    { displayName: 'RIFF 8KHz 16Bit', value: 'Rate8000' },
+    { displayName: 'RIFF 16KHz 16Bit', value: 'Rate16000' },
+    { displayName: 'RIFF 24KHz 16Bit', value: 'Rate24000' },
     // { displayName: 'RIFF 44.1KHz 16Bit', value: 'Riff44100Hz16BitMonoPcm' },
-    { displayName: 'RIFF 48KHz 16Bit', value: 'Riff48Khz16BitMonoPcm', default: true },
+    { displayName: 'RIFF 48KHz 16Bit', value: 'Rate48000', default: true },
   ],
 };
 
@@ -128,6 +129,7 @@ export default function ExportTab(props) {
     async function fetch() {
       console.log(selectedSpeaker.preset);
       const request = selectedSpeaker.subs.map(sub => ({
+        service: selectedSpeaker.preset.service,
         locale: selectedSpeaker.preset.locale,
         voice: selectedSpeaker.preset.voice,
         text: sub.text,
@@ -135,24 +137,25 @@ export default function ExportTab(props) {
         styleDegree: selectedSpeaker.preset.styleDegree,
         // role: 'string',
         pitch: selectedSpeaker.preset.pitch,
-        volume: 1,
+        volume: selectedSpeaker.preset.service === VoicingService.VoiceMaker ? 0 : 1,
         start: sub.startStr,
         end: sub.endStr,
-        format: exportCodec,
+        outputFormat: exportFormat,
+        sampleRate: exportCodec,
       }));
       console.log('Batch speech request:', request);
       const audio = await speechApi.batch(request, 'dev_placeholder');
       console.log('result audio url', audio);
       const fileName = buildExportFileName(exportFormat);
-      download(audio.url);
+      download(audio.url, fileName);
       toast.success(`Export file '${fileName}' succeed`);
     }
 
     fetch().catch((e) => {
-      console.log('e', e);
+      console.log('export error', e);
       toast.error(`Export file failed: ${e}`);
     });
-  }, [exportCodec, speakers, selectedSpeaker]);
+  }, [exportCodec, speakers, selectedSpeaker, exportFormat, exportCodec]);
 
 
   return (

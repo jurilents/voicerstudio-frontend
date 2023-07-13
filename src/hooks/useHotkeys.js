@@ -3,13 +3,18 @@ import { getKeyCode } from '../utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { patchSub, removeSub } from '../store/sessionReducer';
 import timeMachine from '../utils/TimeMachine';
+import { toast } from 'react-toastify';
 
 const HOTKEYS = {
   deleteSub: { key: 'BACKSPACE' },
   playPause: { key: ' ' },
+  record: { key: 'R' },
   pasteSubText: { key: 'V', meta: true },
+  save: { key: 'S', meta: true },
+  refreshPage: { key: 'R', meta: true },
   undo: { key: 'Z', meta: true },
   redo: { key: 'Z', meta: true, shift: true },
+  showMotivation: { key: 'O', meta: true, shift: true },
   moveCursorRight: { key: 'ARROWRIGHT' },
   moveCursorVeryRight: { key: 'ARROWRIGHT', shift: true },
   moveCursorLeft: { key: 'ARROWLEFT' },
@@ -48,14 +53,9 @@ export const useHotkeys = ({ player }) => {
   return useCallback(async (event) => {
     if (!window.timelineEngine) return;
     const engine = window.timelineEngine;
+
     const key = getKeyCode(event);
     if (!key) return;
-
-    console.log('key', key);
-
-    if (key === 'R') {
-      return;
-    }
 
     event.preventDefault();
 
@@ -122,8 +122,15 @@ export const useHotkeys = ({ player }) => {
         break;
       }
 
+      // ----- Record -----
+      case HOTKEYS.record.key: {
+        if (!checkMetaKeys(event, HOTKEYS.record)) break;
+        // TODO: record hotkey
+        break;
+      }
+
       // ----- UnDo / ReDo -----
-      case HOTKEYS.undo.key:
+      case HOTKEYS.undo.key: {
         if (checkMetaKeys(event, HOTKEYS.redo)) {
           const redo = timeMachine.redo();
           if (redo) dispatch(redo);
@@ -132,6 +139,26 @@ export const useHotkeys = ({ player }) => {
           if (undo) dispatch(undo);
         }
         break;
+      }
+
+      // ----- Fake hotkeys and overrides -----
+      case HOTKEYS.save.key: {
+        if (!checkMetaKeys(event, HOTKEYS.save)) break;
+        toast.success(`Calm down, it's okay, everything is saved 😎`);
+        break;
+      }
+
+      case HOTKEYS.refreshPage.key: {
+        if (!checkMetaKeys(event, HOTKEYS.refreshPage)) break;
+        toast.info('Refresh page hotkey disabled. Use browser button if you really want to refresh the page 😘');
+        break;
+      }
+
+      case HOTKEYS.showMotivation.key: {
+        if (!checkMetaKeys(event, HOTKEYS.showMotivation)) break;
+        toast.dark(`Ты котик — у тебя все получится  /ᐠ｡ꞈ｡ᐟ✿\\`);
+        break;
+      }
 
       default:
         break;

@@ -115,8 +115,14 @@ export default function SpeakersTab(props) {
               className='app-select'
               value={selectedSpeaker.preset?.id}
               onChange={(event) => {
-                return dispatch(patchSpeaker(selectedSpeaker.id,
-                  { preset: presets.find(x => x.id === +event.target.value) }));
+                return dispatch(patchSpeaker(selectedSpeaker.id, {
+                  preset: presets.find(x => x.id === +event.target.value),
+                  subs: selectedSpeaker.subs.map(sub => {
+                    // Reset subs voicing
+                    sub.data = null;
+                    return sub;
+                  }),
+                }));
               }}>
               {presets.map((preset, index) => (
                 <option key={index} value={preset.id}>

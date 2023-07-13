@@ -69,7 +69,7 @@ export default function App({ defaultLang }) {
   const [processing, setProcessing] = useState(0);
   const [language, setLanguage] = useState(defaultLang);
   const [preset, setPreset] = useState('');
-  const [waveform, setWaveform] = useState(null);
+  // const [waveform, setWaveform] = useState(null);
   const [playing, setPlaying] = useState(false);
   const [recording, setRecording] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);

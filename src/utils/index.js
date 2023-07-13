@@ -23,8 +23,8 @@ export function download(url, name) {
 
 export function getKeyCode(event) {
   const tag = document.activeElement.tagName.toUpperCase();
-  const editable = document.activeElement.getAttribute('contenteditable');
-  if (tag !== 'INPUT' && tag !== 'TEXTAREA' && editable !== '' && editable !== 'true') {
+  // const editable = document.activeElement.getAttribute('contenteditable');
+  if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
     return event.key.toUpperCase();
   }
 }
@@ -52,7 +52,7 @@ export function predictDuration(text, wordsPerMinute) {
 }
 
 export function d2t(time, shorten) {
-  time = typeof time !== 'number' || isNaN(time) || time === Infinity ? 0 : time;
+  time = typeof time !== 'number' || isNaN(time) || time === Infinity || time < 0 ? 0 : time;
   let displayValue = DT.d2t(time);
   if (shorten) {
     if (displayValue.startsWith('00:00:'))

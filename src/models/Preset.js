@@ -3,6 +3,7 @@ import { parsePreset } from '../utils/presetParser';
 export class Preset {
   constructor(obj) {
     this.id = obj.id;
+    this.service = obj.service;
     this.displayName = obj.displayName;
     this.locale = obj.locale;
     this.voice = obj.voice;
@@ -30,6 +31,7 @@ export class Preset {
     const speechConfig = parsePreset(presetPayload);
 
     return new Preset({
+      service: 'azure',
       locate: speechConfig[1],
       voice: `${speechConfig[1]}-${speechConfig[2]}`,
       token: str,

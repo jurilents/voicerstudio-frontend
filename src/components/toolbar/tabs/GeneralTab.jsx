@@ -6,6 +6,12 @@ import { setSettings } from '../../../store/settingsReducer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faMinus, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
 import { toPercentsDelta } from '../../../utils';
+import { patchSub } from '../../../store/sessionReducer';
+import { VoicedStatuses } from '../../../models/Sub';
+import { speechApi } from '../../../api/axios';
+import { addAudio, removeAudio } from '../../../store/audioReducer';
+import { toast } from 'react-toastify';
+import { useSubsAudioStorage } from '../../../hooks';
 
 const Style = styled.div`
   .speed-wrapper {
@@ -42,9 +48,56 @@ const Style = styled.div`
 export default function GeneralTab(props) {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
+  const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
+  const { saveSubAudio } = useSubsAudioStorage();
 
   function speakAll() {
+    async function fetch(sub) {
+      const request = {
+        service: selectedSpeaker.preset.service,
+        locale: selectedSpeaker.preset.locale,
+        voice: selectedSpeaker.preset.voice,
+        text: sub.text,
+        style: selectedSpeaker.preset.style,
+        styleDegree: selectedSpeaker.preset.styleDegree,
+        // role: 'string',
+        pitch: selectedSpeaker.preset.pitch,
+        volume: 1,
+        start: sub.startStr,
+        end: sub.endStr,
+        outputFormat: 'wav',
+        sampleRate: 'Rate48000',
+        // speed: +speaker.speechConfig[7], // do not apply speed (rate)
+      };
+      console.log('Single speech request:', request);
+      dispatch(patchSub(sub, {
+        data: VoicedStatuses.processing,
+      }));
+      const audio = await speechApi.single(request, 'dev_placeholder');
+      console.log('single audio url', audio);
+      dispatch(addAudio(audio.url));
+      sub.endTime = sub.start + audio.duration;
+      await saveSubAudio(sub.id, audio.blob);
+      dispatch(patchSub(sub, {
+        end: sub.end,
+        data: sub.buildVoicedStamp(audio.url, audio.baseDuration),
+      }));
+      toast.info('Subtitle voiced');
+    }
 
+    for (const sub of selectedSpeaker.subs) {
+      if (!sub.canBeVoiced) return;
+      if (!selectedSpeaker?.preset) return;
+      if (sub.data?.src) {
+        dispatch(removeAudio(sub.data?.src));
+      }
+
+      fetch(sub).catch(err => {
+        toast.error(`Voicing failed: ${err}`);
+      });
+    }
+
+    toast.success('All subtitles of selected speaker voiced');
   }
 
   return (

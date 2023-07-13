@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCircleQuestion,
   faCloudArrowDown,
-  faFileImport,
+  faCloudArrowUp,
   faHeadphonesAlt,
   faHouseChimney,
   faRobot,
@@ -71,7 +71,7 @@ const Toolbar = (props) => {
 
   return (
     <Style className='tool noselect'>
-      <Tab.Container id='left-tabs-example' defaultActiveKey='general'>
+      <Tab.Container id='left-tabs-example' defaultActiveKey='presets'>
         <Nav variant='pills' className='tabs-buttons'>
           <Nav.Item>
             <Nav.Link as='span' eventKey='general' title='General'>
@@ -100,7 +100,7 @@ const Toolbar = (props) => {
           {/*</Nav.Item>*/}
           <Nav.Item>
             <Nav.Link as='span' eventKey='import' title='Import'>
-              <FontAwesomeIcon icon={faFileImport} />
+              <FontAwesomeIcon icon={faCloudArrowUp} />
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>

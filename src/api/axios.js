@@ -7,8 +7,8 @@ const api = axios.create({
 });
 
 export const languagesApi = {
-  getAll: async (credentials) => {
-    const result = await api.get(`v1/speech-info/languages`, {
+  getAll: async (serviceName, credentials) => {
+    const result = await api.get(`v1/speech-info/languages?service=${serviceName}`, {
       headers: { 'X-Credentials': credentials },
     });
     return result.data;
@@ -16,6 +16,15 @@ export const languagesApi = {
 };
 
 export const speechApi = {
+  getDuration: async (body, credentials) => {
+    const result = await api.post(`v1/speech/duration`, body, {
+      headers: { 'X-Credentials': credentials },
+      responseType: 'application/json',
+    });
+    return {
+      baseDuration: +result.data.baseDuration,
+    };
+  },
   single: async (body, credentials) => {
     const result = await api.post(`v1/speech/single`, body, {
       headers: { 'X-Credentials': credentials },
@@ -26,6 +35,7 @@ export const speechApi = {
       blob: blob,
       url: URL.createObjectURL(blob),
       duration: +result.headers['x-duration'],
+      baseDuration: +result.headers['x-base-duration'],
     };
   },
   batch: async (body, credentials) => {
@@ -36,6 +46,7 @@ export const speechApi = {
     return {
       url: URL.createObjectURL(new Blob([result.data])),
       duration: +result.headers['x-duration'],
+      baseDuration: +result.headers['x-base-duration'],
     };
   },
 };

@@ -146,12 +146,12 @@ export function Actions({ player }) {
         <div className={'btn btn-icon focus' + (settings.scrollableMode ? ' active' : '')}
              onClick={() => patchSettings({ scrollableMode: !settings.scrollableMode })}
              title='Navigation lines'>
-          <FontAwesomeIcon icon={faLocationCrosshairs} />
+          <FontAwesomeIcon icon={faMagnet} />
         </div>
         <div className={'btn btn-icon focus' + (settings.magnetMode ? ' active' : '')}
              onClick={() => patchSettings({ magnetMode: !settings.magnetMode })}
              title='Move by fixed timesteps'>
-          <FontAwesomeIcon icon={faMagnet} />
+          <FontAwesomeIcon icon={faLocationCrosshairs} />
         </div>
         <div className='separator'></div>
         <div className={'btn btn-icon' + (settings.magnetMode ? ' record' : '')}

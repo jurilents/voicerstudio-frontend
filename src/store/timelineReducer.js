@@ -3,12 +3,15 @@ const SET_RECORDING_SUB = 'SET_RECORDING_SUB';
 const RECORD_SUB = 'RECORD_SUB';
 const SET_TIME = 'SET_TIME';
 const SET_TOTAL_TIME = 'SET_TOTAL_TIME';
+const SET_SCALE = 'SET_SCALE';
 
 const defaultState = {
   playing: false,
   recordingSub: null,
   time: 0,
   totalTime: 60,
+  scale: 5,
+  scaleWidth: 160,
 };
 
 export default function timelineReducer(state = defaultState, action) {
@@ -49,6 +52,13 @@ export default function timelineReducer(state = defaultState, action) {
         totalTime: action.payload,
       };
     }
+    case SET_SCALE: {
+      return {
+        ...state,
+        scale: action.payload.scale,
+        scaleWidth: action.payload.scaleWidth,
+      };
+    }
     default:
       return state;
   }
@@ -59,3 +69,4 @@ export const setRecordingSub = (sub) => ({ type: SET_RECORDING_SUB, payload: sub
 export const recordSub = (sub, end) => ({ type: RECORD_SUB, payload: { sub, end } });
 export const setTotalTime = (time) => ({ type: SET_TOTAL_TIME, payload: time });
 export const setTime = (time) => ({ type: SET_TIME, payload: time });
+export const setScale = (scale, scaleWidth) => ({ type: SET_SCALE, payload: { scale, scaleWidth } });

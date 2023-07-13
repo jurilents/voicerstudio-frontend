@@ -164,24 +164,9 @@ const TimelineEditor = ({ player }) => {
   useEffect(() => {
     if (!window.timelineEngine) return;
     const engine = window.timelineEngine;
-
     const $cursorElm = document.querySelector('.timeline-editor-cursor');
 
-    engine.listener.on('play', () => {
-      dispatch(setPlaying(true));
-      player.currentTime = engine.getTime();
-    });
-    engine.listener.on('paused', () => {
-      dispatch(setPlaying(false));
-      player.currentTime = engine.getTime();
-    });
-    engine.listener.on('afterSetTime', ({ time }) => dispatch(setTime(time)));
-    engine.listener.on('setTimeByTick', ({ time }) => {
-      if (window.recordingSub) {
-        window.recordingSub.end = time;
-      }
-      dispatch(setTime(time));
-
+    function scrollToCursor(time) {
       const totalWidth = engine.target.clientWidth;
       const cursorPosition = +$cursorElm.style.left.substring(0, $cursorElm.style.left.length - 2);
       const cursorDelta = totalWidth - cursorPosition;
@@ -191,6 +176,29 @@ const TimelineEditor = ({ player }) => {
       } else if (cursorDelta <= 0 || cursorDelta > totalWidth) {
         engine.setScrollLeft(calcLeftOffset(time) - 150);
       }
+    }
+
+    engine.listener.on('play', () => {
+      dispatch(setPlaying(true));
+      player.currentTime = engine.getTime();
+    });
+    engine.listener.on('paused', () => {
+      dispatch(setPlaying(false));
+      player.currentTime = engine.getTime();
+    });
+    engine.listener.on('afterSetTime', ({ time }) => {
+      dispatch(setTime(time));
+
+      setTimeout(() => {
+        scrollToCursor(time);
+      }, 50);
+    });
+    engine.listener.on('setTimeByTick', ({ time }) => {
+      if (window.recordingSub) {
+        window.recordingSub.end = time;
+      }
+      dispatch(setTime(time));
+      scrollToCursor(time);
     });
 
     return () => {
@@ -292,6 +300,7 @@ const TimelineEditor = ({ player }) => {
   }, [window.recordingSub, dispatch, player]);
 
   const getActionRender = useCallback((action, row) => {
+    // console.log('rerendering!!');
     if (row.id === origAudioRowName) {
       return <ActionAudio action={action} row={row} />;
     }
