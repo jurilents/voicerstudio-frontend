@@ -65,33 +65,24 @@ export default function ExportTab(props) {
     }
   }, [selectedSpeaker, exportCodec, exportFileName]);
 
-  const onSubtitleChange = useCallback(
-    (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const ext = getExt(file.name);
-        if (['ass', 'vtt', 'srt', 'json'].includes(ext)) {
-          file2sub(file)
-            .then((res) => {
-              // props.clearSubs();
-              // props.setSubtitle(res);
-            })
-            .catch((err) => {
-              props.notify({
-                message: err.message,
-                level: 'error',
-              });
-            });
-        } else {
-          props.notify({
-            message: `${t('SUB_EXT_ERR')}: ${ext}`,
-            level: 'error',
+  const onSubtitleChange = useCallback((event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const ext = getExt(file.name);
+      if (['ass', 'vtt', 'srt', 'json'].includes(ext)) {
+        file2sub(file)
+          .then((res) => {
+            // props.clearSubs();
+            // props.setSubtitle(res);
+          })
+          .catch((err) => {
+            toast.error(err.message);
           });
-        }
+      } else {
+        toast.error(`${t('SUB_EXT_ERR')}: ${ext}`);
       }
-    },
-    [props.notify],
-  );
+    }
+  }, []);
 
   const downloadSub = useCallback((type) => {
     try {

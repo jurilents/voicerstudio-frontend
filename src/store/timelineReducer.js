@@ -38,6 +38,7 @@ export default function timelineReducer(state = defaultState, action) {
       if (isNaN(action.payload)) {
         throw new Error(`Invalid time provided: ${action.payload}`);
       }
+      window.currentTime = action.payload;
       return {
         ...state,
         time: action.payload,

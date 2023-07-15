@@ -96,7 +96,7 @@ export default function SpeakersTab(props) {
           <Col>
             <Form.Select
               className='app-select'
-              defaultValue={selectedSpeaker?.color}
+              value={selectedSpeaker.color}
               style={{ backgroundColor: selectedSpeaker?.color || 'rgb(255 255 255 / 60%)' }}
               onChange={(event) =>
                 dispatch(patchSpeaker(selectedSpeaker.id, { color: event.target.value }))}>

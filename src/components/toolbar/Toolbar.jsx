@@ -1,7 +1,6 @@
 import { t } from 'react-i18nify';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import googleTranslate from '../../libs/googleTranslate';
-import FFmpeg from '@ffmpeg/ffmpeg';
 import { Nav, Tab } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -22,9 +21,10 @@ import PresetsTab from './tabs/PresetsTab';
 import { Style } from './Toolbar.styles';
 import ImportTab from './tabs/ImportTab';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 
-FFmpeg.createFFmpeg({ log: process.env.REACT_APP_LOG_FFMPEG === 'true' }).load();
+// FFmpeg.createFFmpeg({ log: process.env.REACT_APP_LOG_FFMPEG === 'true' }).load();
 // const fs = new SimpleFS.FileSystem();
 
 const Toolbar = (props) => {
@@ -37,11 +37,8 @@ const Toolbar = (props) => {
     googleTranslate(props.formatSub(props.subtitle), translate)
       .then((res) => {
         props.setLoading('');
-        props.setSubtitle(props.formatSub(res));
-        props.notify({
-          message: t('TRANSLAT_SUCCESS'),
-          level: 'success',
-        });
+        // props.setSubtitle(props.formatSub(res));
+        toast.error(t('TRANSLAT_SUCCESS'));
       })
       .catch((err) => {
         props.setLoading('');

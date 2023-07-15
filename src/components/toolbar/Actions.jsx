@@ -3,12 +3,9 @@ import { faLocationCrosshairs, faMagnet, faPause, faPlay, faStop } from '@fortaw
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Duration from '../timeline/Duration';
 import React, { useCallback, useEffect } from 'react';
-import { setPlaying } from '../../store/timelineReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSettings } from '../../store/settingsReducer';
-import { Sub } from '../../models';
-import { t } from 'react-i18nify';
-import { addSub, patchSub, removeSub } from '../../store/sessionReducer';
+import { usePlayerControls } from '../../hooks/usePlayerControls';
 
 const Style = styled.div`
   position: absolute;
@@ -65,71 +62,13 @@ const Style = styled.div`
 export function Actions({ player }) {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
-  const { selectedSpeaker } = useSelector(store => store.session);
   const { playing, recording, time } = useSelector(store => store.timeline);
-
-  const startRecording = () => {
-    if (!window.timelineEngine) return;
-    const engine = window.timelineEngine;
-
-    if (!playing) {
-      // dispatch(setPlaying(true));
-      // if (player?.paused) player.play();
-      // engine.play({ autoEnd: true });
-      togglePlay();
-      console.log('play!');
-    }
-
-    const sub = new Sub({
-      speakerId: selectedSpeaker.id,
-      start: time,
-      end: time,
-      text: t('SUB_TEXT'),
-    });
-    sub.recording = true;
-
-    console.log('starting recording...');
-    // sub.startOffset = ;
-    // dispatch(setRecordingSub(sub));
-    window.recordingSub = sub;
-    dispatch(addSub(sub));
-
-    setTimeout(() => engine.play({ autoEnd: true }), 10);
-  };
-
-  const completeRecording = useCallback(() => {
-    if (window.recordingSub) {
-      const recSub = window.recordingSub;
-      if (recSub.end - recSub.start > 0.5) {
-        dispatch(patchSub(recSub, { end: recSub.end }));
-      } else {
-        dispatch(removeSub(recSub));
-        if (!player.paused) player.pause();
-        if (window.timelineEngine) window.timelineEngine.pause();
-      }
-    }
-    delete window.recordingSub;
-  }, [window.recordingSub, dispatch]);
+  const { startRecording, completeRecording, togglePlay } = usePlayerControls({ player });
 
   useEffect(() => {
     document.addEventListener('mouseup', completeRecording);
     return () => document.removeEventListener('mouseup', completeRecording);
   }, [completeRecording]);
-
-  const togglePlay = () => {
-    if (!window.timelineEngine) return;
-    const engine = window.timelineEngine;
-
-    if (playing) {
-      dispatch(setPlaying(false));
-      if (!player.paused) player.pause();
-      engine.pause();
-    } else {
-      dispatch(setPlaying(true));
-      if (player.paused) player.play();
-      engine.play({ autoEnd: true });
-    }
-  };
 
   const patchSettings = useCallback((patch) => {
     dispatch(setSettings(patch));
@@ -161,7 +100,7 @@ export function Actions({ player }) {
         </div>
         <div className='separator'></div>
         <div className={'btn btn-icon focus' + (recording ? ' record' : '')}
-             onMouseDown={() => startRecording()}
+             onMouseDown={() => startRecording(time)}
              title='Hold to record subtitle'>
           <FontAwesomeIcon icon={faStop} />
         </div>

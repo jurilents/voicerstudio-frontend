@@ -107,13 +107,13 @@ const PresetEditor = ({ maxPresetId, extraAccuracy, selectedService }) => {
     styleDegree,
     pitch,
     wordsPerMinute: voice.wordsPerMinute,
-  }), [maxPresetId, lang, voice, style, styleDegree, pitch]);
+  }), [maxPresetId, selectedService, lang, voice, style, styleDegree, pitch]);
 
   const onSavePreset = useCallback(() => {
     const preset = createPreset();
     dispatch(addPreset(preset));
     toast.success(`New preset added: '${preset.displayName}'`);
-  }, [selectedService, createPreset]);
+  }, [dispatch, createPreset]);
 
   return (
     <div>

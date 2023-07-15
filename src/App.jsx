@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Toolbar from './components/toolbar/Toolbar';
 import Subtitles from './components/sidebar/Subtitles';
@@ -14,6 +14,7 @@ import { ToastContainer } from 'react-toastify';
 import { VoicedStatuses } from './models/Sub';
 import { addAudio } from './store/audioReducer';
 import 'react-toastify/dist/ReactToastify.css';
+import HotkeysWrap from './components/HotkeysWrap';
 
 const Style = styled.div`
   height: 100%;
@@ -63,40 +64,15 @@ export default function App({ defaultLang }) {
   const { loadSubAudio } = useSubsAudioStorage();
 
   const subtitleHistory = useRef([]);
-  const notificationSystem = useRef(null);
   const [player, setPlayer] = useState(null);
   const [loading, setLoading] = useState('');
   const [processing, setProcessing] = useState(0);
   const [language, setLanguage] = useState(defaultLang);
   const [preset, setPreset] = useState('');
-  // const [waveform, setWaveform] = useState(null);
   const [playing, setPlaying] = useState(false);
   const [recording, setRecording] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentLang, setCurrentLang] = useState(null);
-
-  // toast('🦄 Wow so easy!');
-
-  const notify = useCallback(
-    (obj) => {
-      // https://github.com/igorprado/react-notification-system
-      // const notification = notificationSystem.current;
-      // notification.clearNotifications();
-      // notification.addNotification({
-      //   position: 'tc',
-      //   dismissible: 'none',
-      //   autoDismiss: 2,
-      //   message: obj.message,
-      //   level: obj.level,
-      // });
-    },
-    [notificationSystem],
-  );
-
-  // useMemo(() => {
-  //   const sub = subtitle.find((item) => item.startTime <= currentTime && item.end > currentTime);
-  //   // setSettings({ currentSubtitle: sub?.id || -1 });
-  // }, [currentTime, subtitle, setSettings]);
 
   useEffect(() => {
     async function load() {
@@ -122,14 +98,8 @@ export default function App({ defaultLang }) {
   const props = {
     player,
     setPlayer,
-    // subtitle,
-    // setSubtitle,
-    // waveform,
-    // setWaveform,
     currentTime,
     setCurrentTime,
-    // currentIndex,
-    // setCurrentIndex,
     playing,
     setPlaying,
     language,
@@ -139,34 +109,13 @@ export default function App({ defaultLang }) {
     setProcessing,
     subtitleHistory,
 
-    // speakers,
-    // setSpeakers,
-    // patchSpeaker,
-    // newSpeaker,
-    // settings,
-    // setSettings,
     preset,
     setPreset,
 
     recording,
     setRecording,
-    // langs,
-    // setLangs,
     currentLang,
     setCurrentLang,
-
-    notify,
-    // newSub,
-    // hasSub,
-    // checkSub,
-    // removeSub,
-    // addSub,
-    // undoSubs,
-    // clearSubs,
-    // updateSub,
-    // formatSub,
-    // mergeSub,
-    // splitSub,
   };
 
   return (
@@ -198,6 +147,7 @@ export default function App({ defaultLang }) {
         hideProgressBar
         pauseOnFocusLoss
       />
+      {player && <HotkeysWrap player={player} />}
     </Style>
   );
 }

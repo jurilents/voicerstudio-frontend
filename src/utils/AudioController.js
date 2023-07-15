@@ -54,4 +54,6 @@ class AudioController {
   }
 }
 
-export default new AudioController();
+
+const audioController = new AudioController();
+export default audioController;

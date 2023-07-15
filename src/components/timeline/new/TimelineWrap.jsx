@@ -18,6 +18,8 @@ const TimelineWrap = (props) => {
   // const { selectedSub } = useSelector(store => store.session);
   let ref = null;
 
+  console.log('redraw wrap!!!!!!');
+
   if (!props.player) {
     return <></>;
   }

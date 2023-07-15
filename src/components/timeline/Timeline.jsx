@@ -1,4 +1,3 @@
-import { ContextMenuTrigger } from 'react-contextmenu';
 import React, { createRef, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import isEqual from 'lodash/isEqual';
@@ -18,18 +17,6 @@ const Style = styled.div`
   height: 100%;
   pointer-events: none;
   overflow: hidden;
-
-  .react-contextmenu-wrapper {
-    position: absolute;
-    z-index: 100;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: all;
-  }
 
   .sub-item {
     opacity: 60%;
@@ -360,27 +347,6 @@ export default React.memo(function Timeline({ player, render, currentTime, headi
                 }}
                 onClick={() => onSubClick(sub)}
                 onDoubleClick={(event) => onDoubleClick(sub, event)}>
-                <ContextMenuTrigger id='contextmenu' holdToDisplay={-1}>
-                  <div
-                    className='sub-handle'
-                    style={{ left: 0, width: 10 }}
-                    onMouseDown={(event) => onMouseDown(sub, event, 'left')}>
-                  </div>
-                  <div
-                    className='sub-text'
-                    title={sub.text}
-                    onMouseDown={(event) => onMouseDown(sub, event)}>
-                    {`${sub.text}`.split(/\r?\n/).map((line, index) => (
-                      <p key={index}>{line}</p>
-                    ))}
-                  </div>
-                  <div
-                    className='sub-handle'
-                    style={{ right: 0, width: 10 }}
-                    onMouseDown={(event) => onMouseDown(sub, event, 'right')}>
-                  </div>
-                  <div className='sub-duration'>{sub.duration}</div>
-                </ContextMenuTrigger>
               </div>
             ))}
           </div>

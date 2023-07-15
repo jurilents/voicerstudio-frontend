@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { patchSub, removeSub } from '../store/sessionReducer';
 import timeMachine from '../utils/TimeMachine';
 import { toast } from 'react-toastify';
+import { usePlayerControls } from './usePlayerControls';
 
 const HOTKEYS = {
   deleteSub: { key: 'BACKSPACE' },
@@ -22,6 +23,7 @@ const HOTKEYS = {
 };
 
 let playing = false;
+let holdingRecord = false;
 
 function checkMetaKeys(event, hotkey) {
   return (!hotkey.meta || event.ctrlKey || event.metaKey)
@@ -31,7 +33,8 @@ function checkMetaKeys(event, hotkey) {
 
 export const useHotkeys = ({ player }) => {
   const dispatch = useDispatch();
-  const { selectedSub } = useSelector(store => store.session);
+  const selectedSub = useSelector(store => store.session.selectedSub);
+  const { startRecording, completeRecording } = usePlayerControls({ player });
 
   const handlePlayOrPause = useCallback(() => {
     if (!window.timelineEngine) return;
@@ -41,16 +44,16 @@ export const useHotkeys = ({ player }) => {
       if (engine.isPlaying) {
         console.log('-----pause');
         engine.pause();
-        player.pause();
+        if (!player.paused) player.pause();
       } else {
         console.log('-----play');
         engine.play({ autoEnd: true });
-        player.play();
+        if (player.paused) player.play();
       }
     }
-  }, [player, window.timelineEngine]);
+  }, [player]);
 
-  return useCallback(async (event) => {
+  const onKeyDown = useCallback(async (event) => {
     if (!window.timelineEngine) return;
     const engine = window.timelineEngine;
 
@@ -125,7 +128,12 @@ export const useHotkeys = ({ player }) => {
       // ----- Record -----
       case HOTKEYS.record.key: {
         if (!checkMetaKeys(event, HOTKEYS.record)) break;
-        // TODO: record hotkey
+        if (!holdingRecord) {
+          console.log('rec start');
+          holdingRecord = true;
+          startRecording();
+          //TODO continue here
+        }
         break;
       }
 
@@ -156,12 +164,39 @@ export const useHotkeys = ({ player }) => {
 
       case HOTKEYS.showMotivation.key: {
         if (!checkMetaKeys(event, HOTKEYS.showMotivation)) break;
-        toast.dark(`Ты котик — у тебя все получится  /ᐠ｡ꞈ｡ᐟ✿\\`);
         break;
       }
 
       default:
         break;
     }
-  }, [selectedSub, window.timelineEngine]);
+  }, [dispatch, handlePlayOrPause, selectedSub, player]);
+
+  const onKeyUp = useCallback((event) => {
+    if (!window.timelineEngine) return;
+    const engine = window.timelineEngine;
+
+    const key = getKeyCode(event);
+    if (!key) return;
+
+    event.preventDefault();
+
+    switch (key) {
+      // ----- Record -----
+      case HOTKEYS.record.key: {
+        if (!checkMetaKeys(event, HOTKEYS.record)) break;
+        if (holdingRecord) {
+          console.log('rec done');
+          holdingRecord = false;
+          completeRecording();
+        }
+        break;
+      }
+
+      default:
+        break;
+    }
+  }, []);
+
+  return { onKeyDown, onKeyUp };
 };

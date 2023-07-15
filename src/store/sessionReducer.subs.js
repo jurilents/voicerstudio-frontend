@@ -6,6 +6,7 @@ const subsReducer = {
     speaker.subs = action.payload.subs;
     return { ...state };
   },
+
   addSub: (state, action) => {
     if (!action.payload.sub) {
       console.warn('Sub add invocation unexpected');
@@ -13,7 +14,8 @@ const subsReducer = {
     }
     const speaker = state.speakers.find(x => x.id === action.payload.sub.speakerId);
     if (!speaker) {
-      throw new Error('Cannot add subs to undefined speaker.');
+      console.error('Cannot add sub to undefined speaker.');
+      return state;
     }
     speaker.subs = [...(speaker.subs || []), action.payload.sub];
     speaker.subs.sort((a, b) => a.start - b.start);
@@ -22,10 +24,12 @@ const subsReducer = {
     session.selectedSub = action.payload.sub;
     return session;
   },
+
   removeSub: (state, action) => {
     const speaker = state.speakers.find(x => x.id === action.payload.sub.speakerId);
     if (!speaker) {
-      throw new Error('Cannot remove subs of undefined speaker.');
+      console.error('Cannot remove sub of undefined speaker.');
+      return state;
     }
     const index = speaker.subs.findIndex(x => x.id === action.payload.sub.id);
     if (index < 0) return state;
@@ -41,10 +45,12 @@ const subsReducer = {
           : null,
     };
   },
+
   patchSub: (state, action) => {
     const speaker = state.speakers.find(x => x.id === action.payload.sub.speakerId);
     if (!speaker) {
-      throw new Error('Cannot remove subs of undefined speaker.');
+      console.error('Cannot patch sub of undefined speaker.');
+      return state;
     }
     // speaker.subs = [...(speaker.subs || [])];
     const subIndex = speaker.subs.findIndex(x => x.id === action.payload.sub.id);
@@ -61,10 +67,12 @@ const subsReducer = {
       selectedSub: speaker.subs[subIndex],
     };
   },
+
   selectSub: (state, action) => {
     let speaker = state.speakers.find(x => x.id === action.payload.sub.speakerId);
     if (!speaker) {
-      throw new Error('Cannot remove subs of undefined speaker.');
+      console.error('Cannot select sub of undefined speaker.');
+      return state;
     }
     if (!state.selectedSpeaker || state.selectedSpeaker.id !== action.payload.sub.speakerId) {
       speaker = state.speakers.find(x => x.id === action.payload.sub.speakerId);

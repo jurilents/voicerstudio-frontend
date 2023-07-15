@@ -8,7 +8,6 @@ import { setPlaying, setTime } from '../../../store/timelineReducer';
 import TimelineWrap from './TimelineWrap';
 import ActionAudio from './ActionAudio';
 import ActionSubtitle from './ActionSubtitle';
-import { useHotkeys } from '../../../hooks';
 
 const Style = styled.div`
   width: 100%;
@@ -98,7 +97,7 @@ const Style = styled.div`
   }
 
   .recording-sub {
-    background-color: rgba(200 0 0 / 50%);
+    background-color: rgba(200 0 0 / 50%) !important;
     border-right: 1px solid white;
     border-left: 1px solid #ff7272;
   }
@@ -153,7 +152,6 @@ function calcLeftOffset(time) {
 }
 
 const TimelineEditor = ({ player }) => {
-  const hotkeysHandler = useHotkeys({ player });
   const dispatch = useDispatch();
   const { speakers, selectedSpeaker, selectedSub, videoUrl } = useSelector(store => store.session);
   // const recordingSub = useSelector(store => store.timeline.recordingSub);
@@ -208,12 +206,6 @@ const TimelineEditor = ({ player }) => {
       // lottieControl.destroy();
     };
   }, [window.timelineEngine]);
-
-  // ---------- Timeline Hotkeys ----------
-  useEffect(() => {
-    window.addEventListener('keydown', hotkeysHandler);
-    return () => window.removeEventListener('keydown', hotkeysHandler);
-  }, [hotkeysHandler]);
 
   const handleScroll = useCallback((param) => {
     // if (window.recordingSub) {
@@ -307,17 +299,10 @@ const TimelineEditor = ({ player }) => {
     return <ActionSubtitle action={action} row={row} />;
   }, [selectedSpeaker, selectedSub]);
 
+  window.recordingSub = { start: 0, end: 300 };
+
   return (
     <Style className='noselect'>
-      {window.recordingSub && (
-        <div className='insert-highlight'
-             style={{
-               top: `${92 + (50 * selectedSpeaker.id)}px`,
-               left: `${(20 + window.recordingSub.start)}px`,
-               width: `${(window.recordingSub.end - window.recordingSub.start)}px`,
-             }}>
-        </div>
-      )}
       <TimelineWrap
         player={player}
         data={data}
