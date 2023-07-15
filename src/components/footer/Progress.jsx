@@ -26,7 +26,7 @@ const Style = styled.div`
     width: 0%;
     height: 100%;
     display: inline-block;
-    background-color: var(--c-primary-dark);
+    background-color: #323333;
     overflow: visible;
 
     .handle {
@@ -68,7 +68,7 @@ const Style = styled.div`
   }
 `;
 
-export default function Progress({ player, headingWidth }) {
+const Progress = ({ player, headingWidth }) => {
   const [grabbing, setGrabbing] = useState(false);
   const dispatch = useDispatch();
   const speakers = useSelector(store => store.session.speakers);
@@ -143,12 +143,12 @@ export default function Progress({ player, headingWidth }) {
               {speaker.subs.map((sub, index) => (
                 <span
                   key={index}
-                  className='x'
                   style={{
                     left: `${(sub.start / duration) * 100}%`,
                     top: `${subHeight * speakerIndex}%`,
                     width: `${(sub.duration / duration) * 100}%`,
                     height: subHeightStyle,
+                    backgroundColor: speaker.color,
                   }}
                 ></span>
               ))}
@@ -159,3 +159,5 @@ export default function Progress({ player, headingWidth }) {
     </Style>
   );
 };
+
+export default Progress;

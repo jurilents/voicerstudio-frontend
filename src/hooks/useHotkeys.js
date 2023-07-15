@@ -67,7 +67,7 @@ export const useHotkeys = ({ player }) => {
       // ----- Delete -----
       case HOTKEYS.deleteSub.key: {
         if (!checkMetaKeys(event, HOTKEYS.deleteSub)) break;
-        if (selectedSub) {
+        if (selectedSub && !selectedSub.recording) {
           dispatch(removeSub(selectedSub));
         } else {
           console.warn('No sub selected!');
@@ -131,8 +131,7 @@ export const useHotkeys = ({ player }) => {
         if (!holdingRecord) {
           console.log('rec start');
           holdingRecord = true;
-          startRecording();
-          //TODO continue here
+          startRecording(window.currentTime);
         }
         break;
       }

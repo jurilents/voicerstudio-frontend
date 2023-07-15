@@ -6,8 +6,8 @@ import { Sub } from '../../../models';
 import { t } from 'react-i18nify';
 import { setPlaying, setTime } from '../../../store/timelineReducer';
 import TimelineWrap from './TimelineWrap';
-import ActionAudio from './ActionAudio';
-import ActionSubtitle from './ActionSubtitle';
+import ActionAudio from './action-templates/ActionAudio';
+import ActionSubtitle from './action-templates/ActionSubtitle';
 
 const Style = styled.div`
   width: 100%;
@@ -97,9 +97,10 @@ const Style = styled.div`
   }
 
   .recording-sub {
-    background-color: rgba(200 0 0 / 50%) !important;
-    border-right: 1px solid white;
-    border-left: 1px solid #ff7272;
+    border-color: rgba(220, 0, 0, 0.5) !important;
+    border-width: 2px;
+    //border-right: 1px solid white;
+    //border-left: 1px solid #ff7272;
   }
 
   .timeline-audio {
@@ -177,6 +178,7 @@ const TimelineEditor = ({ player }) => {
     }
 
     engine.listener.on('play', () => {
+      console.log('play starting------');
       dispatch(setPlaying(true));
       player.currentTime = engine.getTime();
     });
@@ -200,6 +202,7 @@ const TimelineEditor = ({ player }) => {
     });
 
     return () => {
+      console.log('destruct---');
       if (!engine) return;
       engine.pause();
       engine.listener.offAll();
@@ -298,8 +301,6 @@ const TimelineEditor = ({ player }) => {
     }
     return <ActionSubtitle action={action} row={row} />;
   }, [selectedSpeaker, selectedSub]);
-
-  window.recordingSub = { start: 0, end: 300 };
 
   return (
     <Style className='noselect'>

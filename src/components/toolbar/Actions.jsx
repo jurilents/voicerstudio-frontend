@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { faLocationCrosshairs, faMagnet, faPause, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Duration from '../timeline/Duration';
+import TimeIndicator from './TimeIndicator';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSettings } from '../../store/settingsReducer';
@@ -62,7 +62,7 @@ const Style = styled.div`
 export function Actions({ player }) {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
-  const { playing, recording, time } = useSelector(store => store.timeline);
+  const { playing, recording } = useSelector(store => store.timeline);
   const { startRecording, completeRecording, togglePlay } = usePlayerControls({ player });
 
   useEffect(() => {
@@ -100,13 +100,13 @@ export function Actions({ player }) {
         </div>
         <div className='separator'></div>
         <div className={'btn btn-icon focus' + (recording ? ' record' : '')}
-             onMouseDown={() => startRecording(time)}
+             onMouseDown={() => startRecording(window.currentTime)}
              title='Hold to record subtitle'>
           <FontAwesomeIcon icon={faStop} />
         </div>
       </div>
       <div className='duration-container'>
-        <Duration currentTime={time} player={player} />
+        <TimeIndicator player={player} />
       </div>
     </Style>
   );

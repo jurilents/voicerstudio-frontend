@@ -2,7 +2,7 @@ import { Timeline } from '@xzdarcy/react-timeline-editor';
 import React, { memo } from 'react';
 import { timelineEffects } from '../../../utils/timelineEffects';
 import { useSelector } from 'react-redux';
-import ScaleMarker from './ScaleMarker';
+import ScaleMarker from './action-templates/ScaleMarker';
 
 function calcScaleCount(duration, scale) {
   if (!duration || isNaN(duration)) {

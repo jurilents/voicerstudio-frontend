@@ -1,13 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { d2t } from '../../utils';
+import { useSelector } from 'react-redux';
 
 const Style = styled.div`
-  //position: absolute;
-  //left: 0;
-  //right: 0;
-  //top: -31px;
-  //z-index: 12;
   width: 100%;
   font-size: 15px;
   color: rgb(255 255 255 / 75%);
@@ -17,7 +13,8 @@ const Style = styled.div`
   pointer-events: none;
 `;
 
-export default function Duration({ currentTime, player }) {
+const TimeIndicator = ({ player }) => {
+  const currentTime = useSelector(store => store.timeline.time);
   if (!player) {
     return (
       <></>
@@ -31,3 +28,5 @@ export default function Duration({ currentTime, player }) {
     </Style>
   );
 };
+
+export default TimeIndicator;

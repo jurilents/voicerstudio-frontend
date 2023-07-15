@@ -1,7 +1,7 @@
 import WaveSurfer from 'wavesurfer.js';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setTotalTime } from '../../../store/timelineReducer';
+import { setTotalTime } from '../../../../store/timelineReducer';
 
 const ActionAudio = ({ action, row }) => {
   const $domRef = useRef();

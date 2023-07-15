@@ -1,9 +1,9 @@
 import { Sub } from '../models';
-import { t } from 'react-i18nify';
 import { addSub, patchSub, removeSub } from '../store/sessionReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCallback } from 'react';
 import { setPlaying } from '../store/timelineReducer';
+import { toast } from 'react-toastify';
 
 export function usePlayerControls({ player }) {
   const dispatch = useDispatch();
@@ -29,30 +29,24 @@ export function usePlayerControls({ player }) {
     if (!window.timelineEngine) return;
     const engine = window.timelineEngine;
 
-    if (!playing) {
-      // dispatch(setPlaying(true));
-      // if (player?.paused) player.play();
-      // engine.play({ autoEnd: true });
-      togglePlay();
-      console.log('play!');
-    }
-
     const sub = new Sub({
       speakerId: selectedSpeaker.id,
       start: time,
       end: time,
-      text: t('SUB_TEXT'),
+      text: '',
     });
     sub.recording = true;
 
-    console.log('starting recording...');
     // sub.startOffset = ;
     // dispatch(setRecordingSub(sub));
     window.recordingSub = sub;
     dispatch(addSub(sub));
 
-    setTimeout(() => engine.play({ autoEnd: true }), 10);
-  }, [window.timelineEngine, dispatch, togglePlay]);
+    setTimeout(() => {
+      engine.play({ autoEnd: true });
+      if (player.paused) player.play();
+    }, 10);
+  }, [window.timelineEngine, dispatch, player, togglePlay]);
 
   const completeRecording = useCallback(() => {
     if (window.recordingSub) {
@@ -61,10 +55,12 @@ export function usePlayerControls({ player }) {
         dispatch(patchSub(recSub, { end: recSub.end }));
       } else {
         dispatch(removeSub(recSub));
+        toast.info('Hold the button to record a subtitle');
       }
 
       if (!player.paused) player.pause();
       if (window.timelineEngine) window.timelineEngine.pause();
+      dispatch(setPlaying(false));
     }
     delete window.recordingSub;
   }, [window.timelineEngine, dispatch, player]);

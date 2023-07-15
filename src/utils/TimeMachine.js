@@ -13,12 +13,11 @@ export class TimeMachine {
       undo: undoAction,
       redo: action,
     });
-    console.log('undo action:', action);
     // Limit history size
     while (this.history.length > settings.historyLimit) {
       this.history.shift();
     }
-    console.log('history size:', this.history);
+    // console.log('history size:', this.history);
     // Reset previous future
     if (this.future.length) {
       this.future = [];

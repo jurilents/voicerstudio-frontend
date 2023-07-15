@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import React, { createRef, useState } from 'react';
-import TimelineEditor from './new/TimelineEditor';
-import { TimelineHeading } from './new/TimelineHeading';
+import TimelineEditor from './timeline/TimelineEditor';
+import { TimelineHeading } from './timeline/TimelineHeading';
 import Progress from './Progress';
 import Zoom from './Zoom';
 

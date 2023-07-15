@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Toolbar from './components/toolbar/Toolbar';
 import Subtitles from './components/sidebar/Subtitles';
 import Player from './components/player/Player';
-import Footer from './components/timeline/Footer';
+import Footer from './components/footer/Footer';
 import Loading from './components/Loading';
 import ProgressBar from './components/header/ProgressBar';
 import Header from './components/header/Header';

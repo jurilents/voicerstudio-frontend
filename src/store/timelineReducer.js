@@ -14,6 +14,8 @@ const defaultState = {
   scaleWidth: 160,
 };
 
+window.currentTime = defaultState.time;
+
 export default function timelineReducer(state = defaultState, action) {
   switch (action.type) {
     case SET_PLAYING: {
