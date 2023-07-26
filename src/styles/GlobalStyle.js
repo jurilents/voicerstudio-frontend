@@ -169,4 +169,74 @@ export default createGlobalStyle`
       }
     }
   }
+
+  .ReactModal__Overlay {
+    z-index: 1111;
+    background-color: rgba(42, 42, 42, 0.9) !important;
+    border: none !important;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 20vh;
+
+    .ReactModal__Content {
+      background-color: rgb(15 15 15 / 80%) !important;
+      border: none !important;
+      color: white;
+      padding: 20px 50px 60px 50px !important;
+      //inset: none !important;
+    }
+
+    .btn-modal {
+      font-size: 16px;
+    }
+
+    .app-input {
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      &:focus {
+        background-color: inherit;
+        color: inherit;
+      }
+    }
+
+    h2 {
+      text-align: center;
+    }
+  }
+
+  .modal-container {
+    max-width: 500px;
+
+    .label {
+      text-align: right;
+      margin: auto 0;
+    }
+
+    input, select {
+      min-width: 300px;
+      //width: 300px;
+      margin: 0;
+    }
+  }
+
+  .btn-app-close {
+    font-size: 24px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: white;
+    background: none;
+    border: none;
+    opacity: 0.75;
+    transition: opacity 0.1s ease;
+
+    &:hover {
+      opacity: 1;
+      transition: opacity 0.1s ease;
+    }
+  }
 `;

@@ -6,6 +6,7 @@ import { patchPreset, removePreset } from '../../../store/sessionReducer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import PresetEditor, { VoicingService } from './PresetsTab.Editor';
+import AddAzureCredsModal from '../../modals/AddAzureCredsModal';
 
 const Style = styled.div`
   .presets-list {
@@ -41,6 +42,7 @@ const Style = styled.div`
 
 const PresetsTab = () => {
   const presets = useSelector(store => store.session.presets);
+  const [modalIsOpen, setIsOpen] = React.useState(false);
 
   const [selectedService, setSelectedService] = useState(VoicingService.Azure);
   const [extraAccuracy, setExtraAccuracy] = useState(false);
@@ -82,13 +84,20 @@ const PresetsTab = () => {
           <Col>
             Voicing service
           </Col>
-          <Col>
+          <Col className='mb-3'>
             <Form.Select className='app-select'
                          onChange={(event) => setSelectedService(event.target.value)}>
               {Object.entries(VoicingService).map(([key, val], index) => (
                 <option key={index} value={val}>{key}</option>
               ))}
             </Form.Select>
+          </Col>
+          <Col className='mb-1'>
+            <button
+              className='btn btn-modal btn-outline'
+              onClick={() => setIsOpen(true)}>
+              Add Credentials
+            </button>
           </Col>
         </Row>
         {/* ************ Extra Accuracy ************ */}
@@ -105,6 +114,7 @@ const PresetsTab = () => {
         selectedService={selectedService}
         maxPresetId={maxPresetId}
         extraAccuracy={extraAccuracy} />
+      <AddAzureCredsModal isOpen={modalIsOpen} setIsOpen={setIsOpen} />
     </Style>
   );
 };

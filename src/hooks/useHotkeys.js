@@ -163,6 +163,7 @@ export const useHotkeys = ({ player }) => {
 
       case HOTKEYS.showMotivation.key: {
         if (!checkMetaKeys(event, HOTKEYS.showMotivation)) break;
+        toast.dark(<>Ты котик — у тебя все получится<br />/ᐠ｡ꞈ｡ᐟ✿\</>, {});
         break;
       }
 

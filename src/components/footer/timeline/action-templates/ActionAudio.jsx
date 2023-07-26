@@ -6,13 +6,14 @@ import { setTotalTime } from '../../../../store/timelineReducer';
 const ActionAudio = ({ action, row }) => {
   const $domRef = useRef();
   const dispatch = useDispatch();
-  const { waveZoom } = useSelector(store => store.settings);
+  const { waveZoom, timelineZoom } = useSelector(store => store.settings);
   const [wavesurfer, setWavesurfer] = useState();
   const [wavesurferOptions, setWavesurferOptions] = useState({
     container: $domRef.current,
     waveColor: 'rgb(175,175,175)',
     progressColor: 'rgb(100,100,100)',
     interact: false,
+    fillParent: true,
     // media: action.data.player,
     // url: action.data.src,
     // minPxPerSec: 10,
@@ -27,9 +28,8 @@ const ActionAudio = ({ action, row }) => {
   }, [$domRef.current, wavesurferOptions, setWavesurferOptions]);
 
   useEffect(() => {
-    if (!$domRef.current || (!wavesurfer && action.data.player && isNaN(+action.data.player.duration))) {
-      return;
-    }
+    if (!$domRef.current || !wavesurfer || !action.data.player || isNaN(+action.data.player.duration)) return;
+
     const ws = WaveSurfer.create(wavesurferOptions);
     ws.load(action.data.player);
     setWavesurfer(ws);
@@ -39,6 +39,13 @@ const ActionAudio = ({ action, row }) => {
       ws.destroy();
     };
   }, [$domRef, dispatch, setWavesurfer, action]);
+
+  useEffect(() => {
+    if (!$domRef.current || !wavesurfer || !action.data.player || isNaN(+action.data.player.duration)) return;
+
+    wavesurfer.drawer.containerWidth = wavesurfer.drawer.container.clientWidth;
+    wavesurfer.drawBuffer();
+  }, [$domRef.current, wavesurfer, timelineZoom]);
 
   // useEffect(() => {
   //   if ($domRef.current && wavesurfer) {

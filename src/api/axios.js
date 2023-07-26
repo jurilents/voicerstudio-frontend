@@ -6,6 +6,16 @@ const api = axios.create({
   // 'https://api.voicer-demo.tacles.net',
 });
 
+export const credentialsApi = {
+  secureCredentials: async (service, credentialsData) => {
+    const result = await api.post(`v1/credentials/secure`, {
+      service: service,
+      data: credentialsData,
+    });
+    return result.data;
+  },
+};
+
 export const languagesApi = {
   getAll: async (serviceName, credentials) => {
     const result = await api.get(`v1/speech-info/languages?service=${serviceName}`, {

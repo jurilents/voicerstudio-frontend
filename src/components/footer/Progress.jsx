@@ -23,11 +23,12 @@ const Style = styled.div`
     left: 0;
     top: 0;
     bottom: 0;
-    width: 0%;
+    width: 0;
     height: 100%;
     display: inline-block;
-    background-color: #323333;
+    background-color: rgba(49, 51, 51, 0.45);
     overflow: visible;
+    z-index: 100;
 
     .handle {
       position: absolute;
@@ -40,6 +41,7 @@ const Style = styled.div`
       color: #c9c9c9;
       display: flex;
       padding: 1px;
+      z-index: 111;
 
       svg {
         display: inline-block;
@@ -68,13 +70,17 @@ const Style = styled.div`
   }
 `;
 
-const Progress = ({ player, headingWidth }) => {
+const Progress = ({ player }) => {
   const [grabbing, setGrabbing] = useState(false);
   const dispatch = useDispatch();
   const speakers = useSelector(store => store.session.speakers);
   const currentTime = useSelector(store => store.timeline.time);
 
   const setProgress = useCallback((pageX) => {
+    if (!window.timelineEngine) return;
+    const engine = window.timelineEngine;
+    const totalWidth = engine.target.clientWidth;
+
     const screenDelta = pageX / document.body.clientWidth;
     const newTime = screenDelta * player.duration;
     player.currentTime = newTime;
@@ -91,7 +97,7 @@ const Progress = ({ player, headingWidth }) => {
     if (event.button !== 0) return;
     setProgress(event.pageX);
     // props.waveform.seek(currentTime);
-  }, [dispatch, headingWidth, player]);
+  }, [dispatch, player]);
 
   const onGrabDown = useCallback(
     (event) => {
@@ -107,7 +113,7 @@ const Progress = ({ player, headingWidth }) => {
         setProgress(event.pageX);
       }
     },
-    [grabbing, player, headingWidth],
+    [grabbing, player],
   );
 
   const onDocumentMouseUp = useCallback(() => {

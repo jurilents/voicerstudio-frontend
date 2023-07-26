@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSettings } from '../../store/settingsReducer';
+import { clamp } from 'lodash';
 
 const Style = styled.div`
   position: absolute;
@@ -18,7 +19,7 @@ const Style = styled.div`
 
   .bar {
     position: absolute;
-    left: 0;
+    left: 5px;
     top: 0;
     bottom: 0;
     width: 0;
@@ -42,19 +43,36 @@ const Style = styled.div`
   }
 `;
 
+const offset = 10;
+
+function calcZoom(eventX) {
+  // TODO: Zoom handle not always is under the cursor
+  const screenDelta = (eventX - offset) / (document.body.clientWidth - (offset * 2));
+  return +(clamp(screenDelta, 0.0001, 1)).toFixed(5);
+}
+
+
 export default function Zoom({ waveform, player, headingWidth }) {
   const [grabbing, setGrabbing] = useState(false);
   const dispatch = useDispatch();
   const { timelineZoom, waveZoom } = useSelector(store => store.settings);
   const [zoom, setZoom] = useState(timelineZoom);
 
+  function applyZoom(zoom) {
+    // if (!window.timelineEngine) return;
+    // const engine = window.timelineEngine;
+    if (!player.paused) player.pause();
+    dispatch(setSettings({ timelineZoom: zoom }));
+    console.log('final zoom: ', zoom);
+    // engine.set();
+  }
+
   const onProgressClick = useCallback(
     (event) => {
       if (event.button !== 0) return;
-      const screenDelta = (event.pageX) / (document.body.clientWidth);
-      const zoomValue = +(Math.max(screenDelta, 0.01)).toFixed(3);
+      const zoomValue = calcZoom(event.pageX);
       setZoom(zoomValue);
-      dispatch(setSettings({ timelineZoom: zoomValue }));
+      applyZoom(zoomValue);
     },
     [dispatch, headingWidth],
   );
@@ -70,8 +88,8 @@ export default function Zoom({ waveform, player, headingWidth }) {
   const onGrabMove = useCallback(
     (event) => {
       if (grabbing) {
-        const zoomValue = (event.pageX) / (document.body.clientWidth);
-        setZoom(+zoomValue.toFixed(3));
+        const zoomValue = calcZoom(event.pageX);
+        setZoom(zoomValue);
       }
     },
     [grabbing, dispatch, player, headingWidth],
@@ -81,8 +99,7 @@ export default function Zoom({ waveform, player, headingWidth }) {
     if (grabbing) {
       setGrabbing(false);
       if (zoom > 0 && zoom <= 1) {
-        // console.log('zoom', zoom);
-        dispatch(setSettings({ timelineZoom: zoom }));
+        applyZoom(zoom);
       }
     }
   }, [grabbing, dispatch, player.currentTime]);
@@ -96,25 +113,25 @@ export default function Zoom({ waveform, player, headingWidth }) {
     };
   }, [onDocumentMouseUp, onGrabMove]);
 
-  useEffect(() => {
-    if (waveform) {
-      waveform.setOptions({
-        duration: timelineZoom * 500,
-      });
-    }
-  }, [timelineZoom]);
+  // useEffect(() => {
+  //   if (waveform) {
+  //     waveform.setOptions({
+  //       duration: timelineZoom * 500,
+  //     });
+  //   }
+  // }, [timelineZoom]);
 
-  useEffect(() => {
-    if (waveform) {
-      waveform.setOptions({
-        waveScale: waveZoom,
-      });
-    }
-  }, [waveZoom]);
+  // useEffect(() => {
+  //   if (waveform) {
+  //     waveform.setOptions({
+  //       waveScale: waveZoom,
+  //     });
+  //   }
+  // }, [waveZoom]);
 
   return (
     <Style className='zoom' onClick={onProgressClick}>
-      <div className='bar' style={{ width: `${zoom * 100}%` }}>
+      <div className='bar' style={{ width: `calc(${zoom * 100}% - 10px)` }}>
         <div className='handle' onMouseDown={onGrabDown}></div>
       </div>
     </Style>

@@ -104,6 +104,8 @@ const Style = styled.div`
   }
 
   .timeline-audio {
+    width: 100%;
+
     wave {
       overflow: hidden !important;
     }
@@ -142,7 +144,7 @@ function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
 }
 
 const timelineOptions = {
-  startLeft: 20,
+  // startLeft: 20,
   scale: 1,
   scaleWidth: 100,
 };
@@ -307,7 +309,7 @@ const TimelineEditor = ({ player }) => {
       <TimelineWrap
         player={player}
         data={data}
-        startLeft={timelineOptions.startLeft}
+        // startLeft={timelineOptions.startLeft}
         scale={timelineOptions.scale}
         scaleWidth={timelineOptions.scaleWidth}
         onTimeChange={onTimeChange}

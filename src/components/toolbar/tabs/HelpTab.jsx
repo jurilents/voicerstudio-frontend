@@ -48,6 +48,10 @@ export default function HelpTab() {
           <Col><span className='hotkey-key'>Backspace</span></Col>
         </Row>
         <Row>
+          <Col>Record subtitle</Col>
+          <Col><span className='hotkey-key'>R (hold)</span></Col>
+        </Row>
+        <Row>
           <Col>Paste text from clipboard</Col>
           <Col><span className='hotkey-key'>⌘ + V</span></Col>
         </Row>
