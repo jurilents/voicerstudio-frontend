@@ -64,6 +64,25 @@ export const useHotkeys = ({ player }) => {
 
     switch (key) {
 
+      // ----- Fake hotkeys and overrides -----
+      case HOTKEYS.save.key: {
+        if (!checkMetaKeys(event, HOTKEYS.save)) break;
+        toast.success(`Calm down, it's okay, everything is saved 😎`);
+        break;
+      }
+
+      case HOTKEYS.refreshPage.key: {
+        if (!checkMetaKeys(event, HOTKEYS.refreshPage)) break;
+        toast.info('Refresh page hotkey disabled. Use browser button if you really want to refresh the page 😘');
+        break;
+      }
+
+      case HOTKEYS.showMotivation.key: {
+        if (!checkMetaKeys(event, HOTKEYS.showMotivation)) break;
+        toast.dark(<>Ты котик — у тебя все получится<br />/ᐠ｡ꞈ｡ᐟ✿\</>, {});
+        break;
+      }
+
       // ----- Delete -----
       case HOTKEYS.deleteSub.key: {
         if (!checkMetaKeys(event, HOTKEYS.deleteSub)) break;
@@ -145,25 +164,6 @@ export const useHotkeys = ({ player }) => {
           const undo = timeMachine.undo();
           if (undo) dispatch(undo);
         }
-        break;
-      }
-
-      // ----- Fake hotkeys and overrides -----
-      case HOTKEYS.save.key: {
-        if (!checkMetaKeys(event, HOTKEYS.save)) break;
-        toast.success(`Calm down, it's okay, everything is saved 😎`);
-        break;
-      }
-
-      case HOTKEYS.refreshPage.key: {
-        if (!checkMetaKeys(event, HOTKEYS.refreshPage)) break;
-        toast.info('Refresh page hotkey disabled. Use browser button if you really want to refresh the page 😘');
-        break;
-      }
-
-      case HOTKEYS.showMotivation.key: {
-        if (!checkMetaKeys(event, HOTKEYS.showMotivation)) break;
-        toast.dark(<>Ты котик — у тебя все получится<br />/ᐠ｡ꞈ｡ᐟ✿\</>, {});
         break;
       }
 

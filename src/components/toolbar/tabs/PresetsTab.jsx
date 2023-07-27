@@ -2,11 +2,11 @@ import React, { memo, useState } from 'react';
 import styled from 'styled-components';
 import { Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { patchPreset, removePreset } from '../../../store/sessionReducer';
+import { patchCreds, patchPreset, removeCreds, removePreset } from '../../../store/sessionReducer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faAdd, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import PresetEditor, { VoicingService } from './PresetsTab.Editor';
-import AddAzureCredsModal from '../../modals/AddAzureCredsModal';
+import AddCredsModal from '../../modals/AddCredsModal';
 
 const Style = styled.div`
   .presets-list {
@@ -41,7 +41,7 @@ const Style = styled.div`
 `;
 
 const PresetsTab = () => {
-  const presets = useSelector(store => store.session.presets);
+  const { credentials, presets } = useSelector(store => store.session);
   const [modalIsOpen, setIsOpen] = React.useState(false);
 
   const [selectedService, setSelectedService] = useState(VoicingService.Azure);
@@ -53,11 +53,42 @@ const PresetsTab = () => {
   return (
     <Style className='tab-outlet'>
       <div className='mb-5'>
+        <h3>Credentials</h3>
+        <ListGroup className='presets-list app-list-group'>
+          {credentials.map((cred) => (
+            <ListGroup.Item key={cred.value}>
+              <img className='service-logo'
+                   src={`/images/${cred.service}-logo.png`}
+                   alt={cred.service}
+                   title={cred.service} />
+              <input className='list-item-text'
+                     type='text'
+                     value={cred.displayName}
+                     onChange={(event) =>
+                       dispatch(patchCreds(cred, { displayName: event.target.value }))} />
+              <span className='list-item-actions'>
+                <button className='btn'
+                        onClick={() => dispatch(removeCreds(cred))}>
+                  <FontAwesomeIcon icon={faTrashAlt} />
+                </button>
+              </span>
+            </ListGroup.Item>
+          ))}
+          <ListGroup.Item>
+            <button className='btn add-button'
+                    onClick={() => setIsOpen(true)}>
+              <FontAwesomeIcon icon={faAdd} />
+            </button>
+          </ListGroup.Item>
+        </ListGroup>
+      </div>
+
+
+      <div className='mb-5'>
         <h3>Presets</h3>
         <ListGroup className='presets-list app-list-group'>
           {presets.map((preset) => (
-            <ListGroup.Item
-              key={preset.id}>
+            <ListGroup.Item key={preset.id}>
               <img className='service-logo'
                    src={`/images/${preset.service}-logo.png`}
                    alt={preset.service}
@@ -92,13 +123,7 @@ const PresetsTab = () => {
               ))}
             </Form.Select>
           </Col>
-          <Col className='mb-1'>
-            <button
-              className='btn btn-modal btn-outline'
-              onClick={() => setIsOpen(true)}>
-              Add Credentials
-            </button>
-          </Col>
+
         </Row>
         {/* ************ Extra Accuracy ************ */}
         <Row>
@@ -110,11 +135,10 @@ const PresetsTab = () => {
           </Col>
         </Row>
       </Container>
-      <PresetEditor
-        selectedService={selectedService}
-        maxPresetId={maxPresetId}
-        extraAccuracy={extraAccuracy} />
-      <AddAzureCredsModal isOpen={modalIsOpen} setIsOpen={setIsOpen} />
+      <PresetEditor selectedService={selectedService}
+                    maxPresetId={maxPresetId}
+                    extraAccuracy={extraAccuracy} />
+      <AddCredsModal isOpen={modalIsOpen} setIsOpen={setIsOpen} />
     </Style>
   );
 };

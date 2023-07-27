@@ -12,6 +12,7 @@ export const credentialsApi = {
       service: service,
       data: credentialsData,
     });
+    console.log('result', result);
     return result.data;
   },
 };

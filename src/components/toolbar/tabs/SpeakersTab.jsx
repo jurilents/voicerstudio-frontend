@@ -60,10 +60,9 @@ export default function SpeakersTab(props) {
         <h3>Speakers</h3>
         <ListGroup className='app-list-group'>
           {speakers.map((speaker) => (
-            <ListGroup.Item
-              className={(selectedSpeaker?.id && speaker.id === selectedSpeaker?.id ? 'selected' : '')}
-              key={speaker.id}
-              onClick={() => dispatch(selectSpeaker(speaker.id))}>
+            <ListGroup.Item className={(selectedSpeaker?.id && speaker.id === selectedSpeaker?.id ? 'selected' : '')}
+                            key={speaker.id}
+                            onClick={() => dispatch(selectSpeaker(speaker.id))}>
               <div className='color-preview' style={{ backgroundColor: speaker.color || '#000' }}></div>
               <input className='list-item-text'
                      type='text'
@@ -71,9 +70,8 @@ export default function SpeakersTab(props) {
                      onChange={(event) =>
                        dispatch(patchSpeaker(speaker.id, { displayName: event.target.value }))} />
               <span className='list-item--actions'>
-            <button
-              className='btn'
-              onClick={() => dispatch(removeSpeaker(speaker))}>
+            <button className='btn'
+                    onClick={() => dispatch(removeSpeaker(speaker))}>
               <FontAwesomeIcon icon={faTrashAlt} />
             </button>
           </span>
@@ -81,9 +79,8 @@ export default function SpeakersTab(props) {
           ))}
           {speakers.length < 10 && (
             <ListGroup.Item>
-              <button
-                className='btn add-button'
-                onClick={() => dispatch(addSpeaker(createSpeaker()))}>
+              <button className='btn add-button'
+                      onClick={() => dispatch(addSpeaker(createSpeaker()))}>
                 <FontAwesomeIcon icon={faAdd} />
               </button>
             </ListGroup.Item>

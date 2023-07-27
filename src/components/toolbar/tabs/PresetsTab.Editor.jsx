@@ -11,7 +11,7 @@ import { addPreset } from '../../../store/sessionReducer';
 
 export const VoicingService = {
   Azure: 'Azure',
-  VoiceMaker: 'VoiceMaker',
+  // VoiceMaker: 'VoiceMaker',
 };
 
 const PresetEditor = ({ maxPresetId, extraAccuracy, selectedService }) => {

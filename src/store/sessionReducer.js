@@ -6,6 +6,7 @@ import presetsReducer from './sessionReducer.presets';
 import { VoicedStatuses } from '../models/Sub';
 import timeMachine from '../utils/TimeMachine';
 import { cloneByKeys, objectsHaveSameKeys } from '../utils';
+import credsReducer from './sessionReducer.creds';
 
 // Commands
 const ADD_SPEAKER = 'ADD_SPEAKER';
@@ -26,6 +27,10 @@ const PATCH_PRESET = 'PATCH_PRESET';
 const SET_VIDEO = 'SET_VIDEO';
 const SET_VIDEO_DURATION = 'SET_VIDEO_DURATION';
 
+const ADD_CREDS = 'ADD_CREDS';
+const REMOVE_CREDS = 'REMOVE_CREDS';
+const PATCH_CREDS = 'PATCH_CREDS';
+
 // Storage keys
 const STORAGE_KEY = 'session';
 
@@ -40,6 +45,7 @@ const rootState = {
   selectedSpeaker: defaultSpeaker,
   selectedSub: null,
   presets: [],
+  credentials: [],
   videoUrl: null,
   videoDuration: 60,
 };
@@ -173,12 +179,10 @@ export default function sessionReducer(state = defaultState, action) {
       const session = presetsReducer.addPreset(state, action);
       return saveToLocalStorage(session);
     }
-
     case REMOVE_PRESET: {
       const session = presetsReducer.removePreset(state, action);
       return saveToLocalStorage(session);
     }
-
     case PATCH_PRESET: {
       const session = presetsReducer.patchPreset(state, action);
       return saveToLocalStorage(session);
@@ -202,6 +206,21 @@ export default function sessionReducer(state = defaultState, action) {
       };
       return saveToLocalStorage(session);
     }
+
+    /************************* CREDENTIALS *************************/
+    case ADD_CREDS: {
+      const session = credsReducer.addCreds(state, action);
+      return saveToLocalStorage(session);
+    }
+    case REMOVE_CREDS: {
+      const session = credsReducer.removeCreds(state, action);
+      return saveToLocalStorage(session);
+    }
+    case PATCH_CREDS: {
+      const session = credsReducer.patchCreds(state, action);
+      return saveToLocalStorage(session);
+    }
+
     default:
       return state;
   }
@@ -224,3 +243,7 @@ export const patchPreset = (id, patch) => ({ type: PATCH_PRESET, payload: { id, 
 
 export const setVideo = (videoUrl) => ({ type: SET_VIDEO, payload: { videoUrl } });
 export const setVideoDuration = (videoDuration) => ({ type: SET_VIDEO_DURATION, payload: { videoDuration } });
+
+export const addCreds = (cred) => ({ type: ADD_CREDS, payload: { cred } });
+export const removeCreds = (cred) => ({ type: REMOVE_CREDS, payload: { cred } });
+export const patchCreds = (cred, patch) => ({ type: PATCH_CREDS, payload: { cred, patch } });

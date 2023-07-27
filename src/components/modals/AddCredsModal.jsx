@@ -6,21 +6,28 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { VoicingService } from '../toolbar/tabs/PresetsTab.Editor';
 import { credentialsApi } from '../../api/axios';
 import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { addCreds } from '../../store/sessionReducer';
+import { Creds } from '../../models';
+import { Status } from '../../api/constants';
 
-const AddAzureCredsModal = ({ isOpen, setIsOpen }) => {
+const AddCredsModal = ({ isOpen, setIsOpen }) => {
+  const dispatch = useDispatch();
+  const credentials = useSelector(store => store.session.credentials);
+  console.log('credentials', credentials);
   const [voicingService, setVoicingService] = useState(VoicingService.Azure);
+  const [status, setStatus] = useState(Status.none);
+  const [securedCreds, setSecuredCreds] = useState('');
   const [azureSubscriptionKey, setAzureSubscriptionKey] = useState('');
   const [azureRegion, setAzureRegion] = useState('');
-  const [checked, setChecked] = useState(false);
-  const [encryptedCreds, setEncryptedCreds] = useState('');
 
   const closeModal = () => {
     setIsOpen(false);
   };
 
   const handleCredChange = () => {
-    setChecked(false);
-    setEncryptedCreds('');
+    setStatus(Status.none);
+    setSecuredCreds('');
   };
 
   const getVoicingServiceCreds = () => {
@@ -41,34 +48,50 @@ const AddAzureCredsModal = ({ isOpen, setIsOpen }) => {
   };
 
   const submit = async () => {
-    if (checked) {
+    if (status === Status.loading) {
+      toast.info('Wait. We are checking your credentials...');
+      return;
+    }
+    if (status === Status.success) {
+      dispatch(addCreds(new Creds({
+        service: voicingService,
+        value: securedCreds,
+        displayName: `${voicingService} ${credentials.length + 1}`,
+      })));
+      setIsOpen(false);
+      handleCredChange();
+      setAzureSubscriptionKey('');
+      setAzureRegion('');
+      toast.success('Credentials added!');
       return;
     }
 
+    setStatus(Status.loading);
     const creds = getVoicingServiceCreds();
     console.log('creds', creds);
 
     try {
       const securedCreds = await credentialsApi.secureCredentials(voicingService, creds);
-      console.log('securedCreds', securedCreds);
-      setChecked(true);
-      toast.success('Great! Credentials are valid!');
+
+      setSecuredCreds(securedCreds.credentials);
+      setStatus(Status.success);
+      toast.success('Great! Credentials are valid');
     } catch (err) {
       console.log(err);
+      setStatus(Status.failure);
       toast.error(err.response.data.message);
     }
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      style={{
-        content: {
-          inset: 'unset',
-        },
-      }}
-      onRequestClose={closeModal}
-      contentLabel='Example Modal'>
+    <Modal isOpen={isOpen}
+           style={{
+             content: {
+               inset: 'unset',
+             },
+           }}
+           onRequestClose={closeModal}
+           contentLabel='Add Credentials'>
       <button className='btn-app-close' onClick={closeModal}>
         <FontAwesomeIcon icon={faXmark} />
       </button>
@@ -94,7 +117,7 @@ const AddAzureCredsModal = ({ isOpen, setIsOpen }) => {
               <Col className='range-wrapper'>
                 <Form.Control type='password'
                               className='app-input'
-                              placeholder='Subscription Key'
+                              placeholder='a1b2cca1b2c3...'
                               onChange={(event) => {
                                 setAzureSubscriptionKey(event.target.value);
                                 handleCredChange();
@@ -106,7 +129,7 @@ const AddAzureCredsModal = ({ isOpen, setIsOpen }) => {
               <Col className='range-wrapper'>
                 <Form.Control type='password'
                               className='app-input'
-                              placeholder='Region'
+                              placeholder='eastus'
                               onChange={(event) => {
                                 setAzureRegion(event.target.value);
                                 handleCredChange();
@@ -136,7 +159,9 @@ const AddAzureCredsModal = ({ isOpen, setIsOpen }) => {
             <button className='btn btn-modal btn-outline'
                     onClick={submit}
                     disabled={voicingService !== VoicingService.Azure}>
-              {checked ? 'Add' : 'Check'}
+              {status === Status.success
+                ? 'Add' : status === Status.loading
+                  ? 'Checking...' : 'Check'}
             </button>
           </Col>
         </Row>
@@ -145,4 +170,4 @@ const AddAzureCredsModal = ({ isOpen, setIsOpen }) => {
   );
 };
 
-export default AddAzureCredsModal;
+export default AddCredsModal;
