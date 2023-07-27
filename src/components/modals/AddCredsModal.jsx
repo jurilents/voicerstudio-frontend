@@ -3,13 +3,13 @@ import { Col, Container, Form, Row } from 'react-bootstrap';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import { VoicingService } from '../toolbar/tabs/PresetsTab.Editor';
 import { credentialsApi } from '../../api/axios';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCreds } from '../../store/sessionReducer';
 import { Creds } from '../../models';
 import { Status } from '../../api/constants';
+import { VoicingService } from '../../models/enums';
 
 const AddCredsModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
@@ -79,12 +79,13 @@ const AddCredsModal = ({ isOpen, setIsOpen }) => {
     } catch (err) {
       console.log(err);
       setStatus(Status.failure);
-      toast.error(err.response.data.message);
+      toast.error(err.response?.data.message || 'Unknown error :(');
     }
   };
 
   return (
     <Modal isOpen={isOpen}
+           ariaHideApp={false}
            style={{
              content: {
                inset: 'unset',

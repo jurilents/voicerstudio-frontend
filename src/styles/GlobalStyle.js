@@ -185,6 +185,7 @@ export default createGlobalStyle`
       border: none !important;
       color: white;
       padding: 20px 50px 60px 50px !important;
+      min-width: 50%;
       //inset: none !important;
     }
 
@@ -237,6 +238,86 @@ export default createGlobalStyle`
     &:hover {
       opacity: 1;
       transition: opacity 0.1s ease;
+    }
+  }
+
+  input[type=checkbox].form-check-input {
+    border-radius: 0 !important;
+    background-color: transparent;
+    border: 1px solid rgb(255 255 255 / 33%);
+    /* width: 30px; */
+    min-width: 20px;
+    display: inline-block;
+    aspect-ratio: 1;
+    height: auto;
+
+    &:focus {
+      border-color: var(--c-primary-dark);
+      box-shadow: none;
+    }
+
+    &:checked {
+      background-color: var(--c-primary);
+      border-color: var(--c-primary);
+    }
+  }
+
+  input[type=range] {
+    width: 100%;
+    min-width: 100%;
+    height: 28px;
+  }
+
+  .speaker-form {
+    .row {
+      margin-bottom: 10px;
+    }
+  }
+
+  .custom-input-wrap {
+    height: 38px;
+    display: flex;
+    align-items: center;
+  }
+
+  .text-to-voice {
+    width: 100%;
+    background-color: transparent;
+    color: white;
+    padding: 10px;
+    min-height: 60px;
+    max-height: 200px;
+  }
+
+  option {
+    color: white !important;
+    background-color: rgb(0 0 0 / 95%);
+    border: none;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    &:checked {
+      background-color: var(--c-primary-dark);
+    }
+  }
+
+  .app-reset-btn {
+    transform: rotateY(180deg) rotateZ(30deg);
+    display: block;
+    border: none;
+    outline: none;
+    background-color: rgb(255 255 255 / 10%);
+    border-radius: 50%;
+    padding: 5px 0 4px 0;
+    min-width: 25px;
+    width: 15px;
+    color: white;
+    font-size: 13px;
+
+    &:hover {
+      background-color: var(--c-primary);
     }
   }
 `;

@@ -1,12 +1,12 @@
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
 import styled from 'styled-components';
-import { Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
+import { ListGroup } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { patchCreds, patchPreset, removeCreds, removePreset } from '../../../store/sessionReducer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import PresetEditor, { VoicingService } from './PresetsTab.Editor';
 import AddCredsModal from '../../modals/AddCredsModal';
+import AddPresetModal from '../../modals/AddPresetModal';
 
 const Style = styled.div`
   .presets-list {
@@ -24,15 +24,6 @@ const Style = styled.div`
     height: 30px;
   }
 
-  .text-to-voice {
-    width: 100%;
-    background-color: transparent;
-    color: white;
-    padding: 10px;
-    min-height: 60px;
-    max-height: 200px;
-  }
-
   .audio {
     min-width: 100%;
     height: 40px !important;
@@ -42,13 +33,10 @@ const Style = styled.div`
 
 const PresetsTab = () => {
   const { credentials, presets } = useSelector(store => store.session);
-  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [credsModalIsOpen, toggleCredsModal] = React.useState(false);
+  const [presetModalIsOpen, togglePresetModal] = React.useState(false);
 
-  const [selectedService, setSelectedService] = useState(VoicingService.Azure);
-  const [extraAccuracy, setExtraAccuracy] = useState(false);
   const dispatch = useDispatch();
-  let maxPresetId = useSelector(store => store.session.presets.length
-    ? Math.max.apply(null, (store.session.presets).map(x => x.id)) : 0);
 
   return (
     <Style className='tab-outlet'>
@@ -76,7 +64,7 @@ const PresetsTab = () => {
           ))}
           <ListGroup.Item>
             <button className='btn add-button'
-                    onClick={() => setIsOpen(true)}>
+                    onClick={() => toggleCredsModal(true)}>
               <FontAwesomeIcon icon={faAdd} />
             </button>
           </ListGroup.Item>
@@ -107,38 +95,16 @@ const PresetsTab = () => {
               </span>
             </ListGroup.Item>
           ))}
+          <ListGroup.Item>
+            <button className='btn add-button'
+                    onClick={() => togglePresetModal(true)}>
+              <FontAwesomeIcon icon={faAdd} />
+            </button>
+          </ListGroup.Item>
         </ListGroup>
       </div>
-      <Container className='mb-3'>
-        {/* ************ Voicing Service ************ */}
-        <Row>
-          <Col>
-            Voicing service
-          </Col>
-          <Col className='mb-3'>
-            <Form.Select className='app-select'
-                         onChange={(event) => setSelectedService(event.target.value)}>
-              {Object.entries(VoicingService).map(([key, val], index) => (
-                <option key={index} value={val}>{key}</option>
-              ))}
-            </Form.Select>
-          </Col>
-
-        </Row>
-        {/* ************ Extra Accuracy ************ */}
-        <Row>
-          <Col className='label'>Extra Accuracy Inputs</Col>
-          <Col>
-            <Form.Check
-              checked={extraAccuracy}
-              onChange={(event) => setExtraAccuracy(event.target.checked)} />
-          </Col>
-        </Row>
-      </Container>
-      <PresetEditor selectedService={selectedService}
-                    maxPresetId={maxPresetId}
-                    extraAccuracy={extraAccuracy} />
-      <AddCredsModal isOpen={modalIsOpen} setIsOpen={setIsOpen} />
+      <AddCredsModal isOpen={credsModalIsOpen} setIsOpen={toggleCredsModal} />
+      <AddPresetModal isOpen={presetModalIsOpen} setIsOpen={togglePresetModal} />
     </Style>
   );
 };

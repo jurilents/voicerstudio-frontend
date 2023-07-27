@@ -15,13 +15,14 @@ const credsReducer = {
   },
   patchCreds: (state, action) => {
     const index = state.credentials.findIndex(x => x.value === action.payload.cred.value);
+    console.log('pccc', index);
     if (index < 0) return;
     const credsCopy = [...state.credentials];
     const cred = state.credentials[index];
     credsCopy[index] = new Creds({ ...cred, ...action.payload.patch });
     return {
       ...state,
-      presets: credsCopy,
+      credentials: credsCopy,
     };
   },
 };

@@ -11,7 +11,7 @@ import { patchSub } from '../../store/sessionReducer';
 import { useSubsAudioStorage } from '../../hooks';
 import { VoicedStatuses } from '../../models/Sub';
 import { toast } from 'react-toastify';
-import { VoicingService } from '../toolbar/tabs/PresetsTab.Editor';
+import { VoicingService } from '../../models/enums';
 
 const Style = styled.div`
   height: 100%;

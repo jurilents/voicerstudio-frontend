@@ -39,10 +39,6 @@ const Style = styled.div`
       }
     }
   }
-
-  .reset-speed-btn {
-    transform: rotateY(180deg) rotateZ(30deg);
-  }
 `;
 
 export default function GeneralTab(props) {
@@ -131,7 +127,7 @@ export default function GeneralTab(props) {
                 <FontAwesomeIcon icon={faAdd} />
               </button>
               <button
-                className='speed-btn reset-speed-btn'
+                className='speed-btn app-reset-btn'
                 onClick={() => dispatch(setSettings({ playbackSpeed: 1 }))}>
                 <FontAwesomeIcon icon={faRedoAlt} />
               </button>

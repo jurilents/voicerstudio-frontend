@@ -10,7 +10,7 @@ import { file2sub, sub2srt, sub2txt, sub2vtt } from '../../../libs/readSub';
 import { t } from 'react-i18nify';
 import sub2ass from '../../../libs/readSub/sub2ass';
 import { toast } from 'react-toastify';
-import { VoicingService } from './PresetsTab.Editor';
+import { VoicingService } from '../../../models/enums';
 
 const Style = styled.div`
   .app-input {

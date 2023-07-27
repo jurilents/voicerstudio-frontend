@@ -27,17 +27,17 @@ export const languagesApi = {
 };
 
 export const speechApi = {
-  getDuration: async (body, credentials) => {
-    const result = await api.post(`v1/speech/duration`, body, {
-      headers: { 'X-Credentials': credentials },
-      responseType: 'application/json',
-    });
-    return {
-      baseDuration: +result.data.baseDuration,
-    };
-  },
+  // getDuration: async (body, credentials) => {
+  //   const result = await api.post(`v1/text-2-speech/duration`, body, {
+  //     headers: { 'X-Credentials': credentials },
+  //     responseType: 'application/json',
+  //   });
+  //   return {
+  //     baseDuration: +result.data.baseDuration,
+  //   };
+  // },
   single: async (body, credentials) => {
-    const result = await api.post(`v1/speech/single`, body, {
+    const result = await api.post(`v1/text2speech/single`, body, {
       headers: { 'X-Credentials': credentials },
       responseType: 'blob',
     });
@@ -50,7 +50,7 @@ export const speechApi = {
     };
   },
   batch: async (body, credentials) => {
-    const result = await api.post(`v1/speech/batch`, body, {
+    const result = await api.post(`v1/text2speech/batch`, body, {
       headers: { 'X-Credentials': credentials },
       responseType: 'blob',
     });

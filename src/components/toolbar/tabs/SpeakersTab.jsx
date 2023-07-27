@@ -23,20 +23,6 @@ const Style = styled.div`
     margin: auto 5px;
     border-radius: 50%;
   }
-
-  .speaker-form {
-    border-top: 1px solid rgb(255 255 255 / 30%);
-    padding-top: 20px;
-
-    .row {
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .label {
-      text-align: right;
-    }
-  }
 `;
 
 export default function SpeakersTab(props) {
