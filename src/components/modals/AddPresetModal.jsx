@@ -1,6 +1,7 @@
 import Modal from 'react-modal';
-import { Col, Container, Form, Row } from 'react-bootstrap';
+import { Col, Form, Row } from 'react-bootstrap';
 import React, { createRef, memo, useCallback, useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRedoAlt, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +14,16 @@ import { Preset } from '../../models';
 import { addPreset } from '../../store/sessionReducer';
 import { VoicingService } from '../../models/enums';
 
+const Style = styled.div`
+  .audio {
+    min-width: 100%;
+    max-width: 100%;
+    width: 100%;
+    height: 40px !important;
+    margin: 5px 0 15px 0;
+  }
+`;
+
 const AddPresetModal = ({ isOpen, setIsOpen }) => {
   let maxPresetId = useSelector(store => store.session.presets.length
     ? Math.max.apply(null, (store.session.presets).map(x => x.id)) : 0);
@@ -24,15 +35,15 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
   const [status, setStatus] = useState(Status.none);
   const [sampleSrc, setSampleSrc] = useState('');
 
-  const [lang, setLang] = useState({ locale: 'en-US', voices: null });
+  const [lang, setLang] = useState({ locale: 'en-US', voices: [] });
   const [voice, setVoice] = useState({});
   const [style, setStyle] = useState('');
-  const [styleDegree, setStyleDegree] = useState(0);
+  const [styleDegree, setStyleDegree] = useState(1);
   const [pitch, setPitch] = useState(0);
   const [text, setText] = useState(`This priceless pearl of the primordial knowledge removes the cloak from all mysteries of the material world`);
 
   const credentials = useSelector(store => store.session.credentials.filter(x => x.service === voicingService));
-  const [selectedCreds, setSelectedCreds] = useState(credentials.length > 0 ? credentials[0] : null);
+  const [selectedCred, setSelectedCred] = useState(credentials.length > 0 ? credentials[0] : null);
 
   const dispatch = useDispatch();
   let languages = useSelector(store => voicingService === VoicingService.Azure
@@ -42,7 +53,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
   useEffect(() => {
     async function fetchLanguages() {
       setLangsFetchStatus(Status.loading);
-      const newLanguages = await languagesApi.getAll(voicingService, 'dev_placeholder');
+      const newLanguages = await languagesApi.getAll(voicingService, selectedCred.value);
       if (newLanguages.length < 1) {
         toast.error('No languages fetched :(');
         setLangsFetchStatus(Status.failure);
@@ -88,7 +99,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
         styleDegree: styleDegree,
         // role: 'string',
         pitch: pitch,
-        volume: 1,
+        volume: 0,
         speed: 0,
         outputFormat: 'Wav',
         sampleRate: 'Rate48000',
@@ -96,12 +107,16 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
 
       try {
         console.log('req', request);
-        const response = await speechApi.single(request, 'dev_placeholder');
+        console.log('selectedCred.value', selectedCred.value);
+        const response = await speechApi.single(request, selectedCred.value);
         setSampleSrc(response.url);
         console.log('res', response);
         toast.info('Speak succeeded');
       } catch (err) {
-        toast.error(`Speak failed: ${err.response.data}`);
+        console.log('error', err);
+        const errText = await err.response?.data.text();
+        const errJson = JSON.parse(errText);
+        toast.error(`Speak failed: ${errJson?.message || 'Unknown error'}`);
       }
     }
 
@@ -120,7 +135,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
   const createPreset = useCallback(() => new Preset({
     id: ++maxPresetId,
     service: voicingService,
-    displayName: `${lang.displayName.split(' ')[0]} / ${voice.displayName} ${style ? style + ' ' : ''}${maxPresetId}`,
+    displayName: `${voice.displayName} ${style ? style + ' ' : ''}${maxPresetId} (${lang.displayName.split(' ')[0]})`,
     locale: lang.locale,
     voice: voice.key,
     style,
@@ -140,10 +155,12 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
   };
 
   const handleStyleChange = (value) => {
+    console.log('new style: ', value);
     setStyle(value);
   };
 
   const handleVoiceChange = (value) => {
+    console.log('new voice: ', value);
     if (typeof value === 'string') {
       setVoice(lang.voices.find(x => x.key === value));
     } else {
@@ -153,9 +170,10 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
   };
 
   const handleLanguageChange = (value) => {
+    console.log('new lang: ', value);
     const newLang = languages.find(x => x.locale === value);
     setLang(newLang);
-    handleVoiceChange(newLang.voices?.length ? newLang.voices[0] : '');
+    handleVoiceChange(newLang.voices?.length ? newLang.voices[0] : {});
   };
 
   return (
@@ -175,15 +193,15 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
       <h2 className='my-4'>Add Voice Preset</h2>
 
       {langsFetchStatus !== Status.success && (
-        <Container className='modal-container speaker-form'>
+        <Style className='modal-container speaker-form container'>
           <Row>
             <Col xs={12}>Loading...</Col>
           </Row>
-        </Container>
+        </Style>
       )}
 
       {langsFetchStatus === Status.success && (
-        <Container className='modal-container speaker-form'>
+        <Style className='modal-container speaker-form container'>
 
           {/* ************ Voicing Service ************ */}
           <Row>
@@ -204,8 +222,8 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
             <Col xs={4} className='label'>Credentials</Col>
             <Col xs={8}>
               <Form.Select className='app-select'
-                           onChange={(event) => setSelectedCreds(event.target.value)}
-                           value={selectedCreds}>
+                           onChange={(event) => setSelectedCred(event.target.value)}
+                           value={selectedCred}>
                 {credentials.map((cred, index) => (
                   <option key={index} value={cred.value}>{cred.displayName}</option>
                 ))}
@@ -239,8 +257,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
                   defaultValue=''
                   onChange={(event) => handleVoiceChange(event.target.value)}>
                   {lang.voices.map((voice) => (
-                    <option key={voice.key}
-                            value={voice.key}>
+                    <option key={voice.key} value={voice.key}>
                       {voice.displayName} ({voice.gender}) {voice.styles.length > 0 ? ` ${voice.styles.length} styles` : null}
                     </option>
                   ))}
@@ -254,14 +271,12 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
             <Row>
               <Col xs={4} className='label'>Style</Col>
               <Col xs={8}>
-                <Form.Select
-                  className='app-select'
-                  defaultValue={style}
-                  onChange={(event) => handleStyleChange(event.target.value)}>
+                <Form.Select className='app-select'
+                             value={style}
+                             onChange={(event) => handleStyleChange(event.target.value)}>
                   <option value=''>--- neutral ---</option>
                   {voice.styles.map((style, index) => (
-                    <option key={index}
-                            value={style}>
+                    <option key={index} value={style}>
                       {style}
                     </option>
                   ))}
@@ -276,7 +291,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
               <Col xs={4} className='label'>Style degree</Col>
               <Col xs={6}>
                 <input type='range'
-                       min={-1.0} max={1.0}
+                       min={0.01} max={2.0}
                        step={extraAccuracy ? 0.001 : 0.01}
                        value={styleDegree}
                        onChange={(event) => setStyleDegree(+event.target.value)} />
@@ -284,12 +299,12 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
               <Col xs={1}>
                 <button
                   className='app-reset-btn'
-                  onClick={() => setStyleDegree(0)}>
+                  onClick={() => setStyleDegree(1)}>
                   <FontAwesomeIcon icon={faRedoAlt} />
                 </button>
               </Col>
               <Col xs={1}>
-                <span>{toPercentsDelta(styleDegree, true, extraAccuracy)}</span>
+                <span>{toPercentsDelta(styleDegree, false, extraAccuracy)}</span>
               </Col>
             </Row>
           ) : null}
@@ -361,11 +376,11 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
               <button
                 className='btn btn-primary'
                 onClick={onSavePreset}>
-                Save Preset
+                Add Preset
               </button>
             </Col>
           </Row>
-        </Container>
+        </Style>
       )}
     </Modal>
   );

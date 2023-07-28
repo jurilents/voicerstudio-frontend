@@ -10,7 +10,7 @@ import AddPresetModal from '../../modals/AddPresetModal';
 
 const Style = styled.div`
   .presets-list {
-    max-height: 200px;
+    max-height: 250px;
     overflow-y: scroll;
   }
 
@@ -22,12 +22,6 @@ const Style = styled.div`
 
   .offset {
     height: 30px;
-  }
-
-  .audio {
-    min-width: 100%;
-    height: 40px !important;
-    margin: 10px 0 5px 0;
   }
 `;
 
@@ -72,7 +66,7 @@ const PresetsTab = () => {
       </div>
 
 
-      <div className='mb-5'>
+      <div className='mb-3'>
         <h3>Presets</h3>
         <ListGroup className='presets-list app-list-group'>
           {presets.map((preset) => (
