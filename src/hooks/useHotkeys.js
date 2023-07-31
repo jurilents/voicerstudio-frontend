@@ -5,6 +5,7 @@ import { patchSub, removeSub } from '../store/sessionReducer';
 import timeMachine from '../utils/TimeMachine';
 import { toast } from 'react-toastify';
 import { usePlayerControls } from './usePlayerControls';
+import { setSettings } from '../store/settingsReducer';
 
 const HOTKEYS = {
   deleteSub: { key: 'BACKSPACE' },
@@ -71,15 +72,15 @@ export const useHotkeys = ({ player }) => {
         break;
       }
 
-      case HOTKEYS.refreshPage.key: {
-        if (!checkMetaKeys(event, HOTKEYS.refreshPage)) break;
-        toast.info('Refresh page hotkey disabled. Use browser button if you really want to refresh the page 😘');
-        break;
-      }
-
       case HOTKEYS.showMotivation.key: {
         if (!checkMetaKeys(event, HOTKEYS.showMotivation)) break;
-        toast.dark(<>Ты котик — у тебя все получится<br />/ᐠ｡ꞈ｡ᐟ✿\</>, {});
+        dispatch(setSettings({ showCat: true }));
+        toast.dark(<div style={{ textAlign: 'center' }}>
+          Ты котик — у тебя все получится
+          <br />
+          <div style={{ marginTop: '15px' }}>/ᐠ｡ꞈ｡ᐟ✿\</div>
+          <img src='/images/cats/transparent.gif' alt='Тут был кот' style={{ width: '100%' }} />
+        </div>, {});
         break;
       }
 
@@ -123,6 +124,7 @@ export const useHotkeys = ({ player }) => {
         }
         break;
       }
+
       // ----- Move cursor left <–|  -----
       case HOTKEYS.moveCursorLeft.key: {
         if (checkMetaKeys(event, HOTKEYS.moveCursorVeryLeft)) {
@@ -146,6 +148,11 @@ export const useHotkeys = ({ player }) => {
 
       // ----- Record -----
       case HOTKEYS.record.key: {
+        if (checkMetaKeys(event, HOTKEYS.refreshPage)) {
+          toast.info('Refresh page hotkey disabled. Use browser button if you really want to refresh the page 😘');
+          break;
+        }
+
         if (!checkMetaKeys(event, HOTKEYS.record)) break;
         if (!holdingRecord) {
           console.log('rec start');

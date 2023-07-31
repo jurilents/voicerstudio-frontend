@@ -15,6 +15,7 @@ import { VoicedStatuses } from './models/Sub';
 import { addAudio } from './store/audioReducer';
 import 'react-toastify/dist/ReactToastify.css';
 import HotkeysWrap from './components/HotkeysWrap';
+import CatWrap from './components/CatWrap';
 
 const Style = styled.div`
   height: 100%;
@@ -148,6 +149,7 @@ export default function App({ defaultLang }) {
         pauseOnFocusLoss
       />
       {player && <HotkeysWrap player={player} />}
+      <CatWrap />
     </Style>
   );
 }

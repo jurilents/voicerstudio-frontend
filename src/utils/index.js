@@ -24,7 +24,7 @@ export function download(url, name) {
 export function getKeyCode(event) {
   const tag = document.activeElement.tagName.toUpperCase();
   // const editable = document.activeElement.getAttribute('contenteditable');
-  if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+  if (tag !== 'INPUT' && tag !== 'TEXTAREA' || document.activeElement.type === 'range') {
     return event.key.toUpperCase();
   }
 }

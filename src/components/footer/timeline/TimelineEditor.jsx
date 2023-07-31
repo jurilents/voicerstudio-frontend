@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React, { memo, useCallback, useEffect } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSub, patchSub, selectSpeaker, selectSub } from '../../../store/sessionReducer';
 import { Sub } from '../../../models';
@@ -8,6 +8,7 @@ import { setPlaying, setTime } from '../../../store/timelineReducer';
 import TimelineWrap from './TimelineWrap';
 import ActionAudio from './action-templates/ActionAudio';
 import ActionSubtitle from './action-templates/ActionSubtitle';
+import { calculateScaleAndWidth } from '../../../utils/timelineScale';
 
 const Style = styled.div`
   width: 100%;
@@ -69,6 +70,7 @@ const Style = styled.div`
     height: 100%;
     opacity: 50%;
     border: 1px solid transparent;
+    border-bottom: 4px solid inherit;
 
     &.focus-sub {
       opacity: 100%;
@@ -90,9 +92,24 @@ const Style = styled.div`
       text-overflow: ellipsis;
     }
 
+    .sub-footer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .sub-time {
       font-size: 10px;
       opacity: 60%;
+    }
+
+    .sub-status {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid rgb(255 255 255 / 75%);
     }
   }
 
@@ -110,9 +127,16 @@ const Style = styled.div`
       overflow: hidden !important;
     }
   }
+
+  .timeline-editor-cursor-top {
+    top: -7px !important;
+    transform: translate(-50%, 0) scaleX(2) scaleY(1.4) !important;
+    height: 30px !important;
+  }
 `;
 
 const origAudioRowName = 'original-audio-row';
+let prevData = null;
 
 function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
   const data = speakers.map((speaker) => ({
@@ -140,6 +164,8 @@ function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
       },
     ],
   });
+
+  prevData = data;
   return data;
 }
 
@@ -149,18 +175,32 @@ const timelineOptions = {
   scaleWidth: 100,
 };
 
-function calcLeftOffset(time) {
-  const pixelPerSecond = timelineOptions.scaleWidth / timelineOptions.scale;
-  return time * pixelPerSecond + timelineOptions.startLeft;
-}
-
 const TimelineEditor = ({ player }) => {
   const dispatch = useDispatch();
   const { speakers, selectedSpeaker, selectedSub, videoUrl } = useSelector(store => store.session);
-  // const recordingSub = useSelector(store => store.timeline.recordingSub);
-  // const [recordEndTime, setRecordEndTime] = useState(0);
-  // const originalVideoUrl = videoUrl || '/samples/video_placeholder.mp4?t=1';
-  const data = getTimelineData(speakers, selectedSpeaker, window.recordingSub, player);
+  const timelineZoom = useSelector(store => store.timelineSettings.timelineZoom);
+  const [zoom, setZoom] = useState({ scale: 1, scaleWidth: 100, scaleCount: 60 });
+  const data = useMemo(
+    () => getTimelineData(speakers, selectedSpeaker, window.recordingSub, player),
+    [speakers, selectedSpeaker, selectedSub, window.recordingSub, player, isNaN(+player?.duration)],
+  );
+
+  function calcLeftOffset(time) {
+    const pixelPerSecond = timelineOptions.scaleWidth / timelineOptions.scale;
+    return time * pixelPerSecond + 20; // TimelineWrap.startLeft = 20
+  }
+
+  // ------- Zoom -------
+  useMemo(() => {
+    if (!window.timelineEngine) return;
+    const engine = window.timelineEngine;
+    if (engine?.target && !isNaN(player.duration)) {
+      console.log('zoom recalculating...');
+      const zoom = calculateScaleAndWidth(timelineZoom, player.duration, engine.target.clientWidth);
+      setZoom(zoom);
+      // console.log('zoom:', zoom);
+    }
+  }, [player, setZoom, timelineZoom]);
 
   useEffect(() => {
     if (!window.timelineEngine) return;
@@ -173,9 +213,13 @@ const TimelineEditor = ({ player }) => {
       const cursorDelta = totalWidth - cursorPosition;
 
       if (cursorDelta < 10 && cursorDelta > 0) {
-        engine.setScrollLeft(calcLeftOffset(time) - 5);
+        const a = calcLeftOffset(time) - 5;
+        console.log('cursorDelta < 10 && cursorDelta > 0', a);
+        engine.setScrollLeft(a);
       } else if (cursorDelta <= 0 || cursorDelta > totalWidth) {
-        engine.setScrollLeft(calcLeftOffset(time) - 150);
+        const b = calcLeftOffset(time) - 150;
+        console.log('cursorDelta <= 0 || cursorDelta > totalWidth', b);
+        engine.setScrollLeft(b);
       }
     }
 
@@ -286,18 +330,30 @@ const TimelineEditor = ({ player }) => {
   }, [dispatch]);
 
   const onTimeChange = useCallback((time) => {
-    if (window.timelineEngine) {
-      window.timelineEngine.pause();
-    }
+    if (!window.timelineEngine) return;
+    const engine = window.timelineEngine;
+    engine.pause();
+    console.log('changing time:', time);
+
     if (player) {
-      player.pause();
-      dispatch(setTime(time));
-      player.currentTime = time;
+      if (!player.paused) player.pause();
+
+      if (!isNaN(+time)) {
+        if (!isNaN(+player.duration)) {
+          if (time < 0) time = 0;
+          if (time > player.duration) {
+            time = player.duration;
+            // setTimeout(() => engine.setTime(time), 100);
+          }
+        }
+
+        dispatch(setTime(time));
+        player.currentTime = time;
+      }
     }
   }, [window.recordingSub, dispatch, player]);
 
   const getActionRender = useCallback((action, row) => {
-    // console.log('rerendering!!');
     if (row.id === origAudioRowName) {
       return <ActionAudio action={action} row={row} />;
     }
@@ -306,23 +362,23 @@ const TimelineEditor = ({ player }) => {
 
   return (
     <Style className='noselect'>
-      <TimelineWrap
-        player={player}
-        data={data}
-        // startLeft={timelineOptions.startLeft}
-        scale={timelineOptions.scale}
-        scaleWidth={timelineOptions.scaleWidth}
-        onTimeChange={onTimeChange}
-        onScroll={handleScroll}
-        onClickAction={setSubtitle}
-        onDoubleClickAction={setTimeToSubEnd}
-        onActionResizeStart={(param) => setSubtitle(param, true)}
-        onActionResizing={setSubStartEndTime}
-        onActionMoveStart={(param) => setSubtitle(param, true)}
-        onActionMoving={setSubStartEndTime}
-        onClickRow={setSpeaker}
-        getActionRender={getActionRender}
-        onDoubleClickRow={addSubtitle}
+      <TimelineWrap player={player}
+                    data={data}
+                    scale={timelineOptions.scale}
+                    scaleWidth={timelineOptions.scaleWidth}
+                    onTimeChange={onTimeChange}
+                    onScroll={handleScroll}
+                    onClickAction={setSubtitle}
+                    onDoubleClickAction={setTimeToSubEnd}
+                    onActionResizeStart={(param) => setSubtitle(param, true)}
+                    onActionResizing={setSubStartEndTime}
+                    onActionMoveStart={(param) => setSubtitle(param, true)}
+                    onActionMoving={setSubStartEndTime}
+                    onClickRow={setSpeaker}
+                    getActionRender={getActionRender}
+                    onDoubleClickRow={addSubtitle}
+                    zoom={zoom}
+                    setZoom={setZoom}
       />
     </Style>
   );

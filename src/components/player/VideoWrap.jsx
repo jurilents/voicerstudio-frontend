@@ -5,7 +5,7 @@ import { setVideoDuration } from '../../store/sessionReducer';
 export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
   const $video = createRef();
   const dispatch = useDispatch();
-  const { playbackSpeed, originalVolume, masterVolume } = useSelector(store => store.settings);
+  const settings = useSelector(store => store.settings);
   const videoUrl = useSelector(store => store.session.videoUrl) || '/samples/video_placeholder.mp4?t=1';
   // const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
   // const [playingSub, setPlayingSub] = useState(null);
@@ -13,10 +13,14 @@ export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
 
   useEffect(() => {
     if ($video.current) {
-      $video.current.playbackRate = playbackSpeed;
-      $video.current.volume = (originalVolume || 1) * (masterVolume || 1);
+      $video.current.playbackRate = settings.playbackSpeed;
+      if (settings.originalMute) {
+        $video.current.volume = 0;
+      } else {
+        $video.current.volume = (settings.originalVolume || 1) * (settings.masterVolume || 1);
+      }
     }
-  }, [$video, playbackSpeed]);
+  }, [$video, settings.playbackSpeed]);
 
   useEffect(() => {
     if (!$video.current) return;
@@ -34,11 +38,33 @@ export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
       // }
     };
 
+    const handlePlay = () => {
+      if (!window.timelineEngine) return;
+      const engine = window.timelineEngine;
+      if (!engine.isPlaying) {
+        engine.setTime(videoElm.currentTime);
+        engine.play();
+      }
+    };
+
+    const handlePause = () => {
+      if (!window.timelineEngine) return;
+      const engine = window.timelineEngine;
+      if (engine.isPlaying) {
+        engine.setTime(videoElm.currentTime);
+        engine.pause();
+      }
+    };
+
     videoElm.onloadedmetadata = setupDuration;
     videoElm.addEventListener('timeupdate', handleTimeUpdate);
+    videoElm.addEventListener('play', handlePlay);
+    videoElm.addEventListener('pause', handlePause);
     return () => {
       setupDuration();
       videoElm.removeEventListener('timeupdate', handleTimeUpdate);
+      videoElm.removeEventListener('play', handlePlay);
+      videoElm.removeEventListener('pause', handlePause);
     };
   }, [$video]);
 

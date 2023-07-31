@@ -1,17 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Col, Container, Form, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSettings } from '../../../store/settingsReducer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faMinus, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
-import { toPercentsDelta } from '../../../utils';
 import { patchSub } from '../../../store/sessionReducer';
 import { VoicedStatuses } from '../../../models/Sub';
 import { speechApi } from '../../../api/axios';
 import { addAudio, removeAudio } from '../../../store/audioReducer';
 import { toast } from 'react-toastify';
 import { useSubsAudioStorage } from '../../../hooks';
+import _ from 'lodash/fp';
 
 const Style = styled.div`
   .speed-wrapper {
@@ -44,7 +44,7 @@ const Style = styled.div`
 export default function GeneralTab(props) {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
-  const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
+  const { selectedSpeaker, selectedCredentials } = useSelector(store => store.session);
   const { saveSubAudio } = useSubsAudioStorage();
 
   function speakAll() {
@@ -69,7 +69,8 @@ export default function GeneralTab(props) {
       dispatch(patchSub(sub, {
         data: VoicedStatuses.processing,
       }));
-      const audio = await speechApi.single(request, 'dev_placeholder');
+      const cred = selectedCredentials[selectedSpeaker.preset.service];
+      const audio = await speechApi.single(request, cred.value);
       console.log('single audio url', audio);
       dispatch(addAudio(audio.url));
       sub.endTime = sub.start + audio.duration;
@@ -81,9 +82,12 @@ export default function GeneralTab(props) {
       toast.info('Subtitle voiced');
     }
 
+    if (!selectedSpeaker?.preset) {
+      toast.warn('Cannot voice subtitles of selected speaker. There is no voice preset selected for it');
+      return;
+    }
     for (const sub of selectedSpeaker.subs) {
-      if (!sub.canBeVoiced) return;
-      if (!selectedSpeaker?.preset) return;
+      if (!sub.canBeVoiced) continue;
       if (sub.data?.src) {
         dispatch(removeAudio(sub.data?.src));
       }
@@ -96,57 +100,55 @@ export default function GeneralTab(props) {
     toast.success('All subtitles of selected speaker voiced');
   }
 
+  const setPlaybackSpeed = (value) => {
+    if (!window.timelineEngine) return;
+    const engine = window.timelineEngine;
+    value = _.clamp(0.25, 4, value);
+    dispatch(setSettings({ playbackSpeed: value }));
+    engine.setPlayRate(value);
+  };
+
   return (
     <Style className='tab-outlet'>
       <div>
         <h3>Tools</h3>
         <Container>
-          {/* ************ Single Record Mode ************ */}
-          <Row>
-            <Col className='label'>Single record mode</Col>
-            <Col>
-              <Form.Check
-                checked={settings.singleRecordMode}
-                onChange={(event) =>
-                  dispatch(setSettings({ singleRecordMode: event.target.checked }))} />
-            </Col>
-          </Row>
           {/* ************ Playback speed ************ */}
           <Row>
             <Col className='label'>Playback speed</Col>
             <Col className='speed-wrapper'>
               <button
                 className='speed-btn'
-                onClick={() => dispatch(setSettings({ playbackSpeed: Math.max(settings.playbackSpeed - 0.25, 0.25) }))}>
+                onClick={() => setPlaybackSpeed(settings.playbackSpeed - 0.25)}>
                 <FontAwesomeIcon icon={faMinus} />
               </button>
               <span className='speed-text'>{Math.round(settings.playbackSpeed * 100)}%</span>
               <button
                 className='speed-btn'
-                onClick={() => dispatch(setSettings({ playbackSpeed: Math.min(settings.playbackSpeed + 0.25, 4) }))}>
+                onClick={() => setPlaybackSpeed(settings.playbackSpeed + 0.25)}>
                 <FontAwesomeIcon icon={faAdd} />
               </button>
               <button
                 className='speed-btn app-reset-btn'
-                onClick={() => dispatch(setSettings({ playbackSpeed: 1 }))}>
+                onClick={() => setPlaybackSpeed(1)}>
                 <FontAwesomeIcon icon={faRedoAlt} />
               </button>
             </Col>
           </Row>
           {/* ************ Wave Zoom ************ */}
-          <Row>
-            <Col className='label'>Wave zoom</Col>
-            <Col className='range-wrapper'>
-              <input
-                type='range' min={0.1} max={2} step={0.1} value={settings.waveZoom}
-                onChange={(event) =>
-                  dispatch(setSettings({ waveZoom: +event.target.value }))} />
-              <span>{toPercentsDelta(settings.waveZoom)}</span>
-            </Col>
-          </Row>
+          {/*<Row>*/}
+          {/*  <Col className='label'>Wave zoom</Col>*/}
+          {/*  <Col className='range-wrapper'>*/}
+          {/*    <input*/}
+          {/*      type='range' min={0.1} max={2} step={0.1} value={settings.waveZoom}*/}
+          {/*      onChange={(event) =>*/}
+          {/*        dispatch(setSettings({ waveZoom: +event.target.value }))} />*/}
+          {/*    <span>{toPercentsDelta(settings.waveZoom)}</span>*/}
+          {/*  </Col>*/}
+          {/*</Row>*/}
           <Row className='mt-4'>
             <Col>
-              <button className='btn btn-outline' onClick={() => speakAll()}>
+              <button className='btn btn-outline' onClick={speakAll}>
                 Speak All
               </button>
             </Col>

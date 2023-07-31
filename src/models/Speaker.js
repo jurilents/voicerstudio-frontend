@@ -7,6 +7,8 @@ export class Speaker {
     this.wordsPerMinute = obj.wordsPerMinute;
     this.subs = obj.subs || [];
     this.volume = obj.volume || 1;
+    this.solo = obj.solo;
+    this.mute = obj.mute;
   }
 
   clone() {

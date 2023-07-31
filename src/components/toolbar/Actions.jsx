@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TimeIndicator from './TimeIndicator';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSettings } from '../../store/settingsReducer';
 import { usePlayerControls } from '../../hooks/usePlayerControls';
+import { setTimelineSettings } from '../../store/timelineSettingsReducer';
 
 const Style = styled.div`
   position: absolute;
@@ -61,7 +61,7 @@ const Style = styled.div`
 
 export function Actions({ player }) {
   const dispatch = useDispatch();
-  const settings = useSelector(store => store.settings);
+  const settings = useSelector(store => store.timelineSettings);
   const { playing, recording } = useSelector(store => store.timeline);
   const { startRecording, completeRecording, togglePlay } = usePlayerControls({ player });
 
@@ -71,17 +71,15 @@ export function Actions({ player }) {
   }, [completeRecording]);
 
   const patchSettings = useCallback((patch) => {
-    dispatch(setSettings(patch));
-  }, [dispatch]);
+    if (!player?.paused) player.pause();
+    if (window.timelineEngine) window.timelineEngine.pause();
+    dispatch(setTimelineSettings(patch));
+  }, [player, dispatch]);
 
 
   return (
     <Style className='actions-wrapper'>
       <div className='actions-container'>
-        {/*<div className={'btn btn-icon focus' + (settings.drawingMode ? ' active' : '')}*/}
-        {/*     onClick={() => patchSettings({ drawingMode: !settings.drawingMode })}>*/}
-        {/*  <FontAwesomeIcon icon={faPencil} />*/}
-        {/*</div>*/}
         <div className={'btn btn-icon focus' + (settings.scrollableMode ? ' active' : '')}
              onClick={() => patchSettings({ scrollableMode: !settings.scrollableMode })}
              title='Navigation lines'>

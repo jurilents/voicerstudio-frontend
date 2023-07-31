@@ -25,6 +25,14 @@ const credsReducer = {
       credentials: credsCopy,
     };
   },
+  selectCreds: (state, action) => {
+    const selectedCredentials = { ...state.selectedCredentials };
+    selectedCredentials[action.payload.service] = action.payload.cred;
+    return {
+      ...state,
+      selectedCredentials: selectedCredentials,
+    };
+  },
 };
 
 export default credsReducer;

@@ -30,6 +30,7 @@ const SET_VIDEO_DURATION = 'SET_VIDEO_DURATION';
 const ADD_CREDS = 'ADD_CREDS';
 const REMOVE_CREDS = 'REMOVE_CREDS';
 const PATCH_CREDS = 'PATCH_CREDS';
+const SELECT_CREDS = 'SELECT_CREDS';
 
 // Storage keys
 const STORAGE_KEY = 'session';
@@ -46,6 +47,7 @@ const rootState = {
   selectedSub: null,
   presets: [],
   credentials: [],
+  selectedCredentials: { Azure: null },
   videoUrl: null,
   videoDuration: 60,
 };
@@ -220,6 +222,10 @@ export default function sessionReducer(state = defaultState, action) {
       const session = credsReducer.patchCreds(state, action);
       return saveToLocalStorage(session);
     }
+    case SELECT_CREDS: {
+      const session = credsReducer.selectCreds(state, action);
+      return saveToLocalStorage(session);
+    }
 
     default:
       return state;
@@ -247,3 +253,4 @@ export const setVideoDuration = (videoDuration) => ({ type: SET_VIDEO_DURATION, 
 export const addCreds = (cred) => ({ type: ADD_CREDS, payload: { cred } });
 export const removeCreds = (cred) => ({ type: REMOVE_CREDS, payload: { cred } });
 export const patchCreds = (cred, patch) => ({ type: PATCH_CREDS, payload: { cred, patch } });
+export const selectCreds = (cred, service) => ({ type: SELECT_CREDS, payload: { cred, service } });

@@ -1,7 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
-import { setSettings } from '../../store/settingsReducer';
 import { clamp } from 'lodash';
 
 const Style = styled.div`
@@ -53,65 +51,65 @@ function calcZoom(eventX) {
 
 
 export default function Zoom({ waveform, player, headingWidth }) {
-  const [grabbing, setGrabbing] = useState(false);
-  const dispatch = useDispatch();
-  const { timelineZoom, waveZoom } = useSelector(store => store.settings);
-  const [zoom, setZoom] = useState(timelineZoom);
+  // const [grabbing, setGrabbing] = useState(false);
+  // const dispatch = useDispatch();
+  // const { timelineZoom, waveZoom } = useSelector(store => store.timelineSettings);
+  // const [zoom, setZoom] = useState(timelineZoom);
 
-  function applyZoom(zoom) {
-    // if (!window.timelineEngine) return;
-    // const engine = window.timelineEngine;
-    if (!player.paused) player.pause();
-    dispatch(setSettings({ timelineZoom: zoom }));
-    console.log('final zoom: ', zoom);
-    // engine.set();
-  }
-
-  const onProgressClick = useCallback(
-    (event) => {
-      if (event.button !== 0) return;
-      const zoomValue = calcZoom(event.pageX);
-      setZoom(zoomValue);
-      applyZoom(zoomValue);
-    },
-    [dispatch, headingWidth],
-  );
-
-  const onGrabDown = useCallback(
-    (event) => {
-      if (event.button !== 0) return;
-      setGrabbing(true);
-    },
-    [setGrabbing],
-  );
-
-  const onGrabMove = useCallback(
-    (event) => {
-      if (grabbing) {
-        const zoomValue = calcZoom(event.pageX);
-        setZoom(zoomValue);
-      }
-    },
-    [grabbing, dispatch, player, headingWidth],
-  );
-
-  const onDocumentMouseUp = useCallback(() => {
-    if (grabbing) {
-      setGrabbing(false);
-      if (zoom > 0 && zoom <= 1) {
-        applyZoom(zoom);
-      }
-    }
-  }, [grabbing, dispatch, player.currentTime]);
-
-  useEffect(() => {
-    document.addEventListener('mouseup', onDocumentMouseUp);
-    document.addEventListener('mousemove', onGrabMove);
-    return () => {
-      document.removeEventListener('mouseup', onDocumentMouseUp);
-      document.removeEventListener('mousemove', onGrabMove);
-    };
-  }, [onDocumentMouseUp, onGrabMove]);
+  // function applyZoom(zoom) {
+  //   // if (!window.timelineEngine) return;
+  //   // const engine = window.timelineEngine;
+  //   if (!player.paused) player.pause();
+  //   dispatch(setTimelineSettings({ timelineZoom: zoom }));
+  //   console.log('final zoom: ', zoom);
+  //   // engine.set();
+  // }
+  //
+  // const onProgressClick = useCallback(
+  //   (event) => {
+  //     if (event.button !== 0) return;
+  //     const zoomValue = calcZoom(event.pageX);
+  //     setZoom(zoomValue);
+  //     applyZoom(zoomValue);
+  //   },
+  //   [dispatch, headingWidth],
+  // );
+  //
+  // const onGrabDown = useCallback(
+  //   (event) => {
+  //     if (event.button !== 0) return;
+  //     setGrabbing(true);
+  //   },
+  //   [setGrabbing],
+  // );
+  //
+  // const onGrabMove = useCallback(
+  //   (event) => {
+  //     if (grabbing) {
+  //       const zoomValue = calcZoom(event.pageX);
+  //       setZoom(zoomValue);
+  //     }
+  //   },
+  //   [grabbing, dispatch, player, headingWidth],
+  // );
+  //
+  // const onDocumentMouseUp = useCallback(() => {
+  //   if (grabbing) {
+  //     setGrabbing(false);
+  //     if (zoom > 0 && zoom <= 1) {
+  //       applyZoom(zoom);
+  //     }
+  //   }
+  // }, [grabbing, dispatch, player.currentTime]);
+  //
+  // useEffect(() => {
+  //   document.addEventListener('mouseup', onDocumentMouseUp);
+  //   document.addEventListener('mousemove', onGrabMove);
+  //   return () => {
+  //     document.removeEventListener('mouseup', onDocumentMouseUp);
+  //     document.removeEventListener('mousemove', onGrabMove);
+  //   };
+  // }, [onDocumentMouseUp, onGrabMove]);
 
   // useEffect(() => {
   //   if (waveform) {
@@ -130,10 +128,10 @@ export default function Zoom({ waveform, player, headingWidth }) {
   // }, [waveZoom]);
 
   return (
-    <Style className='zoom' onClick={onProgressClick}>
-      <div className='bar' style={{ width: `calc(${zoom * 100}% - 10px)` }}>
-        <div className='handle' onMouseDown={onGrabDown}></div>
-      </div>
+    <Style className='zoom'>{/*onClick={onProgressClick}>*/}
+      {/*<div className='bar' style={{ width: `calc(${zoom * 100}% - 10px)` }}>*/}
+      {/*  <div className='handle' onMouseDown={onGrabDown}></div>*/}
+      {/*</div>*/}
     </Style>
   );
 };

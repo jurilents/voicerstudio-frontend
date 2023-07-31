@@ -4,10 +4,11 @@ class AudioController {
   cacheMap = {};
   listenerMap = {};
 
-  start({ id, src, startTime, time, volume, engine }) {
-    let item;
-    if (this.cacheMap[id]) {
-      item = this.cacheMap[id];
+  start({ speakerId, id, src, startTime, time, volume, engine }) {
+    const cached = this._getCachedSpeaker(speakerId);
+    let item = cached[id];
+
+    if (item) {
       item.rate(engine.getPlayRate());
       item.volume(volume);
       item.seek((time - startTime) % item.duration());
@@ -21,17 +22,17 @@ class AudioController {
         volume: volume,
         // html5: true,
       });
-      this.cacheMap[id] = item;
+      cached[id] = item;
       item.on('load', () => {
         item.rate(engine.getPlayRate());
         item.seek((time - startTime) % item.duration());
       });
     }
 
-    const timeListener = (time) => {
+    const timeListener = ({ time }) => {
       item.seek(time);
     };
-    const rateListener = (rate) => {
+    const rateListener = ({ rate }) => {
       item.rate(rate);
     };
     if (!this.listenerMap[id]) this.listenerMap[id] = {};
@@ -41,9 +42,22 @@ class AudioController {
     this.listenerMap[id].rate = rateListener;
   }
 
-  stop({ id, engine }) {
-    if (this.cacheMap[id]) {
-      const item = this.cacheMap[id];
+  setSpeakerVolume({ speakerId, volume }) {
+    const cachedSpeaker = this._getCachedSpeaker(speakerId);
+    console.log('map', this.cacheMap);
+    console.log('cached:', speakerId);
+    if (cachedSpeaker) {
+      for (const item of Object.values(cachedSpeaker)) {
+        console.log('volume:', item.getVolume());
+        item.volume(volume);
+      }
+    }
+  }
+
+  stop({ speakerId, id, engine }) {
+    const item = this._getCachedSpeaker(speakerId)[id];
+
+    if (item) {
       item.stop();
       if (this.listenerMap[id]) {
         this.listenerMap[id].time && engine.off('afterSetTime', this.listenerMap[id].time);
@@ -52,8 +66,12 @@ class AudioController {
       }
     }
   }
+
+  _getCachedSpeaker(speakerId) {
+    if (!this.cacheMap[speakerId])
+      this.cacheMap[speakerId] = {};
+    return this.cacheMap[speakerId];
+  }
 }
 
-
-const audioController = new AudioController();
-export default audioController;
+export default new AudioController();

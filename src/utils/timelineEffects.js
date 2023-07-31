@@ -5,7 +5,9 @@ export const effectKeys = {
 };
 
 function getSpeakerVolume(action) {
-  return (window.speakersVolume?.[action.speakerId] || 1) * (window.masterVolume || 1);
+  const vol = (window.speakersVolume?.[action.speakerId] || 1) * (window.masterVolume || 1);
+  console.log('speaker volume', vol);
+  return vol;
 }
 
 export const timelineEffects = {
@@ -19,7 +21,7 @@ export const timelineEffects = {
           const src = action.data?.src;
           if (!action.data?.src) return;
           audioController.start({
-            id: src,
+            id: action.id,
             src,
             startTime: action.start,
             time,
@@ -30,11 +32,10 @@ export const timelineEffects = {
       },
       enter: ({ action, engine, isPlaying, time }) => {
         if (isPlaying) {
-          // console.log('enter effect 0');
           const src = action.data?.src;
           if (!action.data?.src) return;
           audioController.start({
-            id: src,
+            id: action.id,
             src,
             startTime: action.start,
             time,
@@ -49,7 +50,7 @@ export const timelineEffects = {
         const src = action.data?.src;
         if (!action.data?.src) return;
         audioController.stop({
-          id: src,
+          id: action.id,
           engine,
         });
       },
@@ -58,7 +59,7 @@ export const timelineEffects = {
         const src = action.data?.src;
         if (!action.data?.src) return;
         audioController.stop({
-          id: src,
+          id: action.id,
           engine,
         });
       },

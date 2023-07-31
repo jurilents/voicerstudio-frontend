@@ -6,6 +6,7 @@ import languagesReducer from './languagesReducer';
 import sessionReducer from './sessionReducer';
 import settingsReducer from './settingsReducer';
 import timelineReducer from './timelineReducer';
+import timelineSettingsReducer from './timelineSettingsReducer';
 
 const rootReducer = combineReducers({
   audio: audioReducer,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   session: sessionReducer,
   settings: settingsReducer,
   timeline: timelineReducer,
+  timelineSettings: timelineSettingsReducer,
 });
 
 export const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));

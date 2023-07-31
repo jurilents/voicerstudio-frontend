@@ -5,6 +5,7 @@ const palette = {
     primaryDark: '#115d55',
     success: '#69c220',
     danger: '#b22e1c',
+    warn: '#b28f1c',
     text: '#ffffff',
   },
 };

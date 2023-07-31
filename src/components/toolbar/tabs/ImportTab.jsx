@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Form, Row } from 'react-bootstrap';
 import { getExt } from '../../../utils';
 import { setVideo } from '../../../store/sessionReducer';
 import { t } from 'react-i18nify';
@@ -9,6 +9,23 @@ import { useVideoStorage } from '../../../hooks';
 import { toast } from 'react-toastify';
 
 const Style = styled.div`
+  .file {
+    border-radius: 1px;
+    background-color: transparent;
+    color: white;
+    border: 1px solid rgb(255 255 255 / 25%);
+
+    &::file-selector-button {
+      background-color: rgb(255 255 255 / 10%);
+      color: white;
+    }
+
+    &:hover {
+      &::file-selector-button {
+        background-color: rgb(255 255 255 / 25%) !important;
+      }
+    }
+  }
 `;
 
 export default function ImportTab(props) {
@@ -63,16 +80,21 @@ export default function ImportTab(props) {
         <Container>
           <Row>
             <Col className='label'>Import Video</Col>
-            <Col>
-              <input className='file' type='file' onChange={onVideoChange} onClick={onInputClick} />
-            </Col>
           </Row>
           <Row>
-            <Col className='label'>Import Subtitles</Col>
             <Col>
-              <input className='file' type='file' onChange={onVideoChange} onClick={onInputClick} />
+              <Form.Control className='file'
+                            type='file'
+                            onChange={onVideoChange}
+                            onClick={onInputClick} />
             </Col>
           </Row>
+          {/*<Row>*/}
+          {/*  <Col className='label'>Import Subtitles</Col>*/}
+          {/*  <Col>*/}
+          {/*    <input className='file' type='file' onChange={onVideoChange} onClick={onInputClick} />*/}
+          {/*  </Col>*/}
+          {/*</Row>*/}
         </Container>
       </div>
     </Style>

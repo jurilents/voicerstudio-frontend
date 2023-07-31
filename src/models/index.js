@@ -1,4 +1,4 @@
 export { Creds } from './Creds';
 export { Preset } from './Preset';
 export { Speaker } from './Speaker';
-export { Sub, VoicedSubStamp } from './Sub';
+export { Sub, VoicedSubStamp, getSubVoicedStatus, canSubBeVoiced, getSubVoicedStatusColor } from './Sub';

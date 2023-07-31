@@ -10,6 +10,40 @@ export const VoicedStatuses = {
   obsolete: 'obsolete',
 };
 
+export function getSubVoicedStatus(sub) {
+  if (sub.data) {
+    if (sub.data === VoicedStatuses.processing) {
+      return VoicedStatuses.processing;
+    }
+    if (sub.data.src === VoicedStatuses.voiced) {
+      return VoicedStatuses.voiced;
+    }
+    if (sub.text.trim() === sub.data.text
+      && Math.abs((sub.end - sub.start) - (sub.data.end - sub.data.start)) < 0.001
+      && sub.data.src) {
+      return VoicedStatuses.voiced;
+    } else if (sub.text !== sub.data.text) {
+      return VoicedStatuses.obsolete;
+    }
+  }
+
+  return VoicedStatuses.none;
+}
+
+export function canSubBeVoiced(sub) {
+  const status = getSubVoicedStatus(sub);
+  return status === VoicedStatuses.none || status === VoicedStatuses.obsolete;
+}
+
+export function getSubVoicedStatusColor(sub) {
+  const status = getSubVoicedStatus(sub);
+  if (status === VoicedStatuses.voiced) return '#32b432';
+  if (status === VoicedStatuses.processing) return '#e8cb09';
+  if (status === VoicedStatuses.none) return '#817777';
+  if (status === VoicedStatuses.obsolete) return '#c93d1e';
+  return '#a8a8a8';
+}
+
 export class Sub {
   constructor(obj) {
     this.id = obj.id || ('sub_' + uuidv4());
@@ -51,45 +85,15 @@ export class Sub {
   }
 
   get voicedStatus() {
-    if (this.data) {
-      if (this.data === VoicedStatuses.processing) {
-        return VoicedStatuses.processing;
-      }
-      if (this.data.src === VoicedStatuses.voiced) {
-        return VoicedStatuses.voiced;
-      }
-      if (this.text.trim() === this.data.text
-        && Math.abs((this.end - this.start) - (this.data.end - this.data.start)) < 0.001
-        && this.data.src) {
-        return VoicedStatuses.voiced;
-      } else if (this.text !== this.data.text) {
-        return VoicedStatuses.obsolete;
-      }
-    }
-
-    return VoicedStatuses.none;
+    return getSubVoicedStatus(this);
   }
 
   get canBeVoiced() {
-    const status = this.voicedStatus;
-    return status === VoicedStatuses.none || status === VoicedStatuses.obsolete;
+    return canSubBeVoiced(this);
   }
 
   get voicedStatusColor() {
-    const status = this.voicedStatus;
-    if (status === VoicedStatuses.voiced) {
-      return '#32b432';
-    }
-    if (status === VoicedStatuses.processing) {
-      return '#e8cb09';
-    }
-    if (status === VoicedStatuses.none) {
-      return '#817777';
-    }
-    if (status === VoicedStatuses.obsolete) {
-      return '#c93d1e';
-    }
-    return '#a8a8a8';
+    return getSubVoicedStatusColor(this);
   }
 }
 

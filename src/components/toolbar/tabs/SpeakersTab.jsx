@@ -73,49 +73,51 @@ export default function SpeakersTab(props) {
           )}
         </ListGroup>
       </div>
-      {selectedSpeaker && <Container className='speaker-form'>
-        <Row>
-          <Col className='label'>Color</Col>
-          <Col>
-            <Form.Select
-              className='app-select'
-              value={selectedSpeaker.color}
-              style={{ backgroundColor: selectedSpeaker?.color || 'rgb(255 255 255 / 60%)' }}
-              onChange={(event) =>
-                dispatch(patchSpeaker(selectedSpeaker.id, { color: event.target.value }))}>
-              {Object.entries(colors).map(([name, value], index) => (
-                <option key={index} value={value}>
-                  {name}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
-        </Row>
-        <Row>
-          <Col className='label'>Speaker Preset</Col>
-          <Col>
-            <Form.Select
-              className='app-select'
-              value={selectedSpeaker.preset?.id}
-              onChange={(event) => {
-                return dispatch(patchSpeaker(selectedSpeaker.id, {
-                  preset: presets.find(x => x.id === +event.target.value),
-                  subs: selectedSpeaker.subs.map(sub => {
-                    // Reset subs voicing
-                    sub.data = null;
-                    return sub;
-                  }),
-                }));
-              }}>
-              {presets.map((preset, index) => (
-                <option key={index} value={preset.id}>
-                  {preset.displayName}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
-        </Row>
-      </Container>}
+      {selectedSpeaker && (
+        <Container className='speaker-form'>
+          <Row>
+            <Col className='label'>Color</Col>
+            <Col>
+              <Form.Select
+                className='app-select'
+                value={selectedSpeaker.color}
+                style={{ backgroundColor: selectedSpeaker?.color || 'rgb(255 255 255 / 60%)' }}
+                onChange={(event) =>
+                  dispatch(patchSpeaker(selectedSpeaker.id, { color: event.target.value }))}>
+                {Object.entries(colors).map(([name, value], index) => (
+                  <option key={index} value={value}>
+                    {name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+          </Row>
+          <Row>
+            <Col className='label'>Speaker Preset</Col>
+            <Col>
+              <Form.Select
+                className='app-select'
+                value={selectedSpeaker.preset?.id}
+                onChange={(event) => {
+                  return dispatch(patchSpeaker(selectedSpeaker.id, {
+                    preset: presets.find(x => x.id === +event.target.value),
+                    subs: selectedSpeaker.subs.map(sub => {
+                      // Reset subs voicing
+                      sub.data = null;
+                      return sub;
+                    }),
+                  }));
+                }}>
+                {presets.map((preset, index) => (
+                  <option key={index} value={preset.id}>
+                    {preset.displayName}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+          </Row>
+        </Container>
+      )}
     </Style>
   );
 }

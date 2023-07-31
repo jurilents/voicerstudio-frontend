@@ -7,26 +7,21 @@ const STORAGE_KEY = 'settings';
 const rootState = {
   selectedSpeaker: null,
   selectedSubtitle: null,
-  // If true, allows user to draw new subs, otherwise dragging will scroll
-  drawingMode: true,
-  //
   scrollableMode: true,
-  //
   magnetMode: true,
-  //
-  singleRecordMode: true,
   timelineZoom: 1,
   waveZoom: 1,
-  //
   playbackSpeed: 1,
   // From 0 (mute) to 1 (100%)
   masterVolume: 1,
   originalVolume: 1,
   originalMute: false,
+  originalSolo: false,
   exportFormat: 'WAV',
   exportCodec: 'Riff8Khz16BitMonoPcm',
   exportFileName: '[{L}-{s}] {d}-{t} result',
   timelineRowHeight: 50,
+  showCat: false,
 };
 
 const storedState = localStorage.getItem(STORAGE_KEY);

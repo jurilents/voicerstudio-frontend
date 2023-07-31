@@ -42,13 +42,12 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
   const [pitch, setPitch] = useState(0);
   const [text, setText] = useState(`This priceless pearl of the primordial knowledge removes the cloak from all mysteries of the material world`);
 
-  const credentials = useSelector(store => store.session.credentials.filter(x => x.service === voicingService));
-  const [selectedCred, setSelectedCred] = useState(credentials.length > 0 ? credentials[0] : null);
-
   const dispatch = useDispatch();
   let languages = useSelector(store => voicingService === VoicingService.Azure
     ? store.languages.azure
     : store.languages.voiceMaker) || [];
+  const allSelectedCredentials = useSelector(store => store.session.selectedCredentials);
+  const selectedCred = allSelectedCredentials[voicingService];
 
   useEffect(() => {
     async function fetchLanguages() {
@@ -221,13 +220,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
           <Row>
             <Col xs={4} className='label'>Credentials</Col>
             <Col xs={8}>
-              <Form.Select className='app-select'
-                           onChange={(event) => setSelectedCred(event.target.value)}
-                           value={selectedCred}>
-                {credentials.map((cred, index) => (
-                  <option key={index} value={cred.value}>{cred.displayName}</option>
-                ))}
-              </Form.Select>
+              {selectedCred.displayName}
             </Col>
           </Row>
 
@@ -366,7 +359,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
           <Row>
             <Col>
               <button className='btn btn-outline' onClick={speak}>
-                Speak
+                Generate Sample Speech
               </button>
             </Col>
           </Row>

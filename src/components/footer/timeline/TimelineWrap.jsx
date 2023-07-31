@@ -9,88 +9,20 @@ function calcScaleCount(duration, scale) {
   return (duration / scale) + 1;
 }
 
-const minScaleWidth = 50;
-const maxScaleWidth = 200;
-
-const niceNumbers = [
-  1,
-  2,
-  5,
-  10,
-  15,
-  30,
-  60, // 1m
-  120, // 2m
-  300, // 5m
-  600, // 10m
-  900, // 15m
-  1200, // 20m
-  1800, // 30m
-  3600, // 1h
-  7200, // 2h
-  21600, // 6h
-  43200, // 12h
-  86400, // 24h
-];
-
-function calculateScaleAndWidth(zoom, timelineDuration, timelineWidth) {
-  if (isNaN(+zoom) || zoom < 0 || zoom > 1) zoom = 1;
-  if (isNaN(+timelineDuration)) timelineDuration = 60;
-  zoom += 0.05;
-
-  // Step 1: Calculate the visible duration based on the total duration and the zoom level
-  const visibleDuration = timelineDuration * zoom;
-
-  // Step 2: Calculate the raw scale and scale width
-  let scaleWidth = timelineWidth * zoom;
-  let scale = visibleDuration / (timelineWidth / scaleWidth);
-
-  // If scaleWidth is out of its range, adjust it and calculate new scale
-  if (scaleWidth < minScaleWidth) {
-    scaleWidth = minScaleWidth;
-    scale = visibleDuration / (timelineWidth / scaleWidth);
-  } else if (scaleWidth > maxScaleWidth) {
-    scaleWidth = maxScaleWidth;
-    scale = visibleDuration / (timelineWidth / scaleWidth);
-  }
-
-  // Step 3: Round the scale to a "nice" number
-  scale = niceNumbers.reduce((prev, curr) =>
-    Math.abs(curr - scale) < Math.abs(prev - scale) ? curr : prev,
-  );
-
-  // Step 4: Recalculate the scaleWidth based on the "nice" scale
-  scaleWidth = timelineWidth / (visibleDuration / scale);
-  const scaleCount = Math.ceil(visibleDuration / scale);
-
-  return { scale, scaleWidth, scaleCount };
-}
-
 window.isPlaying = false;
 
 const TimelineWrap = (props) => {
-  const settings = useSelector(store => store.settings);
+  console.log('<redraw wrap>');
+  const settings = useSelector(store => store.timelineSettings);
+  // console.log('settings', settings);
   // const { selectedSub } = useSelector(store => store.session);
   let [ref, setRef] = useState(null);
-  const [zoom, setZoom] = useState({ scale: 1, scaleWidth: 100, scaleCount: 60 });
-
-  // ------- Zoom -------
-  useMemo(() => {
-    if (ref?.target && !isNaN(props.player.duration)) {
-      console.log('zoom recalculating...');
-      const zoom = calculateScaleAndWidth(settings.timelineZoom, props.player.duration, ref.target.clientWidth);
-      setZoom(zoom);
-      // console.log('zoom:', zoom);
-    }
-  }, [ref, props.player, setZoom, settings.timelineZoom]);
-
-  console.log('redraw wrap!!!');
 
   if (!props.player) {
     return <></>;
   }
 
-  const scaleCount = calcScaleCount(props.player.duration, 1);
+  // const scaleCount = calcScaleCount(props.player.duration, 1);
   return (
     <Timeline
       ref={(newRef) => {
@@ -100,8 +32,8 @@ const TimelineWrap = (props) => {
         }
       }}
       startLeft={20}
-      scale={zoom.scale}
-      scaleWidth={zoom.scaleWidth}
+      scale={props.zoom.scale}
+      scaleWidth={props.zoom.scaleWidth}
       autoScroll={true}
       autoReRender={false}
       dragLine={settings.scrollableMode}
@@ -109,8 +41,8 @@ const TimelineWrap = (props) => {
       rowHeight={50}
       editorData={props.data}
       effects={timelineEffects}
-      minScaleCount={zoom.scaleCount}
-      maxScaleCount={zoom.scaleCount * 2}
+      minScaleCount={props.zoom.scaleCount}
+      maxScaleCount={props.zoom.scaleCount * 2}
       // ----- Event Handlers -----
       onChange={(data) => {
       }}
@@ -120,7 +52,7 @@ const TimelineWrap = (props) => {
       onCursorDrag={props.onTimeChange}
       // Time area
       onClickTimeArea={(time) => {
-        console.log('click!', time);
+        if (isNaN(time)) return;
         props.onTimeChange(time);
       }}
       // Action
@@ -158,6 +90,7 @@ export default memo(
   TimelineWrap,
   (prevProps, nextProps) => {
     return prevProps.data === nextProps.data
-      && nextProps.player && prevProps.player?.src === nextProps.player.src;
+      && nextProps.player && prevProps.player?.src === nextProps.player.src
+      && prevProps.zoom === nextProps.zoom;
   },
 );

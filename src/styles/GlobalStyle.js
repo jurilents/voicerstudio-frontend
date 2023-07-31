@@ -9,6 +9,7 @@ export default createGlobalStyle`
     --c-primary-light: ${palette.colors.primaryLight};
     --c-success: ${palette.colors.success};
     --c-danger: ${palette.colors.danger};
+    --c-warn: ${palette.colors.warn};
   }
 
   html,

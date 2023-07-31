@@ -1,6 +1,6 @@
 import Modal from 'react-modal';
 import { Col, Container, Form, Row } from 'react-bootstrap';
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { credentialsApi } from '../../api/axios';
@@ -14,7 +14,6 @@ import { VoicingService } from '../../models/enums';
 const AddCredsModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
   const credentials = useSelector(store => store.session.credentials);
-  console.log('credentials', credentials);
   const [voicingService, setVoicingService] = useState(VoicingService.Azure);
   const [status, setStatus] = useState(Status.none);
   const [securedCreds, setSecuredCreds] = useState('');
@@ -171,4 +170,9 @@ const AddCredsModal = ({ isOpen, setIsOpen }) => {
   );
 };
 
-export default AddCredsModal;
+export default memo(
+  AddCredsModal,
+  (prevProps, nextProps) => {
+    return prevProps.isOpen === nextProps.isOpen && prevProps.setIsOpen === nextProps.setIsOpen;
+  },
+);

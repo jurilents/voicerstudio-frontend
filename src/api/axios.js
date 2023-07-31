@@ -1,10 +1,25 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
   //   'https://api-voicerstudio.azurewebsites.net',
   // 'https://api.voicer-demo.tacles.net',
 });
+
+api.interceptors.response.use(
+  // success
+  response => response,
+  // error
+  async (response) => {
+    console.log('err', response.data);
+    if (response?.data instanceof Blob) {
+      const text = await response.data.text();
+      const json = JSON.parse(text);
+      toast.error(json.message);
+    }
+  },
+);
 
 export const credentialsApi = {
   secureCredentials: async (service, credentialsData) => {

@@ -20,7 +20,6 @@ import SpeakersTab from './tabs/SpeakersTab';
 import PresetsTab from './tabs/PresetsTab';
 import { Style } from './Toolbar.styles';
 import ImportTab from './tabs/ImportTab';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 
@@ -28,7 +27,7 @@ import { toast } from 'react-toastify';
 // const fs = new SimpleFS.FileSystem();
 
 const Toolbar = (props) => {
-  const singleRecordMode = useSelector(store => store.settings.singleRecordMode);
+  // const singleRecordMode = useSelector(store => store.settings.singleRecordMode);
   const [translate, setTranslate] = useState('en');
   // const [videoFile, setVideoFile] = useState(null);
 
@@ -52,12 +51,12 @@ const Toolbar = (props) => {
   const onDocumentMouseUp = useCallback(() => {
     if (props.recording) {
       props.setRecording(false);
-      if (singleRecordMode) {
-        props.setPlaying(false);
-        props.player.pause();
-      }
+      // if (singleRecordMode) {
+      props.setPlaying(false);
+      props.player.pause();
+      // }
     }
-  }, [props.recording, props.setRecording, singleRecordMode]);
+  }, [props.recording, props.setRecording]);
 
   useEffect(() => {
     document.addEventListener('mouseup', onDocumentMouseUp);
@@ -68,7 +67,7 @@ const Toolbar = (props) => {
 
   return (
     <Style className='tool noselect'>
-      <Tab.Container id='left-tabs-example' defaultActiveKey='presets'>
+      <Tab.Container id='left-tabs-example' defaultActiveKey='general'>
         <Nav variant='pills' className='tabs-buttons'>
           <Nav.Item>
             <Nav.Link as='span' eventKey='general' title='General'>

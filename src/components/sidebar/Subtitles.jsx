@@ -11,7 +11,6 @@ import { patchSub } from '../../store/sessionReducer';
 import { useSubsAudioStorage } from '../../hooks';
 import { VoicedStatuses } from '../../models/Sub';
 import { toast } from 'react-toastify';
-import { VoicingService } from '../../models/enums';
 
 const Style = styled.div`
   height: 100%;
@@ -132,7 +131,7 @@ const Style = styled.div`
 export default function Subtitles({ player }) {
   const dispatch = useDispatch();
   const exportCodec = useSelector(store => store.settings.exportCodec);
-  const { selectedSpeaker, selectedSub } = useSelector(store => store.session);
+  const { selectedSpeaker, selectedSub, selectedCredentials } = useSelector(store => store.session);
   const playingPlayer = useSelector(store => store.audio.players.find(x => x.playing));
   const [height, setHeight] = useState(100);
   const { saveSubAudio } = useSubsAudioStorage();
@@ -160,7 +159,7 @@ export default function Subtitles({ player }) {
         styleDegree: selectedSpeaker.preset.styleDegree,
         // role: 'string',
         pitch: selectedSpeaker.preset.pitch,
-        volume: selectedSpeaker.preset.service === VoicingService.VoiceMaker ? 0 : 1,
+        volume: 0,
         start: sub.startStr,
         end: sub.endStr,
         // format: exportCodec,
@@ -169,10 +168,9 @@ export default function Subtitles({ player }) {
         // speed: +speaker.speechConfig[7], // do not apply speed (rate)
       };
       console.log('Single speech request:', request);
-      dispatch(patchSub(sub, {
-        data: VoicedStatuses.processing,
-      }));
-      const audio = await speechApi.single(request, 'dev_placeholder');
+      dispatch(patchSub(sub, { data: VoicedStatuses.processing }));
+      const cred = selectedCredentials[selectedSpeaker.preset.service];
+      const audio = await speechApi.single(request, cred.value);
       console.log('single audio url', audio);
       dispatch(addAudio(audio.url));
       sub.endTime = sub.start + audio.duration;
@@ -194,10 +192,11 @@ export default function Subtitles({ player }) {
     }
 
     fetch().catch(err => {
-      dispatch(patchSub(sub, {
-        data: {},
-      }));
-      toast.error(`Voicing failed: ${err}`);
+      dispatch(patchSub(sub, { data: {} }));
+      err?.response.text().then((errText) => {
+        const errJson = JSON.parse(errText);
+        toast.error(`Voicing failed: ${errJson.message}`);
+      });
     });
   }, [dispatch, saveSubAudio, selectedSpeaker, exportCodec]);
 
@@ -243,17 +242,16 @@ export default function Subtitles({ player }) {
         headerRowRenderer={() => null}
         rowRenderer={(props) => {
           return (
-            <SubtitleItem
-              key={props.key}
-              props={props}
-              color={selectedSpeaker.color}
-              sub={props.rowData}
-              selectedSub={selectedSub}
-              selectedSpeaker={selectedSpeaker}
-              player={player}
-              speakSub={speakSub}
-              downloadSub={downloadSub}
-              playSub={playSub} />
+            <SubtitleItem key={props.key}
+                          props={props}
+                          color={selectedSpeaker.color}
+                          sub={props.rowData}
+                          selectedSub={selectedSub}
+                          selectedSpeaker={selectedSpeaker}
+                          player={player}
+                          speakSub={speakSub}
+                          downloadSub={downloadSub}
+                          playSub={playSub} />
           );
         }}
       ></Table>

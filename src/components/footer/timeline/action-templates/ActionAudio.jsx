@@ -28,8 +28,7 @@ const ActionAudio = ({ action, row }) => {
   }, [$domRef.current, wavesurferOptions, setWavesurferOptions]);
 
   useEffect(() => {
-    if (!$domRef.current || !wavesurfer || !action.data.player || isNaN(+action.data.player.duration)) return;
-
+    if (!$domRef.current || wavesurfer || !action.data.player || isNaN(+action.data.player.duration)) return;
     const ws = WaveSurfer.create(wavesurferOptions);
     ws.load(action.data.player);
     setWavesurfer(ws);
@@ -38,14 +37,14 @@ const ActionAudio = ({ action, row }) => {
     return () => {
       ws.destroy();
     };
-  }, [$domRef, dispatch, setWavesurfer, action]);
+  }, [$domRef, dispatch, setWavesurfer, action.data.player]);
 
   useEffect(() => {
     if (!$domRef.current || !wavesurfer || !action.data.player || isNaN(+action.data.player.duration)) return;
 
     wavesurfer.drawer.containerWidth = wavesurfer.drawer.container.clientWidth;
     wavesurfer.drawBuffer();
-  }, [$domRef.current, wavesurfer, timelineZoom]);
+  }, [$domRef.current, wavesurfer, timelineZoom, action.data.player]);
 
   // useEffect(() => {
   //   if ($domRef.current && wavesurfer) {
