@@ -32,7 +32,9 @@ export function getSubVoicedStatus(sub) {
 
 export function canSubBeVoiced(sub) {
   const status = getSubVoicedStatus(sub);
-  return status === VoicedStatuses.none || status === VoicedStatuses.obsolete;
+  return status === VoicedStatuses.none
+    || status === VoicedStatuses.obsolete
+    || status === VoicedStatuses.processing;
 }
 
 export function getSubVoicedStatusColor(sub) {

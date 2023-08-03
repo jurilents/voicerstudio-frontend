@@ -1,6 +1,7 @@
 import { Speaker } from '../models';
 import { settings } from '../settings';
 import audioController from '../utils/AudioController';
+import { isBool } from '../utils';
 
 
 export function setGlobalSpeakerVolume(speakerId, volume) {
@@ -46,15 +47,15 @@ const speakersReducer = {
   patchSpeaker: (state, action) => {
     const index = state.speakers.findIndex(x => x.id === action.payload.id);
     if (index < 0) return;
-    if (action.payload.patch.volume || action.payload.patch.mute) {
+    const muteChanged = isBool(action.payload.patch.mute);
+    if (!isNaN(+action.payload.patch.volume) || muteChanged) {
       const globalVolume = action.payload.patch.mute ? 0 : +action.payload.patch.volume;
       setGlobalSpeakerVolume(action.payload.id, globalVolume);
-      if (Object.keys(action.payload.patch).length === 1) {
-        // If only volume changes, do not change the state, only value
-        const speaker = state.speakers[index];
-        speaker.volume = action.payload.patch.volume;
-        return state;
-      }
+      const speaker = state.speakers[index];
+      // If only volume changes, do not change the state, only value
+      if (action.payload.patch.volume) speaker.volume = action.payload.patch.volume;
+      if (isBool(action.payload.patch.mute)) speaker.mute = action.payload.patch.mute;
+      return state;
     }
     const speakersCopy = [...state.speakers];
     const speaker = state.speakers[index];

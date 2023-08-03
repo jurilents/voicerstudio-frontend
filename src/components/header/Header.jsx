@@ -76,7 +76,7 @@ export default function Header() {
         <img src='/images/logo-silver.png' alt='Creative Society' />
         <div className='logo-content'>
           <span className='logo-title'>Voicer Studio</span>
-          <span className='logo-version'>v0.5.0a – 01/08/23</span>
+          <span className='logo-version'>v1.0.0 – 04/08/23</span>
         </div>
       </div>
       <nav>

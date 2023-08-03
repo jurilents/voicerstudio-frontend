@@ -81,3 +81,7 @@ export function cloneByKeys(obj, keysToClone) {
   }
   return clone;
 }
+
+export function isBool(value) {
+  return value === true || value === false;
+}

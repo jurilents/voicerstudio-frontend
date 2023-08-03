@@ -14,6 +14,7 @@ const Style = styled.div`
   padding-bottom: 35px;
   margin-top: 10px;
   position: relative;
+  background-color: rgb(0 0 0 / 50%);
 `;
 
 export default function Footer(props) {

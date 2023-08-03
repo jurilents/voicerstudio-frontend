@@ -10,6 +10,8 @@ export default createGlobalStyle`
     --c-success: ${palette.colors.success};
     --c-danger: ${palette.colors.danger};
     --c-warn: ${palette.colors.warn};
+
+    accent-color: ${palette.colors.primary};
   }
 
   html,
@@ -32,7 +34,7 @@ export default createGlobalStyle`
     display: flex;
     font-size: 14px;
     color: #ccc;
-    background-color: rgb(0 0 0 / 90%);
+    background-color: rgb(45 45 45);
   }
 
   ::-webkit-scrollbar {

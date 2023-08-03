@@ -13,6 +13,7 @@ import { setAzureLanguages, setVMLanguages } from '../../store/languagesReducer'
 import { Preset } from '../../models';
 import { addPreset } from '../../store/sessionReducer';
 import { VoicingService } from '../../models/enums';
+import { useVoicer } from '../../hooks';
 
 const Style = styled.div`
   .audio {
@@ -43,6 +44,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
   const [text, setText] = useState(`This priceless pearl of the primordial knowledge removes the cloak from all mysteries of the material world`);
 
   const dispatch = useDispatch();
+  const { speakSub } = useVoicer();
   let languages = useSelector(store => voicingService === VoicingService.Azure
     ? store.languages.azure
     : store.languages.voiceMaker) || [];
@@ -108,6 +110,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
         console.log('req', request);
         console.log('selectedCred.value', selectedCred.value);
         const response = await speechApi.single(request, selectedCred.value);
+        if (!response) return;
         setSampleSrc(response.url);
         console.log('res', response);
         toast.info('Speak succeeded');

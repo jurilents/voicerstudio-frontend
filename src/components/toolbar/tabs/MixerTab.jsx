@@ -119,11 +119,10 @@ function AudioVolumeItem({ title, propertyName, type, player }) {
   );
 }
 
-function SpeakerAudioVolumeItem({ speaker }) {
+function SpeakerAudioVolumeItem({ speaker, state, setState }) {
   const dispatch = useDispatch();
   const { toggleSpeakerMute, toggleSpeakerSolo } = useAudioControls();
-  const [state, setState] = useState(false);
-
+  console.log('redraw:', speaker.mute);
   return (
     <div style={{ '--c-speaker': speaker.color }}
          className={'speaker-volume volume-wrapper'}>
@@ -163,13 +162,14 @@ function SpeakerAudioVolumeItem({ speaker }) {
 
 export default function MixerTab({ player }) {
   const { speakers, selectedSpeaker } = useSelector(store => store.session);
+  const [state, setState] = useState(false);
 
   return (
     <Style className='mixer'>
       <AudioVolumeItem title='Master' propertyName='masterVolume' type='master' player={player} />
       <AudioVolumeItem title='Original' propertyName='originalVolume' player={player} />
       {speakers.map((speaker) => (
-        <SpeakerAudioVolumeItem key={speaker.id} speaker={speaker} />
+        <SpeakerAudioVolumeItem key={speaker.id} speaker={speaker} state={state} setState={setState} />
       ))}
     </Style>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ListGroup } from 'react-bootstrap';
 import timelineStyles from '../timelineStyles';
@@ -95,6 +95,7 @@ export const TimelineHeading = () => {
   const settings = useSelector(store => store.settings);
   const { speakers, selectedSpeaker } = useSelector(store => store.session);
   const timelineRowHeight = useSelector(store => store.settings.timelineRowHeight);
+  const [state, setState] = useState(false);
   const audioControls = useAudioControls();
 
 
@@ -124,7 +125,10 @@ export const TimelineHeading = () => {
             <div className='speaker-actions'>
               <button className={'btn speaker-btn' + (speaker.mute ? ' mute-active' : '')}
                       title='Mute'
-                      onClick={() => audioControls.toggleSpeakerMute(speaker)}>
+                      onClick={() => {
+                        audioControls.toggleSpeakerMute(speaker);
+                        setState(!state);
+                      }}>
                 M
               </button>
               {/*<button className={'btn speaker-btn' + (speaker.solo ? ' solo-active' : '')}*/}

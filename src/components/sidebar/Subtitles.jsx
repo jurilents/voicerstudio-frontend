@@ -3,13 +3,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Table } from 'react-virtualized';
 import debounce from 'lodash/debounce';
 import { download } from '../../utils';
-import { speechApi } from '../../api/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { addAudio, playAudio, removeAudio } from '../../store/audioReducer';
+import { playAudio } from '../../store/audioReducer';
 import SubtitleItem from './SubtitleItem';
-import { patchSub } from '../../store/sessionReducer';
-import { useSubsAudioStorage } from '../../hooks';
-import { VoicedStatuses } from '../../models/Sub';
+import { useSubsAudioStorage, useVoicer } from '../../hooks';
 import { toast } from 'react-toastify';
 
 const Style = styled.div`
@@ -133,6 +130,7 @@ export default function Subtitles({ player }) {
   const exportCodec = useSelector(store => store.settings.exportCodec);
   const { selectedSpeaker, selectedSub, selectedCredentials } = useSelector(store => store.session);
   const playingPlayer = useSelector(store => store.audio.players.find(x => x.playing));
+  const { speakSub } = useVoicer();
   const [height, setHeight] = useState(100);
   const { saveSubAudio } = useSubsAudioStorage();
   const resize = useCallback(() => {
@@ -147,58 +145,6 @@ export default function Subtitles({ player }) {
       window.addEventListener('resize', debounceResize);
     }
   }, [resize]);
-
-  const speakSub = useCallback((sub) => {
-    async function fetch() {
-      const request = {
-        service: selectedSpeaker.preset.service,
-        locale: selectedSpeaker.preset.locale,
-        voice: selectedSpeaker.preset.voice,
-        text: sub.text,
-        style: selectedSpeaker.preset.style,
-        styleDegree: selectedSpeaker.preset.styleDegree,
-        // role: 'string',
-        pitch: selectedSpeaker.preset.pitch,
-        volume: 0,
-        start: sub.startStr,
-        end: sub.endStr,
-        // format: exportCodec,
-        outputFormat: 'wav',
-        sampleRate: 'Rate48000',
-        // speed: +speaker.speechConfig[7], // do not apply speed (rate)
-      };
-      console.log('Single speech request:', request);
-      dispatch(patchSub(sub, { data: VoicedStatuses.processing }));
-      const cred = selectedCredentials[selectedSpeaker.preset.service];
-      const audio = await speechApi.single(request, cred.value);
-      console.log('single audio url', audio);
-      dispatch(addAudio(audio.url));
-      sub.endTime = sub.start + audio.duration;
-      await saveSubAudio(sub.id, audio.blob);
-      dispatch(patchSub(sub, {
-        end: sub.end,
-        data: sub.buildVoicedStamp(audio.url, audio.baseDuration),
-      }));
-      toast.info('Subtitle voiced');
-    }
-
-    if (!sub.canBeVoiced) {
-      toast.warn('Subtitle cannot be voiced, because you already voiced it');
-      return;
-    }
-    if (!selectedSpeaker?.preset) return;
-    if (sub.data?.src) {
-      dispatch(removeAudio(sub.data?.src));
-    }
-
-    fetch().catch(err => {
-      dispatch(patchSub(sub, { data: {} }));
-      err?.response.text().then((errText) => {
-        const errJson = JSON.parse(errText);
-        toast.error(`Voicing failed: ${errJson.message}`);
-      });
-    });
-  }, [dispatch, saveSubAudio, selectedSpeaker, exportCodec]);
 
   const playSub = useCallback((sub) => {
     if (playingPlayer) {

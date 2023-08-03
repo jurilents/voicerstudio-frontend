@@ -3,20 +3,20 @@ import { toast } from 'react-toastify';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
-  //   'https://api-voicerstudio.azurewebsites.net',
-  // 'https://api.voicer-demo.tacles.net',
 });
 
 api.interceptors.response.use(
   // success
-  response => response,
+  (response) => response,
   // error
-  async (response) => {
-    console.log('err', response.data);
-    if (response?.data instanceof Blob) {
-      const text = await response.data.text();
+  async (error) => {
+    console.log('Server Error:', error);
+    if (error?.data instanceof Blob) {
+      const text = await error.data.text();
       const json = JSON.parse(text);
       toast.error(json.message);
+    } else if (!error.data) {
+      toast.error(`Unknown error: ${error.message}`);
     }
   },
 );
@@ -56,6 +56,7 @@ export const speechApi = {
       headers: { 'X-Credentials': credentials },
       responseType: 'blob',
     });
+    if (!result) return null;
     const blob = new Blob([result.data]);
     return {
       blob: blob,

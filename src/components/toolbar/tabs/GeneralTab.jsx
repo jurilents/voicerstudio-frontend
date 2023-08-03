@@ -5,13 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSettings } from '../../../store/settingsReducer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faMinus, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
-import { patchSub } from '../../../store/sessionReducer';
-import { VoicedStatuses } from '../../../models/Sub';
-import { speechApi } from '../../../api/axios';
-import { addAudio, removeAudio } from '../../../store/audioReducer';
-import { toast } from 'react-toastify';
-import { useSubsAudioStorage } from '../../../hooks';
 import _ from 'lodash/fp';
+import { useVoicer } from '../../../hooks';
 
 const Style = styled.div`
   .speed-wrapper {
@@ -44,61 +39,7 @@ const Style = styled.div`
 export default function GeneralTab(props) {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
-  const { selectedSpeaker, selectedCredentials } = useSelector(store => store.session);
-  const { saveSubAudio } = useSubsAudioStorage();
-
-  function speakAll() {
-    async function fetch(sub) {
-      const request = {
-        service: selectedSpeaker.preset.service,
-        locale: selectedSpeaker.preset.locale,
-        voice: selectedSpeaker.preset.voice,
-        text: sub.text,
-        style: selectedSpeaker.preset.style,
-        styleDegree: selectedSpeaker.preset.styleDegree,
-        // role: 'string',
-        pitch: selectedSpeaker.preset.pitch,
-        volume: 1,
-        start: sub.startStr,
-        end: sub.endStr,
-        outputFormat: 'wav',
-        sampleRate: 'Rate48000',
-        // speed: +speaker.speechConfig[7], // do not apply speed (rate)
-      };
-      console.log('Single speech request:', request);
-      dispatch(patchSub(sub, {
-        data: VoicedStatuses.processing,
-      }));
-      const cred = selectedCredentials[selectedSpeaker.preset.service];
-      const audio = await speechApi.single(request, cred.value);
-      console.log('single audio url', audio);
-      dispatch(addAudio(audio.url));
-      sub.endTime = sub.start + audio.duration;
-      await saveSubAudio(sub.id, audio.blob);
-      dispatch(patchSub(sub, {
-        end: sub.end,
-        data: sub.buildVoicedStamp(audio.url, audio.baseDuration),
-      }));
-      toast.info('Subtitle voiced');
-    }
-
-    if (!selectedSpeaker?.preset) {
-      toast.warn('Cannot voice subtitles of selected speaker. There is no voice preset selected for it');
-      return;
-    }
-    for (const sub of selectedSpeaker.subs) {
-      if (!sub.canBeVoiced) continue;
-      if (sub.data?.src) {
-        dispatch(removeAudio(sub.data?.src));
-      }
-
-      fetch(sub).catch(err => {
-        toast.error(`Voicing failed: ${err}`);
-      });
-    }
-
-    toast.success('All subtitles of selected speaker voiced');
-  }
+  const { speakAll } = useVoicer();
 
   const setPlaybackSpeed = (value) => {
     if (!window.timelineEngine) return;
@@ -117,20 +58,17 @@ export default function GeneralTab(props) {
           <Row>
             <Col className='label'>Playback speed</Col>
             <Col className='speed-wrapper'>
-              <button
-                className='speed-btn'
-                onClick={() => setPlaybackSpeed(settings.playbackSpeed - 0.25)}>
+              <button className='speed-btn'
+                      onClick={() => setPlaybackSpeed(settings.playbackSpeed - 0.25)}>
                 <FontAwesomeIcon icon={faMinus} />
               </button>
               <span className='speed-text'>{Math.round(settings.playbackSpeed * 100)}%</span>
-              <button
-                className='speed-btn'
-                onClick={() => setPlaybackSpeed(settings.playbackSpeed + 0.25)}>
+              <button className='speed-btn'
+                      onClick={() => setPlaybackSpeed(settings.playbackSpeed + 0.25)}>
                 <FontAwesomeIcon icon={faAdd} />
               </button>
-              <button
-                className='speed-btn app-reset-btn'
-                onClick={() => setPlaybackSpeed(1)}>
+              <button className='speed-btn app-reset-btn'
+                      onClick={() => setPlaybackSpeed(1)}>
                 <FontAwesomeIcon icon={faRedoAlt} />
               </button>
             </Col>

@@ -16,6 +16,7 @@ const HOTKEYS = {
   refreshPage: { key: 'R', meta: true },
   undo: { key: 'Z', meta: true },
   redo: { key: 'Z', meta: true, shift: true },
+  speakAll: { key: 'G', meta: true },
   showMotivation: { key: 'O', meta: true, shift: true },
   moveCursorRight: { key: 'ARROWRIGHT' },
   moveCursorVeryRight: { key: 'ARROWRIGHT', shift: true },
@@ -136,6 +137,13 @@ export const useHotkeys = ({ player }) => {
           engine.setTime(newTime);
           player.currentTime = newTime;
         }
+        break;
+      }
+
+      // ----- Speak All -----
+      case HOTKEYS.speakAll.key: {
+        if (!checkMetaKeys(event, HOTKEYS.speakAll)) break;
+        handlePlayOrPause();
         break;
       }
 

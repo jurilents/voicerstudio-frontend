@@ -19,6 +19,7 @@ const Style = styled.div`
   .timeline-editor {
     width: 100%;
     z-index: 100;
+    background-color: transparent;
   }
 
   .timeline-editor-action-right-stretch,
@@ -105,11 +106,11 @@ const Style = styled.div`
 
     .sub-status {
       display: inline-block;
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       aspect-ratio: 1;
       border-radius: 50%;
-      border: 1px solid rgb(255 255 255 / 75%);
+      border: 1px solid rgb(255 255 255 / 50%);
     }
   }
 
