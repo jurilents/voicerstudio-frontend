@@ -1,5 +1,5 @@
 import { Timeline } from '@xzdarcy/react-timeline-editor';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useState } from 'react';
 import { timelineEffects } from '../../../utils/timelineEffects';
 import { useSelector } from 'react-redux';
 import ScaleMarker from './action-templates/ScaleMarker';
@@ -20,6 +20,9 @@ const TimelineWrap = (props) => {
 
   if (!props.player) {
     return <></>;
+  } else {
+    if (!props.player.paused)
+      props.player.pause();
   }
 
   // const scaleCount = calcScaleCount(props.player.duration, 1);

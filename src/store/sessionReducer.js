@@ -67,7 +67,7 @@ function parseSessionJson(json) {
           return new Sub(sub);
         });
       }
-      setGlobalSpeakerVolume(speaker.id, speaker.volume || 1);
+      setGlobalSpeakerVolume(speaker.id, speaker.volume, speaker.mute);
       return new Speaker(speaker);
     });
   }

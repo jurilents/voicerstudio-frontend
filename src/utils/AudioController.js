@@ -1,11 +1,17 @@
 import { Howl } from 'howler';
 
 class AudioController {
-  cacheMap = {};
-  listenerMap = {};
+  // cacheMap = {};
+  // listenerMap = {};
+
+  constructor() {
+    if (!window.cacheMap) window.cacheMap = {};
+    if (!window.listenerMap) window.listenerMap = {};
+  }
 
   start({ speakerId, id, src, startTime, time, volume, engine }) {
     const cached = this._getCachedSpeaker(speakerId);
+    const cachedListeners = this._getCachedSpeakerListeners(speakerId);
     let item = cached[id];
 
     if (item) {
@@ -20,7 +26,7 @@ class AudioController {
         loop: false,
         autoplay: true,
         volume: volume,
-        // html5: true,
+        html5: true,
       });
       cached[id] = item;
       item.on('load', () => {
@@ -35,42 +41,51 @@ class AudioController {
     const rateListener = ({ rate }) => {
       item.rate(rate);
     };
-    if (!this.listenerMap[id]) this.listenerMap[id] = {};
+    if (!cachedListeners[id]) cachedListeners[id] = {};
     engine.on('afterSetTime', timeListener);
     engine.on('afterSetPlayRate', rateListener);
-    this.listenerMap[id].time = timeListener;
-    this.listenerMap[id].rate = rateListener;
+    cachedListeners[id].time = timeListener;
+    cachedListeners[id].rate = rateListener;
   }
 
   setSpeakerVolume({ speakerId, volume }) {
     const cachedSpeaker = this._getCachedSpeaker(speakerId);
-    console.log('map', this.cacheMap);
+
+    console.log('map', cachedSpeaker);
     console.log('cached:', speakerId);
     if (cachedSpeaker) {
       for (const item of Object.values(cachedSpeaker)) {
-        console.log('volume:', item.getVolume());
+        console.log('target vol:', volume);
         item.volume(volume);
+        console.log('new volume:', item.volume());
       }
     }
   }
 
   stop({ speakerId, id, engine }) {
     const item = this._getCachedSpeaker(speakerId)[id];
+    const cachedListeners = this._getCachedSpeakerListeners(speakerId);
 
     if (item) {
       item.stop();
-      if (this.listenerMap[id]) {
-        this.listenerMap[id].time && engine.off('afterSetTime', this.listenerMap[id].time);
-        this.listenerMap[id].rate && engine.off('afterSetPlayRate', this.listenerMap[id].rate);
-        delete this.listenerMap[id];
+      if (cachedListeners[id]) {
+        cachedListeners[id].time && engine.off('afterSetTime', cachedListeners[id].time);
+        cachedListeners[id].rate && engine.off('afterSetPlayRate', cachedListeners[id].rate);
+        delete cachedListeners[id];
       }
     }
   }
 
   _getCachedSpeaker(speakerId) {
-    if (!this.cacheMap[speakerId])
-      this.cacheMap[speakerId] = {};
-    return this.cacheMap[speakerId];
+    if (!window.cacheMap[speakerId])
+      window.cacheMap[speakerId] = {};
+    return window.cacheMap[speakerId];
+  }
+
+  _getCachedSpeakerListeners(speakerId) {
+    if (!window.listenerMap[speakerId])
+      window.listenerMap[speakerId] = {};
+    return window.listenerMap[speakerId];
   }
 }
 

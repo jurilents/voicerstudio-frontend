@@ -122,7 +122,7 @@ function AudioVolumeItem({ title, propertyName, type, player }) {
 function SpeakerAudioVolumeItem({ speaker, state, setState }) {
   const dispatch = useDispatch();
   const { toggleSpeakerMute, toggleSpeakerSolo } = useAudioControls();
-  console.log('redraw:', speaker.mute);
+
   return (
     <div style={{ '--c-speaker': speaker.color }}
          className={'speaker-volume volume-wrapper'}>

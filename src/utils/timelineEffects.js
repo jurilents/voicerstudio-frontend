@@ -1,16 +1,17 @@
 import audioController from './AudioController';
 
-export const effectKeys = {
+const effectKeys = {
   audioTrack: 'audioTrack',
 };
 
 function getSpeakerVolume(action) {
-  const vol = (window.speakersVolume?.[action.speakerId] || 1) * (window.masterVolume || 1);
-  console.log('speaker volume', vol);
-  return vol;
+  let speakerVol = window.speakersVolume?.[action.speakerId];
+  if (isNaN(+speakerVol)) speakerVol = 1;
+  if (isNaN(+window.masterVolume)) window.masterVolume = 1;
+  return speakerVol * window.masterVolume;
 }
 
-export const timelineEffects = {
+const timelineEffects = {
   audioTrack: {
     id: effectKeys.audioTrack,
     name: effectKeys.audioTrack,
@@ -22,6 +23,7 @@ export const timelineEffects = {
           if (!action.data?.src) return;
           audioController.start({
             id: action.id,
+            speakerId: action.speakerId,
             src,
             startTime: action.start,
             time,
@@ -36,6 +38,7 @@ export const timelineEffects = {
           if (!action.data?.src) return;
           audioController.start({
             id: action.id,
+            speakerId: action.speakerId,
             src,
             startTime: action.start,
             time,
@@ -51,6 +54,7 @@ export const timelineEffects = {
         if (!action.data?.src) return;
         audioController.stop({
           id: action.id,
+          speakerId: action.speakerId,
           engine,
         });
       },
@@ -60,9 +64,12 @@ export const timelineEffects = {
         if (!action.data?.src) return;
         audioController.stop({
           id: action.id,
+          speakerId: action.speakerId,
           engine,
         });
       },
     },
   },
 };
+
+export { effectKeys, timelineEffects, audioController };

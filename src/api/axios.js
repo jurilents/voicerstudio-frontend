@@ -15,6 +15,20 @@ api.interceptors.response.use(
       const text = await error.data.text();
       const json = JSON.parse(text);
       toast.error(json.message);
+    } else if (error.code === 'ERR_NETWORK') {
+      toast.error((
+        <>
+          <strong>Server is offline.</strong>
+          Please, check your internet connection or wait until the server is up and running
+          again.
+          <em style={{ display: 'inline-block', marginTop: '15px' }}>
+            If you see this message for a long time, please contact support:
+          </em>
+          <br />
+          <a href='https://t.me/jurilents' style={{ color: 'var(--c-primary-light)' }}>@jurilents </a>
+          (Rus/Ukr/Eng)
+        </>
+      ));
     } else if (!error.data) {
       toast.error(`Unknown error: ${error.message}`);
     }

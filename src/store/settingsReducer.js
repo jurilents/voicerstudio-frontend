@@ -26,6 +26,7 @@ const rootState = {
 
 const storedState = localStorage.getItem(STORAGE_KEY);
 const defaultState = storedState ? { ...rootState, ...JSON.parse(storedState) } : rootState;
+defaultState.playbackSpeed = 1;
 window.masterVolume = +defaultState.masterVolume || 1;
 
 export default function settingsReducer(state = defaultState, action) {
