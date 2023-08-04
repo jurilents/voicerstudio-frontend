@@ -67,58 +67,97 @@ const Style = styled.div`
           outline: none;
         }
 
+        .item-info {
+          width: 150px;
+          font-size: 11px;
+
+          .dimmed {
+            color: var(--c-text);
+            opacity: 80%;
+          }
+        }
+
         .item-bar {
           display: flex;
           flex-direction: column;
           flex-wrap: nowrap;
           justify-content: space-evenly;
+          margin-right: 4px;
+
+          .item-bar-center-row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+
+            > * {
+              text-align: center;
+
+              &:first-child {
+                width: 46%;
+                max-width: 46%;
+                text-align: right;
+              }
+
+              &:last-child {
+                width: 46%;
+                max-width: 46%;
+                text-align: left;
+              }
+            }
+          }
+
+          .item-bar-row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 7px;
+            padding-left: 3px;
+          }
 
           input {
             background-color: transparent;
             color: white;
             border: none;
+            flex: 1;
             width: 90%;
           }
         }
 
         .item-index {
           margin: 5px 3px 5px 0;
-          padding-right: 3px;
-          border-right: 2px solid #838383;
+          padding-left: 3px;
+          border-left: 2px solid #838383;
           border-radius: 1px;
           font-size: 10px;
-        }
-
-        .item-timing {
-          width: 80px;
-          font-size: 11px;
-
-          .estimate-duration {
-            color: #02b2a2;
-          }
-
-          .timing-duration {
-            opacity: 40%;
-          }
+          font-weight: bold;
         }
 
         .item-actions {
-          width: 30px;
           font-size: 16px;
-          padding-left: 5px;
+          padding-top: 8px;
+          justify-content: center;
 
           button {
             background-color: transparent;
             border: none;
-            width: 100%;
             min-height: 20px;
-            opacity: 75%;
+            opacity: 33%;
             cursor: pointer;
 
             &:hover {
               opacity: 100%;
             }
           }
+
+          .highlight {
+            opacity: 80%;
+          }
+        }
+
+        .item-icon {
+          margin: 0 8px;
+          opacity: 50%;
         }
       }
     }
@@ -127,7 +166,6 @@ const Style = styled.div`
 
 export default function Subtitles({ player }) {
   const dispatch = useDispatch();
-  const exportCodec = useSelector(store => store.settings.exportCodec);
   const { selectedSpeaker, selectedSub, selectedCredentials } = useSelector(store => store.session);
   const playingPlayer = useSelector(store => store.audio.players.find(x => x.playing));
   const { speakSub } = useVoicer();
@@ -190,7 +228,6 @@ export default function Subtitles({ player }) {
           return (
             <SubtitleItem key={props.key}
                           props={props}
-                          color={selectedSpeaker.color}
                           sub={props.rowData}
                           selectedSub={selectedSub}
                           selectedSpeaker={selectedSpeaker}

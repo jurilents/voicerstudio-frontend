@@ -2,6 +2,7 @@ import DT from 'duration-time-conversion';
 import { v4 as uuidv4 } from 'uuid';
 import { clamp } from 'lodash';
 import { effectKeys } from '../utils/timelineEffects';
+import palette from '../styles/palette';
 
 export const VoicedStatuses = {
   none: 'none',
@@ -39,11 +40,11 @@ export function canSubBeVoiced(sub) {
 
 export function getSubVoicedStatusColor(sub) {
   const status = getSubVoicedStatus(sub);
-  if (status === VoicedStatuses.voiced) return '#32b432';
-  if (status === VoicedStatuses.processing) return '#e8cb09';
-  if (status === VoicedStatuses.none) return '#817777';
-  if (status === VoicedStatuses.obsolete) return '#c93d1e';
-  return '#a8a8a8';
+  if (status === VoicedStatuses.voiced) return palette.statusColors.ok;
+  if (status === VoicedStatuses.processing) return palette.statusColors.temp;
+  if (status === VoicedStatuses.none) return palette.statusColors.warn;
+  if (status === VoicedStatuses.obsolete) return palette.statusColors.danger;
+  return palette.statusColors.none;
 }
 
 export class Sub {

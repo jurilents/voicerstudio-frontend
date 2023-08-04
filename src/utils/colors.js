@@ -5,8 +5,8 @@ const colors = {
   magenta: '#7A3259',
   teal: '#1e5b55',
   forest: '#2C572D',
-  yellow: '#665C0D',
-  dirt: '#4F2B14',
+  yellow: '#6c5d0f',
+  dirt: '#5e341a',
 };
 
 export default colors;

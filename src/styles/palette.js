@@ -8,6 +8,13 @@ const palette = {
     warn: '#b28f1c',
     text: '#ffffff',
   },
+  statusColors: {
+    none: '#a8a8a8',
+    temp: '#817777',
+    ok: '#32b432',
+    warn: '#e8cb09',
+    danger: '#d74120',
+  },
 };
 
 

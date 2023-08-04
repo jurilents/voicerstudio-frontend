@@ -1,4 +1,5 @@
 import DT from 'duration-time-conversion';
+import palette from '../styles/palette';
 
 export const userAgent = window.navigator.userAgent;
 export const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
@@ -63,6 +64,16 @@ export function d2t(time, shorten) {
   return displayValue.substring(0, displayValue.length - 1);
 }
 
+export function formatTime(time) {
+  time = typeof time !== 'number' || isNaN(time) || time === Infinity || time < 0 ? 0 : time;
+  let displayValue = DT.d2t(time);
+  // if (displayValue.startsWith('00:00:'))
+  //   displayValue = displayValue.substring(6, displayValue.length);
+  if (displayValue.startsWith('00:'))
+    displayValue = displayValue.substring(3, displayValue.length);
+  return displayValue.substring(0, displayValue.length - 1);
+}
+
 export function toPercentsDelta(num, sign, extraAccuracy) {
   num = (num * 100).toFixed(extraAccuracy ? 1 : 0);
   return (num > 0 ? (sign ? '+' : '') + num : num) + '%';
@@ -84,4 +95,14 @@ export function cloneByKeys(obj, keysToClone) {
 
 export function isBool(value) {
   return value === true || value === false;
+}
+
+export function getDurationStatusColor(durationCoef) {
+  if (isNaN(+durationCoef)) durationCoef = 0;
+  durationCoef = Math.abs(durationCoef);
+
+  if (durationCoef < 0.1) return palette.statusColors.none;
+  if (durationCoef <= 10) return palette.statusColors.ok;
+  if (durationCoef <= 15) return palette.statusColors.warn;
+  return palette.statusColors.danger;
 }

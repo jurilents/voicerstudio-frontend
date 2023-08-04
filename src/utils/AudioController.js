@@ -50,14 +50,9 @@ class AudioController {
 
   setSpeakerVolume({ speakerId, volume }) {
     const cachedSpeaker = this._getCachedSpeaker(speakerId);
-
-    console.log('map', cachedSpeaker);
-    console.log('cached:', speakerId);
     if (cachedSpeaker) {
       for (const item of Object.values(cachedSpeaker)) {
-        console.log('target vol:', volume);
         item.volume(volume);
-        console.log('new volume:', item.volume());
       }
     }
   }

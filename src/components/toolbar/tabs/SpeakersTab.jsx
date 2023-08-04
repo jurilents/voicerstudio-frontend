@@ -36,7 +36,7 @@ export default function SpeakersTab(props) {
   const createSpeaker = () => new Speaker({
     id: ++maxSpeakerId,
     displayName: '',
-    color: colors.blue,
+    color: colors.teal,
     preset: presets?.length ? presets[0] : null,
   });
 

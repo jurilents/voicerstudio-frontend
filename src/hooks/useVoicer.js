@@ -12,9 +12,10 @@ export const useVoicer = () => {
   const { selectedSpeaker, selectedCredentials } = useSelector(store => store.session);
   const { saveSubAudio } = useSubsAudioStorage();
 
-  const speakSub = useCallback(async (sub, fromBatch = false) => {
+  const speakSub = useCallback(async (sub, options) => {
+    if (!options) options = {};
     if (!sub.canBeVoiced) {
-      if (!fromBatch) toast.info('Subtitle cannot be voiced, because you already voiced it');
+      if (!options.fromBatch) toast.info('Subtitle cannot be voiced, because you already voiced it');
       return true;
     }
     if (sub.data?.src) {
@@ -31,11 +32,11 @@ export const useVoicer = () => {
       // role: 'string',
       pitch: selectedSpeaker.preset.pitch,
       volume: 1,
-      start: sub.startStr,
-      end: sub.endStr,
+      start: options.speed ? null : sub.startStr,
+      end: options.speed ? null : sub.endStr,
       outputFormat: 'wav',
       sampleRate: 'Rate48000',
-      // speed: +speaker.speechConfig[7], // do not apply speed (rate)
+      speed: options.speed,
     };
     console.log('Single speech request:', request);
     dispatch(patchSub(sub, {
@@ -52,7 +53,7 @@ export const useVoicer = () => {
       end: sub.end,
       data: sub.buildVoicedStamp(audio.url, audio.baseDuration),
     }));
-    if (!fromBatch) toast.info('🎧 Subtitle voiced 🎧');
+    if (!options.fromBatch) toast.info('🎧 Subtitle voiced 🎧');
     return true;
   }, [dispatch, selectedSpeaker, selectedCredentials, saveSubAudio]);
 
@@ -62,8 +63,9 @@ export const useVoicer = () => {
       return;
     }
     let promises = [];
+    const options = { fromBatch: true };
     for (const sub of selectedSpeaker.subs) {
-      promises.push(speakSub(sub, true));
+      promises.push(speakSub(sub, options));
     }
 
     Promise.all(promises).then((results) => {
