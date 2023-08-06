@@ -147,7 +147,7 @@ export default function Player(props) {
     }
     if (props.playing) {
       props.player.play();
-    } else {
+    } else if (!props.player.paused) {
       props.player.pause();
     }
   }, [props.player, props.playing]);

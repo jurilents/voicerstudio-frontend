@@ -15,6 +15,15 @@ const palette = {
     warn: '#eacf1d',
     danger: '#f14c26',
   },
+  indicatorColors: {
+    lowest: '#487cff',
+    lower: '#34c0f3',
+    low: '#4ed08b',
+    zero: '#a8a8a8',
+    high: '#cad52c',
+    higher: '#ef7f2e',
+    highest: '#f14c26',
+  },
 };
 
 

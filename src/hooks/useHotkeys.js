@@ -44,11 +44,9 @@ export const useHotkeys = ({ player }) => {
     playing = !playing;
     if (engine.isPlaying !== playing) {
       if (engine.isPlaying) {
-        console.log('-----pause');
         engine.pause();
         if (!player.paused) player.pause();
       } else {
-        console.log('-----play');
         engine.play({ autoEnd: true });
         if (player.paused) player.play();
       }
@@ -71,7 +69,7 @@ export const useHotkeys = ({ player }) => {
       // ----- Fake hotkeys and overrides -----
       case HOTKEYS.save.key: {
         if (!checkMetaKeys(event, HOTKEYS.save)) break;
-        toast.success(`Calm down, it's okay, everything is saved 😎`);
+        toast.success(`Calm down, it's okay, everything is auto-saved 😎`);
         break;
       }
 

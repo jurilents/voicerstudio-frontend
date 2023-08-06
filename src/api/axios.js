@@ -28,16 +28,17 @@ api.interceptors.response.use(
         toast.error((
           <>
             <strong>Validation Failed</strong>
-            <dl>
+            <ul>
               {Object.entries(json.errors).map(([key, messages]) => (
                 <>
-                  <dt>{key}</dt>
-                  {messages.map((message) => (
-                    <dd>– {message?.endsWith('.') ? message.substring(0, message.length - 1) : message}</dd>
+                  {messages.map((message, index) => (
+                    <li key={index}>
+                      {message?.endsWith('.') ? message.substring(0, message.length - 1) : message}
+                    </li>
                   ))}
                 </>
               ))}
-            </dl>
+            </ul>
           </>
         ));
       }

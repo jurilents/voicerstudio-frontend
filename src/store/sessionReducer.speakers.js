@@ -23,7 +23,6 @@ const speakersReducer = {
     if (state.speakers.length >= settings.speakersLimit) {
       return state;
     }
-    console.log('action.payload.speaker', action.payload.speaker);
     const session = {
       ...state,
       speakers: [...state.speakers, action.payload.speaker],

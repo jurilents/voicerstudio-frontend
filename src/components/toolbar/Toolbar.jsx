@@ -53,7 +53,8 @@ const Toolbar = (props) => {
       props.setRecording(false);
       // if (singleRecordMode) {
       props.setPlaying(false);
-      props.player.pause();
+      if (!props.player.paused)
+        props.player.pause();
       // }
     }
   }, [props.recording, props.setRecording]);

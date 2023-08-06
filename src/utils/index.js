@@ -109,10 +109,20 @@ export function isBool(value) {
 
 export function getDurationStatusColor(durationCoef) {
   if (isNaN(+durationCoef)) durationCoef = 1;
-  durationCoef = Math.abs(durationCoef);
+  // durationCoef = Math.abs(durationCoef);
 
-  if (durationCoef < 0.01) return palette.statusColors.none;
-  if (durationCoef < 0.10001) return palette.statusColors.ok;
-  if (durationCoef < 0.15001) return palette.statusColors.warn;
-  return palette.statusColors.danger;
+  // -15% to -inf
+  if (durationCoef < -0.1501) return palette.indicatorColors.highest;
+  // -10% to -15%
+  if (durationCoef < -0.1001) return palette.indicatorColors.higher;
+  // -1% to -10%
+  if (durationCoef < -0.01) return palette.indicatorColors.high;
+  // -1% to +1%
+  if (durationCoef < 0.01) return palette.indicatorColors.zero;
+  // +1% to 10%
+  if (durationCoef < 0.1001) return palette.indicatorColors.low;
+  // +10% to 15%
+  if (durationCoef < 0.1501) return palette.indicatorColors.lower;
+  // +15% to +inf
+  return palette.indicatorColors.lowest;
 }

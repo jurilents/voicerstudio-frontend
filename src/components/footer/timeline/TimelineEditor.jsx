@@ -138,6 +138,12 @@ const Style = styled.div`
 
 const origAudioRowName = 'original-audio-row';
 let prevData = null;
+let cursorElm = null;
+
+function getCursorElement() {
+  if (!cursorElm) cursorElm = document.querySelector('.timeline-editor-cursor');
+  return cursorElm;
+}
 
 function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
   const data = speakers.map((speaker) => ({
@@ -185,22 +191,11 @@ const TimelineEditor = ({ player }) => {
     return time * pixelPerSecond + 20; // TimelineWrap.startLeft = 20
   }
 
-  // useEffect(() => {
-  //   if (!window.timelineEngine) return;
-  //   const engine = window.timelineEngine;
-  //   console.log('zo2');
-  //   if (engine?.target && !isNaN(player.duration)) {
-  //     const zoom = calculateScaleAndWidth(timelineZoom, player.duration, engine.target.clientWidth);
-  //     // const zoom = {scale: 1, scaleWidth: 150, scaleCount: };
-  //     setZoom(zoom);
-  //     console.log('zoom3:', zoom);
-  //   }
-  // }, [timelineZoom, player?.duration, setZoom]);
-
   // ------- Zoom -------
   useEffect(() => {
     if (!window.timelineEngine) return;
     const engine = window.timelineEngine;
+
     if (engine?.target && !isNaN(player.duration)) {
       const zoom = calculateScaleAndWidth(timelineZoom, player.duration, engine.target.clientWidth);
       // const zoom = {scale: 1, scaleWidth: 150, scaleCount: };
@@ -210,69 +205,62 @@ const TimelineEditor = ({ player }) => {
     }
   }, [player?.currentSrc, player?.duration, setZoom, timelineZoom]);
 
+  const scrollToCursor = useCallback((time) => {
+    if (!window.timelineEngine) return;
+    const engine = window.timelineEngine;
+    const $cursorElm = getCursorElement();
 
+    const totalWidth = engine.target.clientWidth;
+    const cursorPosition = +$cursorElm.style.left.substring(0, $cursorElm.style.left.length - 2);
+    const cursorDelta = totalWidth - cursorPosition;
+
+    if (cursorDelta < 10 && cursorDelta > 0) {
+      const a = calcLeftOffset(time, zoom) - 5;
+      engine.setScrollLeft(a);
+    } else if (cursorDelta <= 0 || cursorDelta > totalWidth) {
+      const b = calcLeftOffset(time, zoom) - 150;
+      engine.setScrollLeft(b);
+    }
+  }, [window.timelineEngine, zoom]);
 
   useEffect(() => {
     if (!window.timelineEngine) return;
     const engine = window.timelineEngine;
-    const $cursorElm = document.querySelector('.timeline-editor-cursor');
 
-    function scrollToCursor(time) {
-      const totalWidth = engine.target.clientWidth;
-      const cursorPosition = +$cursorElm.style.left.substring(0, $cursorElm.style.left.length - 2);
-      const cursorDelta = totalWidth - cursorPosition;
-      console.log('zoomzoomzoom', zoom);
-
-      if (cursorDelta < 10 && cursorDelta > 0) {
-        const a = calcLeftOffset(time, zoom) - 5;
-        console.log('cursorDelta < 10 && cursorDelta > 0', a);
-        engine.setScrollLeft(a);
-      } else if (cursorDelta <= 0 || cursorDelta > totalWidth) {
-        const b = calcLeftOffset(time, zoom) - 150;
-        console.log('cursorDelta <= 0 || cursorDelta > totalWidth', b);
-        engine.setScrollLeft(b);
-      }
-    }
-
-    engine.listener.on('play', () => {
-      console.log('play starting------');
+    engine.listener.on('play', function handler_() {
       dispatch(setPlaying(true));
       if (player) player.currentTime = engine.getTime();
     });
-    engine.listener.on('paused', () => {
+    engine.listener.on('paused', function handler_() {
       dispatch(setPlaying(false));
       if (player) player.currentTime = engine.getTime();
     });
-    engine.listener.on('afterSetTime', ({ time }) => {
+    engine.listener.on('afterSetTime', function handler_({ time }) {
       dispatch(setTime(time));
-
       setTimeout(() => {
         scrollToCursor(time);
       }, 50);
     });
-    engine.listener.on('setTimeByTick', ({ time }) => {
-      if (window.recordingSub) {
-        window.recordingSub.end = time;
-      }
+    engine.listener.on('setTimeByTick', function handler_({ time }) {
+      if (window.recordingSub) window.recordingSub.end = time;
       dispatch(setTime(time));
       scrollToCursor(time);
     });
 
     return () => {
-      console.log('destruct---');
       if (!engine) return;
-      engine.pause();
-      engine.listener.offAll();
-      // lottieControl.destroy();
+      // engine.pause();
+      const handlersName = 'handler_';
+      const listeners = engine.listener.events;
+      listeners.play = listeners.play.filter(x => x.name !== handlersName);
+      listeners.paused = listeners.paused.filter(x => x.name !== handlersName);
+      listeners.afterSetTime = listeners.afterSetTime.filter(x => x.name !== handlersName);
+      listeners.setTimeByTick = listeners.setTimeByTick.filter(x => x.name !== handlersName);
     };
-  }, [window.timelineEngine]);
+  }, [window.timelineEngine, scrollToCursor]);
 
   const handleScroll = useCallback((param) => {
-    // if (window.recordingSub) {
-    //   console.log('scroll select recordingSub', param);
-    //   window.recordingSub.end = param.scrollLeft;
-    // dispatch(recordSub(recordingSub, param.scrollLeft));
-    // }
+    // TODO: Use it or remove
   }, []);
 
   const addSubtitle = useCallback((param) => {
