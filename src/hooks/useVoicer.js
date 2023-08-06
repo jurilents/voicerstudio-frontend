@@ -15,8 +15,12 @@ export const useVoicer = () => {
 
   const speakSub = useCallback(async (sub, options) => {
     if (!options) options = {};
+    if (!selectedSpeaker.preset) {
+      toast.warn('Cannot voice subtitles of selected speaker. Select a voice preset before voiceover');
+      return true;
+    }
     if (!sub.canBeVoiced) {
-      if (!options.fromBatch) toast.info('Subtitle cannot be voiced, because you already voiced it');
+      if (!options.fromBatch) toast.info('Subtitle cannot be voiced, because it is already voiced');
       return true;
     }
     if (sub.data?.src) {
@@ -67,7 +71,7 @@ export const useVoicer = () => {
   const speakAll = useCallback((options) => {
     if (!options) options = {};
     if (!selectedSpeaker?.preset) {
-      toast.warn('Cannot voice subtitles of selected speaker. There is no voice preset selected for it');
+      toast.warn('Cannot voice subtitles of selected speaker. Select a voice preset before voiceover');
       return;
     }
     let promises = [];

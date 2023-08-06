@@ -170,12 +170,6 @@ function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
   return data;
 }
 
-const timelineOptions = {
-  // startLeft: 20,
-  scale: 1,
-  scaleWidth: 100,
-};
-
 const TimelineEditor = ({ player }) => {
   const dispatch = useDispatch();
   const { speakers, selectedSpeaker, selectedSub, videoUrl } = useSelector(store => store.session);
@@ -186,22 +180,37 @@ const TimelineEditor = ({ player }) => {
     [speakers, selectedSpeaker, selectedSub, window.recordingSub, player, isNaN(+player?.duration)],
   );
 
-  function calcLeftOffset(time) {
-    const pixelPerSecond = timelineOptions.scaleWidth / timelineOptions.scale;
+  function calcLeftOffset(time, zoom) {
+    const pixelPerSecond = zoom.scaleWidth / zoom.scale;
     return time * pixelPerSecond + 20; // TimelineWrap.startLeft = 20
   }
 
+  // useEffect(() => {
+  //   if (!window.timelineEngine) return;
+  //   const engine = window.timelineEngine;
+  //   console.log('zo2');
+  //   if (engine?.target && !isNaN(player.duration)) {
+  //     const zoom = calculateScaleAndWidth(timelineZoom, player.duration, engine.target.clientWidth);
+  //     // const zoom = {scale: 1, scaleWidth: 150, scaleCount: };
+  //     setZoom(zoom);
+  //     console.log('zoom3:', zoom);
+  //   }
+  // }, [timelineZoom, player?.duration, setZoom]);
+
   // ------- Zoom -------
-  useMemo(() => {
+  useEffect(() => {
     if (!window.timelineEngine) return;
     const engine = window.timelineEngine;
     if (engine?.target && !isNaN(player.duration)) {
       const zoom = calculateScaleAndWidth(timelineZoom, player.duration, engine.target.clientWidth);
       // const zoom = {scale: 1, scaleWidth: 150, scaleCount: };
+      console.log('1zoom', zoom);
       setZoom(zoom);
       // console.log('zoom:', zoom);
     }
-  }, [player?.currentSrc, setZoom, timelineZoom]);
+  }, [player?.currentSrc, player?.duration, setZoom, timelineZoom]);
+
+
 
   useEffect(() => {
     if (!window.timelineEngine) return;
@@ -212,13 +221,14 @@ const TimelineEditor = ({ player }) => {
       const totalWidth = engine.target.clientWidth;
       const cursorPosition = +$cursorElm.style.left.substring(0, $cursorElm.style.left.length - 2);
       const cursorDelta = totalWidth - cursorPosition;
+      console.log('zoomzoomzoom', zoom);
 
       if (cursorDelta < 10 && cursorDelta > 0) {
-        const a = calcLeftOffset(time) - 5;
+        const a = calcLeftOffset(time, zoom) - 5;
         console.log('cursorDelta < 10 && cursorDelta > 0', a);
         engine.setScrollLeft(a);
       } else if (cursorDelta <= 0 || cursorDelta > totalWidth) {
-        const b = calcLeftOffset(time) - 150;
+        const b = calcLeftOffset(time, zoom) - 150;
         console.log('cursorDelta <= 0 || cursorDelta > totalWidth', b);
         engine.setScrollLeft(b);
       }
@@ -227,11 +237,11 @@ const TimelineEditor = ({ player }) => {
     engine.listener.on('play', () => {
       console.log('play starting------');
       dispatch(setPlaying(true));
-      player.currentTime = engine.getTime();
+      if (player) player.currentTime = engine.getTime();
     });
     engine.listener.on('paused', () => {
       dispatch(setPlaying(false));
-      player.currentTime = engine.getTime();
+      if (player) player.currentTime = engine.getTime();
     });
     engine.listener.on('afterSetTime', ({ time }) => {
       dispatch(setTime(time));
@@ -364,8 +374,6 @@ const TimelineEditor = ({ player }) => {
     <Style className='noselect'>
       <TimelineWrap player={player}
                     data={data}
-                    scale={timelineOptions.scale}
-                    scaleWidth={timelineOptions.scaleWidth}
                     onTimeChange={onTimeChange}
                     onScroll={handleScroll}
                     onClickAction={setSubtitle}

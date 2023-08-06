@@ -94,7 +94,7 @@ export default function SubtitleItem(
               <FontAwesomeIcon icon={faStopwatch} />
             </div>
             {/*<span><FontAwesomeIcon icon={faGaugeSimpleHigh} /></span>*/}
-            <input className='dimmed' type='text'
+            <input type='text'
                    style={{ color: getDurationStatusColor(sub.speedRate - 1) }}
                    value={toPercentsDelta(sub.speedRate - 1, true, 1)}
                    title='Acceleration %'

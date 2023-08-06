@@ -54,8 +54,7 @@ const TimelineWrap = (props) => {
       onCursorDrag={props.onTimeChange}
       // Time area
       onClickTimeArea={(time) => {
-        if (isNaN(time)) return;
-        props.onTimeChange(time);
+        if (!isNaN(time)) props.onTimeChange(time);
       }}
       // Action
       onClickAction={(event, param) => {

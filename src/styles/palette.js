@@ -10,10 +10,10 @@ const palette = {
   },
   statusColors: {
     none: '#a8a8a8',
-    temp: '#817777',
-    ok: '#32b432',
-    warn: '#e8cb09',
-    danger: '#d74120',
+    temp: '#8c7f7f',
+    ok: '#50bb50',
+    warn: '#eacf1d',
+    danger: '#f14c26',
   },
 };
 

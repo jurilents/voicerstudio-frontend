@@ -42,8 +42,8 @@ export function canSubBeVoiced(sub) {
 export function getSubVoicedStatusColor(sub) {
   const status = getSubVoicedStatus(sub);
   if (status === VoicedStatuses.voiced) return palette.statusColors.ok;
-  if (status === VoicedStatuses.processing) return palette.statusColors.temp;
-  if (status === VoicedStatuses.none) return palette.statusColors.warn;
+  if (status === VoicedStatuses.processing) return palette.statusColors.warn;
+  if (status === VoicedStatuses.none) return palette.statusColors.temp;
   if (status === VoicedStatuses.obsolete) return palette.statusColors.danger;
   return palette.statusColors.none;
 }
