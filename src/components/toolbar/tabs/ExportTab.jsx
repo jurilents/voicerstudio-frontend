@@ -39,7 +39,7 @@ const codec = {
 export default function ExportTab(props) {
   const dispatch = useDispatch();
   const { exportCodec, exportFormat, exportFileName } = useSelector(store => store.settings);
-  const { speakers, selectedSpeaker } = useSelector(store => store.session);
+  const { speakers, selectedSpeaker, selectedCredentials } = useSelector(store => store.session);
 
   const ensureExtension = useCallback((fileName, ext) => {
     const extension = '.' + ext.toLowerCase();
@@ -111,7 +111,7 @@ export default function ExportTab(props) {
       const url = URL.createObjectURL(new Blob([text]));
       const fileName = buildExportFileName(type);
       download(url, fileName);
-      toast.success(`Export file '${fileName}' succeed`);
+      toast.success(<>Export file "<b>fileName</b>" succeed</>);
     } catch (e) {
       toast.error(`Export file failed: ${e}`);
     }
@@ -136,17 +136,21 @@ export default function ExportTab(props) {
         sampleRate: exportCodec,
       }));
       console.log('Batch speech request:', request);
-      const audio = await speechApi.batch(request, 'dev_placeholder');
+      const cred = selectedCredentials[selectedSpeaker.preset.service];
+      const audio = await speechApi.batch(request, cred.value);
       console.log('result audio url', audio);
       const fileName = buildExportFileName(exportFormat);
       download(audio.url, fileName);
-      toast.success(`Export file '${fileName}' succeed`);
     }
 
-    fetch().catch((e) => {
-      console.log('export error', e);
-      toast.error(`Export file failed: ${e}`);
-    });
+    const promise = fetch();
+    toast.promise(
+      promise,
+      {
+        success: <>Export file "<b>fileName</b>" succeed</>,
+        pending: <i>Voicing a file for export...</i>,
+      },
+    );
   }, [exportCodec, speakers, selectedSpeaker, exportFormat, exportCodec]);
 
 

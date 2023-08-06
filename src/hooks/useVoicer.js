@@ -64,7 +64,7 @@ export const useVoicer = () => {
       end: sub.end,
       data: sub.data,
     }));
-    if (!options.fromBatch) toast.info('🎧 Subtitle voiced 🎧');
+    if (!options.fromBatch) toast.info('🎧 Subtitle voiced  🎧');
     return true;
   }, [dispatch, selectedSpeaker, selectedCredentials, saveSubAudio]);
 

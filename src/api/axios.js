@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { settings } from '../settings';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -21,13 +22,19 @@ api.interceptors.response.use(
       const text = await error.data.text();
       const json = JSON.parse(text);
       console.log('Error JSON:', json);
+      if (!json.status) json.status = json.code;
 
-      if (json.message) {
+      if (json.status >= 500) {
+        toast.error(<>
+          <h6>Server Error 🤯</h6>
+          <p>{json.message}</p>
+        </>);
+      } else if (json.message) {
         toast.error(json.message);
       } else if (json.status === 400 && json.errors instanceof Object) {
         toast.error((
           <>
-            <strong>Validation Failed</strong>
+            <h6>Validation Failed</h6>
             <ul>
               {Object.entries(json.errors).map(([key, messages]) => (
                 <>
@@ -45,14 +52,15 @@ api.interceptors.response.use(
     } else if (error.code === 'ERR_NETWORK') {
       toast.error((
         <>
-          <strong>Server is offline.</strong>
+          <h6>Server is offline 🚫</h6>
           Please, check your internet connection or wait until the server is up and running
           again.
           <em style={{ display: 'inline-block', marginTop: '15px' }}>
             If you see this message for a long time, please contact support:
           </em>
           <br />
-          <a href='https://t.me/jurilents' style={{ color: 'var(--c-primary-light)' }}>@jurilents </a>
+          <a href={'https://t.me/' + settings.supportTelegram}
+             style={{ color: 'var(--c-primary-light)' }}>@{settings.supportTelegram} </a>
           (Rus/Ukr/Eng)
         </>
       ));

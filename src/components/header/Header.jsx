@@ -77,14 +77,14 @@ export default function Header() {
         <img src='/images/logo-silver.png' alt='Creative Society' />
         <div className='logo-content'>
           <span className='logo-title'>Voicer Studio</span>
-          <span className='logo-version'>v1.0.0b – 04/08/23</span>
+          <span className='logo-version'>v2.0.1b – 06/08/23</span>
         </div>
       </div>
       <nav>
         <ul>
-          <li>
-            {/*<a href='/session/new'>New Session</a>*/}
-          </li>
+          {/*<li>*/}
+          {/*<a href='/session/new'>New Session</a>*/}
+          {/*</li>*/}
           <li>
             <a href='https://text2aspeech.azurewebsites.net/ru/app' target='_blank'>Text 2 Speech</a>
           </li>

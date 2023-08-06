@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Col, Container, Row } from 'react-bootstrap';
+import { settings } from '../../../settings';
 
 const Style = styled.div`
   display: flex;
@@ -89,11 +90,11 @@ export default function HelpTab() {
         <Row>
           <Col>Bugs / Technical support</Col>
           <Col>
-            <a href='https://t.me/jurilents'
+            <a href={'https://t.me/' + settings.supportTelegram}
                target='_blank'
                rel='noreferrer'
                className='hotkey-key'>
-              @jurilents
+              @{settings.supportTelegram}
             </a>
           </Col>
         </Row>
