@@ -1,5 +1,16 @@
 import { Sub } from '../models';
 
+function validateSubs(subs) {
+  let prev = null;
+  for (let i = 0; i < subs.length; i++) {
+    const curr = subs[i];
+    const next = subs[i + 1];
+    if (prev) curr.invalidStart = curr.start < prev.end;
+    if (next) curr.invalidEnd = curr.end > next.start;
+    prev = curr;
+  }
+}
+
 const subsReducer = {
   setAllSubs: (state, action) => {
     const speaker = state.speakers[action.payload.speakerId];
@@ -19,6 +30,7 @@ const subsReducer = {
     }
     speaker.subs = [...(speaker.subs || []), action.payload.sub];
     speaker.subs.sort((a, b) => a.start - b.start);
+    validateSubs(speaker.subs);
 
     const session = { ...state };
     session.selectedSub = action.payload.sub;
@@ -60,9 +72,12 @@ const subsReducer = {
     if (action.payload.patch.start) {
       speaker.subs.sort((a, b) => a.start - b.start);
     }
+    if (action.payload.patch.start || action.payload.patch.end) {
+      validateSubs(speaker.subs);
+    }
     return {
       ...state,
-      // speakers: [...state.speakers],
+      speakers: [...state.speakers],
       selectedSpeaker: speaker,
       selectedSub: speaker.subs[subIndex],
     };

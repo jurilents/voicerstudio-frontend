@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { clamp } from 'lodash';
 import { effectKeys } from '../utils/timelineEffects';
 import palette from '../styles/palette';
+import { settings } from '../settings';
 
 export const VoicedStatuses = {
   none: 'none',
@@ -20,7 +21,7 @@ export function getSubVoicedStatus(sub) {
       return VoicedStatuses.voiced;
     }
     if (sub.text.trim() === sub.data.text
-      && Math.abs((sub.end - sub.start) - (sub.data.end - sub.data.start)) < 0.001
+      // && Math.abs((sub.end - sub.start) - (sub.data.end - sub.data.start)) < 0.001
       && sub.data.src) {
       return VoicedStatuses.voiced;
     } else if (sub.text !== sub.data.text) {
@@ -47,22 +48,28 @@ export function getSubVoicedStatusColor(sub) {
   return palette.statusColors.none;
 }
 
+
 export class Sub {
   constructor(obj) {
     this.id = obj.id || ('sub_' + uuidv4());
     this.speakerId = obj.speakerId;
     this.effectId = effectKeys.audioTrack;
-    this.start = obj.start;
-    this.startStr = DT.d2t(this.start);
-    this.end = obj.end;
-    this.endStr = DT.d2t(this.end);
     this.text = obj.text;
     this.note = obj.note;
     this.data = obj.data;
+    this.start = obj.start;
+    this.startStr = DT.d2t(clamp(this.start, 0, Infinity));
+    this.endTime = obj.end;
+    this.invalidStart = obj.invalidStart;
+    this.invalidEnd = obj.invalidEnd;
   }
 
   get isValid() {
-    return this.start >= 0 && this.end >= 0 && this.start < this.end;
+    return this.start >= 0
+      && this.end >= 0
+      && this.start < this.end
+      && !this.invalidStart
+      && !this.invalidEnd;
   }
 
   get clone() {
@@ -70,20 +77,69 @@ export class Sub {
   }
 
   set startTime(time) {
+    if (this.start === time) return;
     this.start = time;
-    this.startStr = DT.d2t(clamp(time, 0, Infinity));
+
+    const duration = this.duration;
+    const minDuration = this.minDuration;
+    const maxDuration = this.maxDuration;
+    console.log('min', minDuration);
+    console.log('max', maxDuration);
+    if (minDuration && duration < minDuration) this.start = this.end - minDuration;
+    else if (maxDuration && duration > maxDuration) this.start = this.end - maxDuration;
+    console.log('this.start', this.start);
+    this.startStr = DT.d2t(clamp(this.start, 0, Infinity));
+    this.recalcRate();
   }
 
   set endTime(time) {
+    if (this.end === time) return;
     this.end = time;
+
+    const duration = this.duration;
+    const minDuration = this.minDuration;
+    const maxDuration = this.maxDuration;
+    if (minDuration && duration < minDuration) this.end = this.start + minDuration;
+    else if (maxDuration && duration > maxDuration) this.end = this.start + maxDuration;
     this.endStr = DT.d2t(clamp(time, 0, Infinity));
+    this.recalcRate();
   }
 
   get duration() {
-    return parseFloat((this.end - this.start).toFixed(3));
+    return this.end - this.start;
+  }
+
+  get minDuration() {
+    if (this.data && !isNaN(+this.data?.baseDuration)) {
+      return this.data.baseDuration * (1 - settings.rateLimit);
+    }
+    return null;
+  }
+
+  get maxDuration() {
+    if (this.data && !isNaN(+this.data?.baseDuration)) {
+      console.log('1 + settings.rateLimit', 1 / (this.data.baseDuration * (1 + settings.rateLimit)));
+      return this.data.baseDuration * (1 + settings.rateLimit);
+    }
+    return null;
+  }
+
+  get rate() {
+    if (!this.speedRate) this.recalcRate();
+    return this.speedRate;
+  }
+
+  recalcRate() {
+    if (this.data && !isNaN(+this.data?.baseDuration)) {
+      this.speedRate = (this.duration / this.data.baseDuration);
+    } else {
+      this.speedRate = 1;
+    }
+    console.log(`${this.speedRate} ::::: ${this.text} :::::`);
   }
 
   buildVoicedStamp(audioUrl, baseDuration) {
+    console.log('baseDuration', baseDuration);
     return new VoicedSubStamp(this, audioUrl, baseDuration);
   }
 

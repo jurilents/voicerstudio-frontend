@@ -9,6 +9,8 @@ import { cloneByKeys, objectsHaveSameKeys } from '../utils';
 import credsReducer from './sessionReducer.creds';
 
 // Commands
+const RESTORE_FROM_JSON = 'RESTORE_FROM_JSON';
+
 const ADD_SPEAKER = 'ADD_SPEAKER';
 const REMOVE_SPEAKER = 'REMOVE_SPEAKER';
 const PATCH_SPEAKER = 'PATCH_SPEAKER';
@@ -39,7 +41,7 @@ const STORAGE_KEY = 'session';
 const defaultSpeaker = new Speaker({
   id: 1,
   displayName: 'Speaker 1',
-  color: colors.blue,
+  color: colors.teal,
 });
 const rootState = {
   speakers: [defaultSpeaker],
@@ -129,6 +131,14 @@ function pushSubPatchToHistory(state, action) {
 
 export default function sessionReducer(state = defaultState, action) {
   switch (action.type) {
+    /************************* BACKUP *************************/
+    case RESTORE_FROM_JSON: {
+      const session = parseSessionJson(action.payload.jsonText);
+      saveToLocalStorage(session);
+      window.location.reload();
+      return state;
+    }
+
     /************************* SPEAKERS *************************/
     case ADD_SPEAKER: {
       timeMachine.push(action, removeSpeaker(action.payload.speaker));
@@ -194,6 +204,7 @@ export default function sessionReducer(state = defaultState, action) {
     case SET_VIDEO: {
       const session = {
         ...state,
+        speakers: [...state.speakers],
         videoUrl: action.payload.videoUrl,
       };
       return saveToLocalStorage(session);
@@ -231,6 +242,8 @@ export default function sessionReducer(state = defaultState, action) {
       return state;
   }
 }
+
+export const restoreFromJson = (jsonText) => ({ type: RESTORE_FROM_JSON, payload: { jsonText } });
 
 export const addSpeaker = (speaker) => ({ type: ADD_SPEAKER, payload: { speaker } });
 export const removeSpeaker = (speaker) => ({ type: REMOVE_SPEAKER, payload: { speaker } });

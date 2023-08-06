@@ -67,7 +67,7 @@ const Toolbar = (props) => {
 
   return (
     <Style className='tool noselect'>
-      <Tab.Container id='left-tabs-example' defaultActiveKey='general'>
+      <Tab.Container id='left-tabs-example' defaultActiveKey='presets'>
         <Nav variant='pills' className='tabs-buttons'>
           <Nav.Item>
             <Nav.Link as='span' eventKey='general' title='General'>

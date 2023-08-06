@@ -12,20 +12,30 @@ export function sleep(ms = 0) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function download(url, name) {
+export function download(url, exportName) {
   const link = document.createElement('a');
   link.style.display = 'none';
   link.href = url;
-  link.download = name;
+  link.download = exportName;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 }
 
+export function downloadObjectAsJson(obj, exportName) {
+  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj, null, 2));
+  const downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute('href', dataStr);
+  downloadAnchorNode.setAttribute('download', exportName + '.json');
+  document.body.appendChild(downloadAnchorNode); // required for firefox
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}
+
 export function getKeyCode(event) {
   const tag = document.activeElement.tagName.toUpperCase();
   // const editable = document.activeElement.getAttribute('contenteditable');
-  if (tag !== 'INPUT' && tag !== 'TEXTAREA' || document.activeElement.type === 'range') {
+  if ((tag !== 'INPUT' && tag !== 'TEXTAREA') || document.activeElement.type === 'range') {
     return event.key.toUpperCase();
   }
 }
@@ -74,8 +84,8 @@ export function formatTime(time) {
   return displayValue.substring(0, displayValue.length - 1);
 }
 
-export function toPercentsDelta(num, sign, extraAccuracy) {
-  num = (num * 100).toFixed(extraAccuracy ? 1 : 0);
+export function toPercentsDelta(num, sign, accuracy = 0) {
+  num = (num * 100).toFixed(accuracy);
   return (num > 0 ? (sign ? '+' : '') + num : num) + '%';
 }
 
@@ -98,11 +108,11 @@ export function isBool(value) {
 }
 
 export function getDurationStatusColor(durationCoef) {
-  if (isNaN(+durationCoef)) durationCoef = 0;
+  if (isNaN(+durationCoef)) durationCoef = 1;
   durationCoef = Math.abs(durationCoef);
 
-  if (durationCoef < 0.1) return palette.statusColors.none;
-  if (durationCoef <= 10) return palette.statusColors.ok;
-  if (durationCoef <= 15) return palette.statusColors.warn;
+  if (durationCoef < 0.01) return palette.statusColors.none;
+  if (durationCoef < 0.10001) return palette.statusColors.ok;
+  if (durationCoef < 0.15001) return palette.statusColors.warn;
   return palette.statusColors.danger;
 }

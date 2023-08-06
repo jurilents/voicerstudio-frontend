@@ -37,7 +37,7 @@ const ActionAudio = ({ action, row }) => {
     return () => {
       ws.destroy();
     };
-  }, [$domRef, dispatch, setWavesurfer, action.data.player]);
+  }, [$domRef, dispatch, setWavesurfer, action.data.player?.currentSrc]);
 
   useEffect(() => {
     if (!$domRef.current || !wavesurfer || !action.data.player || isNaN(+action.data.player.duration)) return;

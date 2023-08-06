@@ -62,7 +62,9 @@ export const useHotkeys = ({ player }) => {
     const key = getKeyCode(event);
     if (!key) return;
 
-    event.preventDefault();
+    if (key !== 'F' || !checkMetaKeys(event, { meta: true })) {
+      event.preventDefault();
+    }
 
     switch (key) {
 

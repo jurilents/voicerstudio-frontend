@@ -52,7 +52,7 @@ export default function HelpTab() {
           <Col><span className='hotkey-key'>R (hold)</span></Col>
         </Row>
         <Row>
-          <Col>Paste text from clipboard</Col>
+          <Col>Paste copied text to selected subtitle</Col>
           <Col><span className='hotkey-key'>⌘ + V</span></Col>
         </Row>
         <Row>

@@ -55,7 +55,8 @@ export default function ExportTab(props) {
   const buildExportFileName = useCallback((ext) => {
     if (typeof exportFileName === 'string') {
       const fileName = ensureExtension(exportFileName, ext);
-      const date = new Date(Date.now()).toISOString().split('T');
+      const tz = new Date().getTimezoneOffset() * 60000;
+      const date = new Date(Date.now() - tz).toISOString().split('T');
       return fileName
         .replace(/\{[S|s]}/g, selectedSpeaker.displayName)
         .replace(/\{[L|l]}/g, selectedSpeaker.preset?.locale || '???')

@@ -6,7 +6,6 @@ import { isBool } from '../utils';
 
 export function setGlobalSpeakerVolume(speakerId, volume, mute) {
   if (volume === undefined) volume = 1;
-  console.log('mute:', mute);
   volume = mute ? 0 : +volume;
   if (isNaN(volume)) return;
   if (window.speakersVolume) {
@@ -24,6 +23,7 @@ const speakersReducer = {
     if (state.speakers.length >= settings.speakersLimit) {
       return state;
     }
+    console.log('action.payload.speaker', action.payload.speaker);
     const session = {
       ...state,
       speakers: [...state.speakers, action.payload.speaker],

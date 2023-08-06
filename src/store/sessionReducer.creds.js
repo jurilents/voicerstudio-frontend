@@ -2,8 +2,14 @@ import { Creds } from '../models';
 
 const credsReducer = {
   addCreds: (state, action) => {
+    const service = action.payload.cred.service;
+    const selected = state.selectedCredentials[service];
+    if (!selected) {
+      state.selectedCredentials[service] = action.payload.cred;
+    }
     return {
       ...state,
+      selectedCredentials: { ...state.selectedCredentials },
       credentials: [...state.credentials, action.payload.cred],
     };
   },
@@ -15,7 +21,6 @@ const credsReducer = {
   },
   patchCreds: (state, action) => {
     const index = state.credentials.findIndex(x => x.value === action.payload.cred.value);
-    console.log('pccc', index);
     if (index < 0) return;
     const credsCopy = [...state.credentials];
     const cred = state.credentials[index];

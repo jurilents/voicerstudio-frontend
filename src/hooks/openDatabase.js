@@ -1,4 +1,4 @@
-import { openDB } from 'idb';
+import { deleteDB, openDB } from 'idb';
 
 const DB_NAME = 'voicerDB';
 export const VIDEOS_TABLE = 'videos';
@@ -15,4 +15,8 @@ export const openDatabase = async () => {
       // db.createObjectStore(HISTORY_FUTURE_TABLE, { keyPath: 'id', autoIncrement: true });
     },
   });
+};
+
+export const dropDatabase = async () => {
+  await deleteDB(DB_NAME);
 };

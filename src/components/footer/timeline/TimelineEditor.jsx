@@ -196,12 +196,12 @@ const TimelineEditor = ({ player }) => {
     if (!window.timelineEngine) return;
     const engine = window.timelineEngine;
     if (engine?.target && !isNaN(player.duration)) {
-      console.log('zoom recalculating...');
       const zoom = calculateScaleAndWidth(timelineZoom, player.duration, engine.target.clientWidth);
+      // const zoom = {scale: 1, scaleWidth: 150, scaleCount: };
       setZoom(zoom);
       // console.log('zoom:', zoom);
     }
-  }, [player, setZoom, timelineZoom]);
+  }, [player?.currentSrc, setZoom, timelineZoom]);
 
   useEffect(() => {
     if (!window.timelineEngine) return;
@@ -334,7 +334,6 @@ const TimelineEditor = ({ player }) => {
     if (!window.timelineEngine) return;
     const engine = window.timelineEngine;
     engine.pause();
-    console.log('changing time:', time);
 
     if (player) {
       if (!player.paused) player.pause();

@@ -1,5 +1,5 @@
 const minScaleWidth = 50;
-const maxScaleWidth = 200;
+const maxScaleWidth = 130;
 
 const niceNumbers = [
   1,
@@ -27,8 +27,9 @@ export function calculateScaleAndWidth(zoom, timelineDuration, timelineWidth) {
   if (isNaN(+timelineDuration)) timelineDuration = 60;
   zoom += 0.05;
 
+  // TODO: Math.min is hardcode
   // Step 1: Calculate the visible duration based on the total duration and the zoom level
-  const visibleDuration = timelineDuration * zoom;
+  const visibleDuration = Math.min(30, timelineDuration * zoom);
 
   // Step 2: Calculate the raw scale and scale width
   let scaleWidth = timelineWidth * zoom;
@@ -50,7 +51,7 @@ export function calculateScaleAndWidth(zoom, timelineDuration, timelineWidth) {
 
   // Step 4: Recalculate the scaleWidth based on the "nice" scale
   scaleWidth = timelineWidth / (visibleDuration / scale);
-  const scaleCount = Math.ceil(visibleDuration / scale);
+  const scaleCount = Math.ceil(timelineDuration / scale);
 
   return { scale, scaleWidth, scaleCount };
 }

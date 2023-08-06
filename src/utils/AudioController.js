@@ -9,16 +9,20 @@ class AudioController {
     if (!window.listenerMap) window.listenerMap = {};
   }
 
-  start({ speakerId, id, src, startTime, time, volume, engine }) {
+  start({ speakerId, id, src, startTime, time, speedRate, volume, engine }) {
     const cached = this._getCachedSpeaker(speakerId);
     const cachedListeners = this._getCachedSpeakerListeners(speakerId);
     let item = cached[id];
+    if (!speedRate) speedRate = 1;
+    // if (Math.abs(speedRate) > 0.1) speedRate *= 1.0001;
+    console.log('rate:::', speedRate);
 
-    if (item) {
-      item.rate(engine.getPlayRate());
+    if (item && item._src === src) {
+      item.rate(engine.getPlayRate() * speedRate);
       item.volume(volume);
       item.seek((time - startTime) % item.duration());
       item.play();
+      console.log('engine.getPlayRate() * speedRate 1', item._rate);
     } else {
       item = new Howl({
         src: src,
@@ -30,16 +34,19 @@ class AudioController {
       });
       cached[id] = item;
       item.on('load', () => {
-        item.rate(engine.getPlayRate());
+        item.rate(engine.getPlayRate() * speedRate);
         item.seek((time - startTime) % item.duration());
+        console.log('engine.getPlayRate() * speedRate 2', item._rate);
       });
     }
+
+    console.log('item', item._rate);
 
     const timeListener = ({ time }) => {
       item.seek(time);
     };
     const rateListener = ({ rate }) => {
-      item.rate(rate);
+      item.rate(rate * speedRate);
     };
     if (!cachedListeners[id]) cachedListeners[id] = {};
     engine.on('afterSetTime', timeListener);

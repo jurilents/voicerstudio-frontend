@@ -1,12 +1,13 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Col, Container, Form, Row } from 'react-bootstrap';
-import { getExt } from '../../../utils';
-import { setVideo } from '../../../store/sessionReducer';
+import { downloadObjectAsJson, getExt } from '../../../utils';
+import { restoreFromJson, setVideo } from '../../../store/sessionReducer';
 import { t } from 'react-i18nify';
 import { useVideoStorage } from '../../../hooks';
 import { toast } from 'react-toastify';
+import { dropDatabase } from '../../../hooks/openDatabase';
 
 const Style = styled.div`
   .file {
@@ -28,12 +29,11 @@ const Style = styled.div`
   }
 `;
 
+let resetCountdown = 5;
+
 export default function ImportTab(props) {
   const dispatch = useDispatch();
-  // const settings = useSelector(store => store.settings);
-  // const subs = useSelector(store => store.session.subs);
-  // const speakers = useSelector(store => store.session.speakers);
-  // const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
+  const session = useSelector(store => store.session);
   const { saveVideo } = useVideoStorage();
 
   const onVideoChange = useCallback(
@@ -60,7 +60,8 @@ export default function ImportTab(props) {
           // ]);
           // props.player.src = url;
           dispatch(setVideo(url));
-          toast.success('Video uploaded!');
+          toast.success('Video uploaded! Refreshing the page...');
+          setTimeout(() => window.location.reload(), 2000);
         } else {
           toast.error(`${t('VIDEO_EXT_ERR')}: ${file.type || ext}`);
         }
@@ -72,6 +73,46 @@ export default function ImportTab(props) {
   const onInputClick = useCallback((event) => {
     event.target.value = '';
   }, []);
+
+  const onBackupFileLoad = (event) => {
+    dispatch(restoreFromJson(event.target.result));
+  };
+
+  const restoreFromBackupFile = (event) => {
+
+    const file = event.target.files[0];
+    if (file) {
+      const ext = getExt(file.name);
+      if (ext !== 'json') {
+        toast.warn('Invalid backup file format');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = onBackupFileLoad;
+      reader.readAsText(file);
+    }
+  };
+
+  const saveBackupFile = () => {
+    const tz = new Date().getTimezoneOffset() * 60000;
+    const date = new Date(Date.now() - tz).toISOString().substring(0, 16).replaceAll(':', '-').replace('T', ' ');
+    const filename = `voicerbackup-${date}`;
+
+    downloadObjectAsJson(session, filename);
+  };
+
+  const handleResetClick = () => {
+    if (resetCountdown === 0) {
+      localStorage.clear();
+      dropDatabase().then(() => {
+        window.location.reload();
+      });
+      return;
+    }
+
+    toast.warn(`If you really want to reset all your progress forever, click ${resetCountdown} times`);
+    resetCountdown--;
+  };
 
   return (
     <Style className='tab-outlet'>
@@ -87,6 +128,31 @@ export default function ImportTab(props) {
                             type='file'
                             onChange={onVideoChange}
                             onClick={onInputClick} />
+            </Col>
+          </Row>
+          <Row className='mt-4'>
+            <Col className='label'>Restore from backup file</Col>
+          </Row>
+          <Row>
+            <Col>
+              <Form.Control className='file'
+                            type='file'
+                            onChange={restoreFromBackupFile}
+                            onClick={onInputClick} />
+            </Col>
+          </Row>
+          <Row className='mt-3'>
+            <Col>
+              <button className='btn btn-primary' onClick={saveBackupFile}>
+                Save backup file
+              </button>
+            </Col>
+          </Row>
+          <Row className='mt-4'>
+            <Col>
+              <button className='btn btn-outline' onClick={handleResetClick}>
+                Reset All
+              </button>
             </Col>
           </Row>
           {/*<Row>*/}

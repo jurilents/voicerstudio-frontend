@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSubsAudioStorage } from './useSubsAudioStorage';
 import { useCallback } from 'react';
+import { settings } from '../settings';
 
 export const useVoicer = () => {
   const dispatch = useDispatch();
@@ -32,11 +33,11 @@ export const useVoicer = () => {
       // role: 'string',
       pitch: selectedSpeaker.preset.pitch,
       volume: 1,
-      start: options.speed ? null : sub.startStr,
-      end: options.speed ? null : sub.endStr,
+      start: options.speed === undefined ? sub.startStr : null,
+      end: options.speed === undefined ? sub.endStr : null,
       outputFormat: 'wav',
       sampleRate: 'Rate48000',
-      speed: options.speed,
+      speed: options.speed === undefined ? null : options.speed,
     };
     console.log('Single speech request:', request);
     dispatch(patchSub(sub, {
@@ -47,29 +48,35 @@ export const useVoicer = () => {
     if (!audio) return false;
     console.log('single audio url', audio);
     dispatch(addAudio(audio.url));
-    sub.endTime = sub.start + audio.duration;
+
+    sub.data = sub.buildVoicedStamp(audio.url, audio.baseDuration);
+    // If rate is to high or to low, reset it to default
+    if (Math.abs(sub.acceleration) > settings.rateLimit) {
+      sub.endTime = sub.start + audio.duration;
+    }
     await saveSubAudio(sub.id, audio.blob);
+
     dispatch(patchSub(sub, {
       end: sub.end,
-      data: sub.buildVoicedStamp(audio.url, audio.baseDuration),
+      data: sub.data,
     }));
     if (!options.fromBatch) toast.info('🎧 Subtitle voiced 🎧');
     return true;
   }, [dispatch, selectedSpeaker, selectedCredentials, saveSubAudio]);
 
-  const speakAll = useCallback(() => {
+  const speakAll = useCallback((options) => {
+    if (!options) options = {};
     if (!selectedSpeaker?.preset) {
       toast.warn('Cannot voice subtitles of selected speaker. There is no voice preset selected for it');
       return;
     }
     let promises = [];
-    const options = { fromBatch: true };
+    options.fromBatch = true;
     for (const sub of selectedSpeaker.subs) {
       promises.push(speakSub(sub, options));
     }
 
     Promise.all(promises).then((results) => {
-      console.log('res', results);
       const voicedCount = results.filter(success => success).length;
 
       if (voicedCount === selectedSpeaker.subs.length) {
@@ -80,7 +87,7 @@ export const useVoicer = () => {
         toast.warn(`Some subtitles of selected speaker was not voiced`);
       }
     });
-  }, [dispatch, selectedSpeaker]);
+  }, [speakSub, dispatch, selectedSpeaker]);
 
   return { speakSub, speakAll };
 };

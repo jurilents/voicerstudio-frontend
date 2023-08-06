@@ -51,6 +51,7 @@ const Style = styled.div`
     flex-wrap: nowrap;
     justify-content: center;
     gap: 20px;
+    margin-bottom: 0;
 
     li {
       opacity: 60%;

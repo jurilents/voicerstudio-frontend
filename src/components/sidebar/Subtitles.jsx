@@ -35,6 +35,7 @@ const Style = styled.div`
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
+        border: 1px solid transparent;
 
         &.highlight {
           background-color: rgba(255, 255, 255, 0.08);
@@ -46,10 +47,8 @@ const Style = styled.div`
         }
 
         &.illegal {
-          textarea {
-            background-color: var(--c-danger);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-          }
+          //background-color: var(--c-danger);
+          border: 1px solid var(--c-danger);
         }
 
         .textarea {
@@ -68,7 +67,7 @@ const Style = styled.div`
         }
 
         .item-info {
-          width: 150px;
+          width: 130px;
           font-size: 11px;
 
           .dimmed {
@@ -121,6 +120,10 @@ const Style = styled.div`
             border: none;
             flex: 1;
             width: 90%;
+
+            &.invalid {
+              color: var(--c-danger);
+            }
           }
         }
 
@@ -145,8 +148,13 @@ const Style = styled.div`
             opacity: 33%;
             cursor: pointer;
 
-            &:hover {
+            &:not([disabled]):hover {
               opacity: 100%;
+            }
+
+            &[disabled] {
+              cursor: not-allowed;
+              opacity: 20%;
             }
           }
 

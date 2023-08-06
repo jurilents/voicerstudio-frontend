@@ -11,12 +11,24 @@ function getSpeakerVolume(action) {
   return speakerVol * window.masterVolume;
 }
 
+function invertRate(baseRate) {
+  return 1 / baseRate;
+  // let acceleration = -(baseRate ?? 0) + 2;
+  // if (Math.abs(acceleration) - 1 > 0.01) acceleration += acceleration * 0.01;
+  // return acceleration;
+}
+
 const timelineEffects = {
   audioTrack: {
     id: effectKeys.audioTrack,
     name: effectKeys.audioTrack,
     source: {
       start: ({ action, engine, isPlaying, time }) => {
+        const d = action.end - action.start;
+        console.log('---duration now is', d);
+        console.log('-----speed rate is', invertRate(action.speedRate));
+        console.log('------approximately is', invertRate(action.speedRate) * d);
+        console.log('------base duration is', action.data?.baseDuration);
         if (isPlaying) {
           // console.log('start effect 0', action.data?.src);
           const src = action.data?.src;
@@ -27,6 +39,7 @@ const timelineEffects = {
             src,
             startTime: action.start,
             time,
+            speedRate: invertRate(action.speedRate),
             volume: getSpeakerVolume(action),
             engine,
           });
@@ -42,6 +55,7 @@ const timelineEffects = {
             src,
             startTime: action.start,
             time,
+            speedRate: invertRate(action.speedRate),
             volume: getSpeakerVolume(action),
             engine,
           });

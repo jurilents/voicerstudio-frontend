@@ -52,7 +52,7 @@ export default function GeneralTab(props) {
   return (
     <Style className='tab-outlet'>
       <div>
-        <h3>Tools</h3>
+        <h3></h3>
         <Container>
           {/* ************ Playback speed ************ */}
           <Row>
@@ -86,7 +86,8 @@ export default function GeneralTab(props) {
           {/*</Row>*/}
           <Row className='mt-4'>
             <Col>
-              <button className='btn btn-outline' onClick={speakAll}>
+              <button className='btn btn-outline'
+                      onClick={() => speakAll({ speed: 0 })}>
                 Speak All
               </button>
             </Col>

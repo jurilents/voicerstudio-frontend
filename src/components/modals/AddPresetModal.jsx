@@ -77,6 +77,8 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
     }
 
     if (languages.length === 0) {
+      console.log('try langs', allSelectedCredentials);
+      if (!selectedCred?.value) return;
       fetchLanguages().catch(err => {
         toast.error(`Languages did not fetch`);
         setLangsFetchStatus(Status.failure);
@@ -87,7 +89,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
       setVoice(defaultLang.voices ? defaultLang.voices[0] : {});
       setLangsFetchStatus(Status.success);
     }
-  }, [voicingService, languages, lang.locale, dispatch]);
+  }, [voicingService, languages, lang.locale, allSelectedCredentials, dispatch]);
 
   const speak = useCallback(() => {
     async function speakAsync() {
@@ -107,12 +109,12 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
       };
 
       try {
-        console.log('req', request);
+        console.log('test speech request', request);
         console.log('selectedCred.value', selectedCred.value);
         const response = await speechApi.single(request, selectedCred.value);
         if (!response) return;
         setSampleSrc(response.url);
-        console.log('res', response);
+        console.log('test speech response', response);
         toast.info('Speak succeeded');
       } catch (err) {
         console.log('error', err);
@@ -223,7 +225,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
           <Row>
             <Col xs={4} className='label'>Credentials</Col>
             <Col xs={8}>
-              {selectedCred.displayName}
+              {selectedCred?.displayName}
             </Col>
           </Row>
 
@@ -300,7 +302,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
                 </button>
               </Col>
               <Col xs={1}>
-                <span>{toPercentsDelta(styleDegree, false, extraAccuracy)}</span>
+                <span>{toPercentsDelta(styleDegree, false, extraAccuracy ? 1 : 0)}</span>
               </Col>
             </Row>
           ) : null}
@@ -323,7 +325,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
               </button>
             </Col>
             <Col xs={1}>
-              <span>{toPercentsDelta(pitch, true, extraAccuracy)}</span>
+              <span>{toPercentsDelta(pitch, true, extraAccuracy ? 1 : 0)}</span>
             </Col>
           </Row>
 

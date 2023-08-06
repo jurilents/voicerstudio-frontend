@@ -11,10 +11,36 @@ api.interceptors.response.use(
   // error
   async (error) => {
     console.log('Server Error:', error);
-    if (error?.data instanceof Blob) {
+    if (error && !error.data && error.response?.data) {
+      error.data = error.response.data;
+    }
+
+    if (!error) {
+      toast.error(`Unknown server error`);
+    } else if (error.data instanceof Blob) {
       const text = await error.data.text();
       const json = JSON.parse(text);
-      toast.error(json.message);
+      console.log('Error JSON:', json);
+
+      if (json.message) {
+        toast.error(json.message);
+      } else if (json.status === 400 && json.errors instanceof Object) {
+        toast.error((
+          <>
+            <strong>Validation Failed</strong>
+            <dl>
+              {Object.entries(json.errors).map(([key, messages]) => (
+                <>
+                  <dt>{key}</dt>
+                  {messages.map((message) => (
+                    <dd>– {message?.endsWith('.') ? message.substring(0, message.length - 1) : message}</dd>
+                  ))}
+                </>
+              ))}
+            </dl>
+          </>
+        ));
+      }
     } else if (error.code === 'ERR_NETWORK') {
       toast.error((
         <>
@@ -48,7 +74,7 @@ export const credentialsApi = {
 
 export const languagesApi = {
   getAll: async (serviceName, credentials) => {
-    const result = await api.get(`v1/speech-info/languages?service=${serviceName}`, {
+    const result = await api.get(`v1/text2speech/languages?service=${serviceName}`, {
       headers: { 'X-Credentials': credentials },
     });
     return result.data;

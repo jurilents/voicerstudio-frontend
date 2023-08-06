@@ -14,7 +14,6 @@ window.isPlaying = false;
 const TimelineWrap = (props) => {
   console.log('<redraw wrap>');
   const settings = useSelector(store => store.timelineSettings);
-  // console.log('settings', settings);
   // const { selectedSub } = useSelector(store => store.session);
   let [ref, setRef] = useState(null);
 
