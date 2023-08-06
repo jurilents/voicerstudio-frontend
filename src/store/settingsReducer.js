@@ -18,8 +18,8 @@ const rootState = {
   originalMute: false,
   originalSolo: false,
   exportFormat: 'WAV',
-  exportCodec: 'Riff8Khz16BitMonoPcm',
-  exportFileName: '[{L}-{s}] {d}-{t} result',
+  exportCodec: 'Riff48Khz16BitMonoPcm',
+  exportFileName: '{L}_{s}_{d}-{t}',
   timelineRowHeight: 50,
   showCat: false,
 };

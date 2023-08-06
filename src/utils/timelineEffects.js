@@ -25,10 +25,10 @@ const timelineEffects = {
     source: {
       start: ({ action, engine, isPlaying, time }) => {
         const d = action.end - action.start;
-        console.log('---duration now is', d);
-        console.log('-----speed rate is', invertRate(action.speedRate));
-        console.log('------approximately is', invertRate(action.speedRate) * d);
-        console.log('------base duration is', action.data?.baseDuration);
+        // console.log('---duration now is', d);
+        // console.log('-----speed rate is', invertRate(action.speedRate));
+        // console.log('------approximately is', invertRate(action.speedRate) * d);
+        // console.log('------base duration is', action.data?.baseDuration);
         if (isPlaying) {
           // console.log('start effect 0', action.data?.src);
           const src = action.data?.src;

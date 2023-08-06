@@ -36,39 +36,25 @@ export default function ImportTab(props) {
   const session = useSelector(store => store.session);
   const { saveVideo } = useVideoStorage();
 
-  const onVideoChange = useCallback(
-    (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const ext = getExt(file.name);
-        const canPlayType = props.player.canPlayType(file.type);
-        if (canPlayType === 'maybe' || canPlayType === 'probably') {
-          // decodeAudioData(file);
-          saveVideo('video1', file);
+  const onVideoChange = useCallback((event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const ext = getExt(file.name);
+      const canPlayType = props.player.canPlayType(file.type);
+      if (canPlayType === 'maybe' || canPlayType === 'probably') {
+        toast.info('Video is uploading...');
+        saveVideo('video1', file).then(() => {
           const url = URL.createObjectURL(new Blob([file]));
-          // props.waveform.decoder.destroy();
-          // props.waveform.drawer.update();
-          // props.waveform.seek(0);
           props.player.currentTime = 0;
-          // props.clearSubs();
-          // props.setSubtitle([
-          //   props.newSub({
-          //     startStr: '00:00:00.000',
-          //     endStr: '00:00:01.000',
-          //     text: t('SUB_TEXT'),
-          //   }),
-          // ]);
-          // props.player.src = url;
           dispatch(setVideo(url));
           toast.success('Video uploaded! Refreshing the page...');
-          setTimeout(() => window.location.reload(), 2000);
-        } else {
-          toast.error(`${t('VIDEO_EXT_ERR')}: ${file.type || ext}`);
-        }
+          setTimeout(() => window.location.reload(), 1000);
+        });
+      } else {
+        toast.error(`${t('VIDEO_EXT_ERR')}: ${file.type || ext}`);
       }
-    },
-    [dispatch, props.notify, props.player],
-  );
+    }
+  }, [dispatch, props.notify, props.player]);
 
   const onInputClick = useCallback((event) => {
     event.target.value = '';

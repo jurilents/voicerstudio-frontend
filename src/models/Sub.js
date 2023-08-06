@@ -83,11 +83,8 @@ export class Sub {
     const duration = this.duration;
     const minDuration = this.minDuration;
     const maxDuration = this.maxDuration;
-    console.log('min', minDuration);
-    console.log('max', maxDuration);
     if (minDuration && duration < minDuration) this.start = this.end - minDuration;
     else if (maxDuration && duration > maxDuration) this.start = this.end - maxDuration;
-    console.log('this.start', this.start);
     this.startStr = DT.d2t(clamp(this.start, 0, Infinity));
     this.recalcRate();
   }
@@ -118,7 +115,6 @@ export class Sub {
 
   get maxDuration() {
     if (this.data && !isNaN(+this.data?.baseDuration)) {
-      console.log('1 + settings.rateLimit', 1 / (this.data.baseDuration * (1 + settings.rateLimit)));
       return this.data.baseDuration * (1 + settings.rateLimit);
     }
     return null;
@@ -135,7 +131,6 @@ export class Sub {
     } else {
       this.speedRate = 1;
     }
-    console.log(`${this.speedRate} ::::: ${this.text} :::::`);
   }
 
   buildVoicedStamp(audioUrl, baseDuration) {

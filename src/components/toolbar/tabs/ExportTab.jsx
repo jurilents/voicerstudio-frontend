@@ -111,14 +111,14 @@ export default function ExportTab(props) {
       const url = URL.createObjectURL(new Blob([text]));
       const fileName = buildExportFileName(type);
       download(url, fileName);
-      toast.success(<>Export file "<b>fileName</b>" succeed</>);
+      toast.success(<>Export file "<b>{fileName}</b>" succeed</>);
     } catch (e) {
       toast.error(`Export file failed: ${e}`);
     }
   }, [selectedSpeaker]);
 
   const generateAndExport = useCallback(() => {
-    async function fetch() {
+    async function fetch(fileName) {
       console.log(selectedSpeaker.preset);
       const request = selectedSpeaker.subs.map(sub => ({
         service: selectedSpeaker.preset.service,
@@ -139,15 +139,15 @@ export default function ExportTab(props) {
       const cred = selectedCredentials[selectedSpeaker.preset.service];
       const audio = await speechApi.batch(request, cred.value);
       console.log('result audio url', audio);
-      const fileName = buildExportFileName(exportFormat);
       download(audio.url, fileName);
     }
 
-    const promise = fetch();
+    const fileName = buildExportFileName(exportFormat);
+    const promise = fetch(fileName);
     toast.promise(
       promise,
       {
-        success: <>Export file "<b>fileName</b>" succeed</>,
+        success: <>Export file "<b>{fileName}</b>" succeed</>,
         pending: <i>Voicing a file for export...</i>,
       },
     );
@@ -162,11 +162,10 @@ export default function ExportTab(props) {
           <Row>
             <Col className='label'>Speaker</Col>
             <Col>
-              <Form.Select
-                className='app-select'
-                onChange={(event) =>
-                  dispatch(selectSpeaker(+event.target.value))}
-                defaultValue={exportCodec}>
+              <Form.Select className='app-select'
+                           onChange={(event) =>
+                             dispatch(selectSpeaker(+event.target.value))}
+                           value={selectedSpeaker.id}>
                 {speakers.map((speaker, index) =>
                   (<option key={index} value={speaker.id}>
                     {speaker.displayName}
@@ -178,10 +177,9 @@ export default function ExportTab(props) {
           <Row>
             <Col className='label'>Format</Col>
             <Col>
-              <Form.Select
-                className='app-select'
-                onChange={(event) =>
-                  dispatch(setSettings({ exportFormat: event.target.value }))}>
+              <Form.Select className='app-select'
+                           onChange={(event) =>
+                             dispatch(setSettings({ exportFormat: event.target.value }))}>
                 {Object.keys(codec).map((item, index) =>
                   (<option key={index} value={item}>{item}</option>),
                 )}
@@ -191,11 +189,10 @@ export default function ExportTab(props) {
           <Row>
             <Col className='label'>CODEC</Col>
             <Col>
-              <Form.Select
-                className='app-select'
-                onChange={(event) =>
-                  dispatch(setSettings({ exportCodec: event.target.value }))}
-                defaultValue={exportCodec}>
+              <Form.Select className='app-select'
+                           onChange={(event) =>
+                             dispatch(setSettings({ exportCodec: event.target.value }))}
+                           value={exportCodec}>
                 {codec[exportFormat].map((item, index) =>
                   (<option key={index} value={item.value}>
                     {item.displayName}

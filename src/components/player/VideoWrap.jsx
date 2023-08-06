@@ -6,7 +6,7 @@ export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
   const $video = createRef();
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
-  const videoUrl = useSelector(store => store.session.videoUrl) || '/samples/video_placeholder.mp4';
+  const videoUrl = useSelector(store => store.session.videoUrl) || '/images/video_placeholder.mp4';
   // const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
   // const [playingSub, setPlayingSub] = useState(null);
   // const [endSubTime, setEndSubTime] = useState(0);
