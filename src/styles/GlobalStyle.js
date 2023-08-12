@@ -141,7 +141,7 @@ export default createGlobalStyle`
       }
     }
 
-    .list-item-text {
+    .list-item-input {
       width: 100%;
       outline: none;
       resize: none;
@@ -153,6 +153,11 @@ export default createGlobalStyle`
       user-select: all;
       pointer-events: all;
       background-color: transparent;
+    }
+
+    .list-item-text {
+      margin: auto 5px;
+      opacity: 66%;
     }
 
     .list-item-actions {

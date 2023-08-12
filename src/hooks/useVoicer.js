@@ -16,8 +16,8 @@ export const useVoicer = () => {
   const speakSub = useCallback(async (sub, options) => {
     if (!options) options = {};
     if (!selectedSpeaker.preset) {
-      toast.warn('Cannot voice subtitles of selected speaker. Select a voice preset before voiceover');
-      return true;
+      toast.warn('Cannot voice subtitles of selected speaker. Select a voice preset before voicing');
+      return false;
     }
     if (!sub.canBeVoiced) {
       if (!options.fromBatch) toast.info('Subtitle cannot be voiced, because it is already voiced');
@@ -25,6 +25,12 @@ export const useVoicer = () => {
     }
     if (sub.data?.src) {
       dispatch(removeAudio(sub.data?.src));
+    }
+
+    const cred = selectedCredentials[selectedSpeaker.preset.service];
+    if (!cred?.value) {
+      toast.error('Credentials are not valid');
+      return false;
     }
 
     const request = {
@@ -47,7 +53,6 @@ export const useVoicer = () => {
     dispatch(patchSub(sub, {
       data: VoicedStatuses.processing,
     }));
-    const cred = selectedCredentials[selectedSpeaker.preset.service];
     const audio = await speechApi.single(request, cred.value);
     if (!audio) return false;
     console.log('single audio url', audio);
@@ -74,6 +79,13 @@ export const useVoicer = () => {
       toast.warn('Cannot voice subtitles of selected speaker. Select a voice preset before voiceover');
       return;
     }
+
+    const cred = selectedCredentials[selectedSpeaker.preset.service];
+    if (!cred?.value) {
+      toast.error('Credentials are not valid');
+      return false;
+    }
+
     let promises = [];
     options.fromBatch = true;
     for (const sub of selectedSpeaker.subs) {
@@ -91,7 +103,7 @@ export const useVoicer = () => {
         toast.warn(`Some subtitles of selected speaker was not voiced`);
       }
     });
-  }, [speakSub, dispatch, selectedSpeaker]);
+  }, [speakSub, dispatch, selectedSpeaker, selectedCredentials]);
 
   return { speakSub, speakAll };
 };

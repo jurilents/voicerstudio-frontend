@@ -1,142 +1,19 @@
-import styled from 'styled-components';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addSub, patchSub, selectSpeaker, selectSub } from '../../../store/sessionReducer';
+import { addSub, patchMarker, patchSub, selectSpeaker, selectSub } from '../../../store/sessionReducer';
 import { Sub } from '../../../models';
 import { t } from 'react-i18nify';
 import { setPlaying, setTime } from '../../../store/timelineReducer';
 import TimelineWrap from './TimelineWrap';
-import ActionAudio from './action-templates/ActionAudio';
-import ActionSubtitle from './action-templates/ActionSubtitle';
+import AudioActionRenderer from './action-renderers/AudioActionRenderer';
+import SubtitleActionRenderer from './action-renderers/SubtitleActionRenderer';
 import { calculateScaleAndWidth } from '../../../utils/timelineScale';
-
-const Style = styled.div`
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow-y: hidden;
-
-  .timeline-editor {
-    width: 100%;
-    z-index: 100;
-    background-color: transparent;
-  }
-
-  .timeline-editor-action-right-stretch,
-  .timeline-editor-action-left-stretch {
-    //z-index: 1000;
-  }
-
-  .timeline-editor-action {
-    z-index: 100;
-    cursor: grab;
-    --shadow-size: 5px;
-    --shadow-size-minus: -5px;
-
-    &:before, &:after {
-      content: " ";
-      height: 100%;
-      position: absolute;
-      top: 0;
-      width: var(--shadow-size);
-    }
-
-    &:before {
-      box-shadow: black -6px 0 var(--shadow-size) var(--shadow-size-minus) inset;
-      left: var(--shadow-size-minus);
-    }
-
-    &:after {
-      box-shadow: black 6px 0 var(--shadow-size) var(--shadow-size-minus) inset;
-      right: var(--shadow-size-minus);
-    }
-
-
-    &:has(.selected-sub) {
-      z-index: 900;
-    }
-  }
-
-  .timeline-editor-action {
-    background-color: transparent;
-  }
-
-  .timeline-sub {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    opacity: 50%;
-    border: 1px solid transparent;
-    border-bottom: 4px solid inherit;
-
-    &.focus-sub {
-      opacity: 100%;
-    }
-
-    &.selected-sub {
-      border-color: rgba(180, 180, 180, 0.8);
-    }
-
-    .sub-text {
-      display: block;
-      width: calc(100% - 10px);
-      line-height: 1.8;
-      margin-top: 3px;
-      text-align: center;
-      font-size: 13px;
-      text-wrap: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .sub-footer {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .sub-time {
-      font-size: 10px;
-      opacity: 60%;
-    }
-
-    .sub-status {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      aspect-ratio: 1;
-      border-radius: 50%;
-      border: 1px solid rgb(255 255 255 / 50%);
-    }
-  }
-
-  .recording-sub {
-    border-color: rgba(220, 0, 0, 0.5) !important;
-    border-width: 2px;
-    //border-right: 1px solid white;
-    //border-left: 1px solid #ff7272;
-  }
-
-  .timeline-audio {
-    width: 100%;
-
-    wave {
-      overflow: hidden !important;
-    }
-  }
-
-  .timeline-editor-cursor-top {
-    top: -7px !important;
-    transform: translate(-50%, 0) scaleX(2) scaleY(1.4) !important;
-    height: 30px !important;
-  }
-`;
+import MarkerActionRenderer from './action-renderers/MarkerActionRenderer';
+import { Style } from './TimelineEditor.styles';
 
 const origAudioRowName = 'original-audio-row';
+const markersRowName = 'markers-row';
+
 let prevData = null;
 let cursorElm = null;
 
@@ -145,7 +22,11 @@ function getCursorElement() {
   return cursorElm;
 }
 
-function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
+function isSpeakerRow(row) {
+  return row?.id && row.id !== origAudioRowName && row.id !== markersRowName;
+}
+
+function getTimelineData({ speakers, selectedSpeaker, markers, player }) {
   const data = speakers.map((speaker) => ({
     id: speaker.id,
     selected: speaker.id === selectedSpeaker?.id,
@@ -155,9 +36,11 @@ function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
 
   if (!player || isNaN(+player.duration)) return data;
 
+  // Add original audio
   data.unshift({
     id: origAudioRowName,
     rowHeight: 100,
+    classNames: ['waveform-row'],
     actions: [
       {
         id: 'original-audio',
@@ -171,6 +54,19 @@ function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
       },
     ],
   });
+  // Add markers
+  data.unshift({
+    id: markersRowName,
+    rowHeight: 1,
+    classNames: ['markers-row'],
+    actions: markers.map((marker) => ({
+      id: marker.id,
+      start: marker.time,
+      end: marker.time,
+      flexible: false,
+      data: { color: marker.color, text: marker.text },
+    })),
+  });
 
   prevData = data;
   return data;
@@ -178,12 +74,12 @@ function getTimelineData(speakers, selectedSpeaker, recordingSub, player) {
 
 const TimelineEditor = ({ player }) => {
   const dispatch = useDispatch();
-  const { speakers, selectedSpeaker, selectedSub, videoUrl } = useSelector(store => store.session);
+  const { speakers, selectedSpeaker, selectedSub, markers, videoUrl } = useSelector(store => store.session);
   const timelineZoom = useSelector(store => store.timelineSettings.timelineZoom);
   const [zoom, setZoom] = useState({ scale: 1, scaleWidth: 100, scaleCount: 60 });
   const data = useMemo(
-    () => getTimelineData(speakers, selectedSpeaker, window.recordingSub, player),
-    [speakers, selectedSpeaker, selectedSub, window.recordingSub, player, isNaN(+player?.duration)],
+    () => getTimelineData({ speakers, selectedSpeaker, markers, player }),
+    [speakers, selectedSpeaker, markers, selectedSub, player, isNaN(+player?.duration)],
   );
 
   function calcLeftOffset(time, zoom) {
@@ -199,7 +95,6 @@ const TimelineEditor = ({ player }) => {
     if (engine?.target && !isNaN(player.duration)) {
       const zoom = calculateScaleAndWidth(timelineZoom, player.duration, engine.target.clientWidth);
       // const zoom = {scale: 1, scaleWidth: 150, scaleCount: };
-      console.log('1zoom', zoom);
       setZoom(zoom);
       // console.log('zoom:', zoom);
     }
@@ -290,12 +185,15 @@ const TimelineEditor = ({ player }) => {
           window.timelineEngine.setTime(param.action.start);
         }
       }
-      dispatch(selectSub(param.action));
+
+      if (param.row.id !== markersRowName) {
+        dispatch(selectSub(param.action));
+      }
     }
   }, [dispatch]);
 
   const setTimeToSubEnd = useCallback((param) => {
-    if (param.row.id !== origAudioRowName) {
+    if (isSpeakerRow(param.row)) {
       dispatch(setTime(param.action.end));
       if (window.timelineEngine) {
         window.timelineEngine.setTime(param.action.end);
@@ -304,29 +202,35 @@ const TimelineEditor = ({ player }) => {
   }, [dispatch]);
 
   const setSpeaker = useCallback((param) => {
-    if (param.row.id && param.row.id !== origAudioRowName) {
+    if (isSpeakerRow(param.row)) {
       dispatch(selectSpeaker(param.row.id));
     }
   }, [dispatch]);
 
-  const setSubStartEndTime = useCallback((param) => {
-    if (param.row.id !== origAudioRowName) {
-      if (param.dir === 'left') {
-        dispatch(patchSub(param.action, {
-          start: param.start,
-        }));
-      } else if (param.dir === 'right') {
-        dispatch(patchSub(param.action, {
-          end: param.end,
-        }));
-      } else {
-        dispatch(patchSub(param.action, {
-          start: param.start,
-          end: param.end,
-        }));
-      }
+  function setSubStartEndTime({ action, dir, start, end }) {
+    if (dir === 'left') {
+      dispatch(patchSub(action, { start }));
+    } else if (dir === 'right') {
+      dispatch(patchSub(action, { end }));
+    } else {
+      dispatch(patchSub(action, { start, end }));
     }
-  }, [dispatch]);
+  }
+
+  function setMarkerTime({ action, start }) {
+    console.log('param.action is marker', action);
+    dispatch(patchMarker(action, {
+      time: start,
+    }));
+  }
+
+  const handleActionMoveOrResize = (param) => {
+    if (isSpeakerRow(param.row)) {
+      setSubStartEndTime(param);
+    } else if (param.row.id === markersRowName) {
+      setMarkerTime(param);
+    }
+  };
 
   const onTimeChange = useCallback((time) => {
     if (!window.timelineEngine) return;
@@ -353,9 +257,11 @@ const TimelineEditor = ({ player }) => {
 
   const getActionRender = useCallback((action, row) => {
     if (row.id === origAudioRowName) {
-      return <ActionAudio action={action} row={row} />;
+      return <AudioActionRenderer action={action} row={row} />;
+    } else if (row.id === markersRowName) {
+      return <MarkerActionRenderer action={action} row={row} />;
     }
-    return <ActionSubtitle action={action} row={row} />;
+    return <SubtitleActionRenderer action={action} row={row} />;
   }, [selectedSpeaker, selectedSub]);
 
   return (
@@ -367,9 +273,9 @@ const TimelineEditor = ({ player }) => {
                     onClickAction={setSubtitle}
                     onDoubleClickAction={setTimeToSubEnd}
                     onActionResizeStart={(param) => setSubtitle(param, true)}
-                    onActionResizing={setSubStartEndTime}
+                    onActionResizing={handleActionMoveOrResize}
                     onActionMoveStart={(param) => setSubtitle(param, true)}
-                    onActionMoving={setSubStartEndTime}
+                    onActionMoving={handleActionMoveOrResize}
                     onClickRow={setSpeaker}
                     getActionRender={getActionRender}
                     onDoubleClickRow={addSubtitle}

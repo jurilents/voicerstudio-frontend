@@ -79,7 +79,7 @@ const PresetsTab = () => {
                    src={`/images/${cred.service}-logo.png`}
                    alt={cred.service}
                    title={cred.service} />
-              <input className='list-item-text'
+              <input className='list-item-input'
                      type='text'
                      value={cred.displayName}
                      onChange={(event) =>
@@ -112,7 +112,7 @@ const PresetsTab = () => {
                    src={`/images/${preset.service}-logo.png`}
                    alt={preset.service}
                    title={preset.service} />
-              <input className='list-item-text'
+              <input className='list-item-input'
                      type='text'
                      value={preset.displayName}
                      onChange={(event) =>

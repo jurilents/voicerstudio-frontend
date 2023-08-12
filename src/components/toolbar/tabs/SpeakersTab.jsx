@@ -50,7 +50,7 @@ export default function SpeakersTab(props) {
                             key={speaker.id}
                             onClick={() => dispatch(selectSpeaker(speaker.id))}>
               <div className='color-preview' style={{ backgroundColor: speaker.color || '#000' }}></div>
-              <input className='list-item-text'
+              <input className='list-item-input'
                      type='text'
                      value={speaker.displayName}
                      onChange={(event) =>

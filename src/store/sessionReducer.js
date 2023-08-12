@@ -7,6 +7,7 @@ import { VoicedStatuses } from '../models/Sub';
 import timeMachine from '../utils/TimeMachine';
 import { cloneByKeys, objectsHaveSameKeys } from '../utils';
 import credsReducer from './sessionReducer.creds';
+import markersReducer from './sessionReducer.markers';
 
 // Commands
 const RESTORE_FROM_JSON = 'RESTORE_FROM_JSON';
@@ -34,6 +35,9 @@ const REMOVE_CREDS = 'REMOVE_CREDS';
 const PATCH_CREDS = 'PATCH_CREDS';
 const SELECT_CREDS = 'SELECT_CREDS';
 
+const SET_MARKER = 'SET_MARKER';
+const PATCH_MARKER = 'PATCH_MARKER';
+
 // Storage keys
 const STORAGE_KEY = 'session';
 
@@ -47,9 +51,10 @@ const rootState = {
   speakers: [defaultSpeaker],
   selectedSpeaker: defaultSpeaker,
   selectedSub: null,
-  presets: [],
   credentials: [],
   selectedCredentials: { Azure: null },
+  presets: [],
+  markers: [],
   videoUrl: null,
   videoDuration: 60,
 };
@@ -89,6 +94,9 @@ function parseSessionJson(json) {
   }
   if (obj.videoUrl) {
     obj.videoUrl = VoicedStatuses.processing;
+  }
+  if (!obj.markers) {
+    obj.markers = [];
   }
   return obj;
 }
@@ -238,6 +246,17 @@ export default function sessionReducer(state = defaultState, action) {
       return saveToLocalStorage(session);
     }
 
+
+    /************************* MARKERS *************************/
+    case SET_MARKER: {
+      const session = markersReducer.setMarker(state, action);
+      return saveToLocalStorage(session);
+    }
+    case PATCH_MARKER: {
+      const session = markersReducer.patchMarker(state, action);
+      return saveToLocalStorage(session);
+    }
+
     default:
       return state;
   }
@@ -267,3 +286,6 @@ export const addCreds = (cred) => ({ type: ADD_CREDS, payload: { cred } });
 export const removeCreds = (cred) => ({ type: REMOVE_CREDS, payload: { cred } });
 export const patchCreds = (cred, patch) => ({ type: PATCH_CREDS, payload: { cred, patch } });
 export const selectCreds = (cred, service) => ({ type: SELECT_CREDS, payload: { cred, service } });
+
+export const setMarker = (marker) => ({ type: SET_MARKER, payload: { marker } });
+export const patchMarker = (marker, patch) => ({ type: PATCH_MARKER, payload: { marker, patch } });

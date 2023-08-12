@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { getSubVoicedStatusColor } from '../../../../models';
 import { useMemo } from 'react';
 
-const ActionSubtitle = ({ action, row }) => {
+const SubtitleActionRenderer = ({ action, row }) => {
   const { selectedSub, selectedSpeaker } = useSelector(store => store.session);
   action.selected = action.id === selectedSub?.id;
   row.selected = row.id === selectedSpeaker?.id;
@@ -26,4 +26,4 @@ const ActionSubtitle = ({ action, row }) => {
   );
 };
 
-export default ActionSubtitle;
+export default SubtitleActionRenderer;

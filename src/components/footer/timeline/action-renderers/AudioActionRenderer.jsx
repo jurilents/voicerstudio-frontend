@@ -3,7 +3,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTotalTime } from '../../../../store/timelineReducer';
 
-const ActionAudio = ({ action, row }) => {
+const AudioActionRenderer = ({ action, row }) => {
   const $domRef = useRef();
   const dispatch = useDispatch();
   const { waveZoom, timelineZoom } = useSelector(store => store.settings);
@@ -55,17 +55,16 @@ const ActionAudio = ({ action, row }) => {
   // }, [$domRef.current, wavesurfer, wavesurferOptions, setWavesurferOptions, waveZoom]);
 
   return (
-    <div
-      ref={$domRef}
-      style={{ marginTop: '10px' }}
-      className='timeline-audio'>
+    <div ref={$domRef}
+         style={{ marginTop: '10px' }}
+         className='timeline-audio'>
       {/*{(action.end - action.start).toFixed(2)}s*/}
     </div>
   );
 };
 
 export default memo(
-  ActionAudio,
+  AudioActionRenderer,
   (prevProps, nextProps) => {
     const prevData = prevProps.action?.data;
     const nextData = nextProps.action?.data;

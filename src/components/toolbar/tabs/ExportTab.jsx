@@ -8,7 +8,6 @@ import { download, getExt } from '../../../utils';
 import { selectSpeaker } from '../../../store/sessionReducer';
 import { file2sub, sub2srt, sub2txt, sub2vtt } from '../../../libs/readSub';
 import { t } from 'react-i18nify';
-import sub2ass from '../../../libs/readSub/sub2ass';
 import { toast } from 'react-toastify';
 import { VoicingService } from '../../../models/enums';
 
@@ -32,7 +31,7 @@ const codec = {
     { displayName: 'RIFF 16KHz 16Bit', value: 'Rate16000' },
     { displayName: 'RIFF 24KHz 16Bit', value: 'Rate24000' },
     // { displayName: 'RIFF 44.1KHz 16Bit', value: 'Riff44100Hz16BitMonoPcm' },
-    { displayName: 'RIFF 48KHz 16Bit', value: 'Rate48000', default: true },
+    { displayName: 'RIFF 48KHz 16Bit', value: 'Rate48000' },
   ],
 };
 
@@ -89,24 +88,22 @@ export default function ExportTab(props) {
     try {
       let text = '';
       // const name = `${Date.now()}.${type}`;
-      switch (type) {
-        case 'vtt':
-          text = sub2vtt(selectedSpeaker.subs);
-          break;
-        case 'srt':
-          text = sub2srt(selectedSpeaker.subs);
-          break;
-        case 'ass':
-          text = sub2ass(selectedSpeaker.subs);
-          break;
-        case 'txt':
-          text = sub2txt(selectedSpeaker.subs);
-          break;
-        case 'json':
-          text = JSON.stringify(selectedSpeaker.subs);
-          break;
-        default:
-          break;
+      if (type === 'vtt') {
+        text = sub2vtt(selectedSpeaker.subs);
+      } else if (type === 'srt') {
+        text = sub2srt(selectedSpeaker.subs);
+      } else if (type === 'txt') {
+        text = sub2txt(selectedSpeaker.subs);
+      } else if (type === 'json') {
+        const toJson = selectedSpeaker.subs.map((sub) => ({
+          text: sub.text,
+          start: sub.start,
+          end: sub.end,
+        }));
+        text = JSON.stringify(toJson, null, 2);
+      } else {
+        console.error(`Export format does not supported: '${type}'`);
+        return;
       }
       const url = URL.createObjectURL(new Blob([text]));
       const fileName = buildExportFileName(type);
@@ -149,9 +146,10 @@ export default function ExportTab(props) {
       {
         success: <>Export file "<b>{fileName}</b>" succeed</>,
         pending: <i>Voicing a file for export...</i>,
+        error: ':(',
       },
     );
-  }, [exportCodec, speakers, selectedSpeaker, exportFormat, exportCodec]);
+  }, [selectedSpeaker, selectedSpeaker.subs, exportFormat, exportCodec, buildExportFileName]);
 
 
   return (
@@ -232,21 +230,29 @@ export default function ExportTab(props) {
           <Row className='mt-4'>
             <Col>
               <button className='btn btn-primary' onClick={generateAndExport}>
-                Export
+                Export {exportFormat}
               </button>
             </Col>
           </Row>
-          <Row>
+          <Row className='mt-4'>
             <Col>
               <button className='btn btn-outline' onClick={() => downloadSub('srt')}>
-                Export SRT
+                SRT
               </button>
             </Col>
-          </Row>
-          <Row>
+            <Col>
+              <button className='btn btn-outline' onClick={() => downloadSub('vtt')}>
+                VTT
+              </button>
+            </Col>
+            <Col>
+              <button className='btn btn-outline' onClick={() => downloadSub('txt')}>
+                TXT
+              </button>
+            </Col>
             <Col>
               <button className='btn btn-outline' onClick={() => downloadSub('json')}>
-                Export JSON
+                JSON
               </button>
             </Col>
           </Row>

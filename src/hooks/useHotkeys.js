@@ -1,11 +1,17 @@
 import { useCallback } from 'react';
 import { getKeyCode } from '../utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { patchSub, removeSub } from '../store/sessionReducer';
+import { patchSub, removeSub, setMarker } from '../store/sessionReducer';
 import timeMachine from '../utils/TimeMachine';
 import { toast } from 'react-toastify';
 import { usePlayerControls } from './usePlayerControls';
 import { setSettings } from '../store/settingsReducer';
+import { Marker } from '../models';
+import colors from '../utils/colors';
+
+// meta: CTRL / COMMAND
+// shift: SHIFT
+// alt: ALT / OPTION
 
 const HOTKEYS = {
   deleteSub: { key: 'BACKSPACE' },
@@ -16,6 +22,7 @@ const HOTKEYS = {
   refreshPage: { key: 'R', meta: true },
   undo: { key: 'Z', meta: true },
   redo: { key: 'Z', meta: true, shift: true },
+  setMarker: { key: 'M', meta: true },
   speakAll: { key: 'G', meta: true },
   showMotivation: { key: 'O', meta: true, shift: true },
   moveCursorRight: { key: 'ARROWRIGHT' },
@@ -35,8 +42,21 @@ function checkMetaKeys(event, hotkey) {
 
 export const useHotkeys = ({ player }) => {
   const dispatch = useDispatch();
-  const selectedSub = useSelector(store => store.session.selectedSub);
+  const { selectedSub, markers } = useSelector(store => store.session);
   const { startRecording, completeRecording } = usePlayerControls({ player });
+
+  const createDefaultMarker = useCallback(() => {
+    let maxMarkerId = Math.max.apply(null, markers.map(x => x.id));
+    if (isNaN(+maxMarkerId) || maxMarkerId < 0 || maxMarkerId > 99) maxMarkerId = 0;
+    maxMarkerId++;
+
+    return new Marker({
+      id: maxMarkerId,
+      text: `Marker #${maxMarkerId}`,
+      color: colors.teal,
+      time: window.timelineEngine.getTime(),
+    });
+  }, [markers]);
 
   const handlePlayOrPause = useCallback(() => {
     if (!window.timelineEngine) return;
@@ -93,6 +113,15 @@ export const useHotkeys = ({ player }) => {
         } else {
           console.warn('No sub selected!');
         }
+        break;
+      }
+
+      // ----- Set Marker -----
+      case HOTKEYS.setMarker.key: {
+        if (!checkMetaKeys(event, HOTKEYS.setMarker)) break;
+        if (!window.timelineEngine) return;
+        const marker = createDefaultMarker();
+        dispatch(setMarker(marker));
         break;
       }
 
@@ -185,7 +214,7 @@ export const useHotkeys = ({ player }) => {
       default:
         break;
     }
-  }, [dispatch, handlePlayOrPause, selectedSub, player]);
+  }, [dispatch, createDefaultMarker, handlePlayOrPause, selectedSub, player]);
 
   const onKeyUp = useCallback((event) => {
     if (!window.timelineEngine) return;
