@@ -2,52 +2,8 @@ import DT from 'duration-time-conversion';
 import { v4 as uuidv4 } from 'uuid';
 import { clamp } from 'lodash';
 import { effectKeys } from '../utils/timelineEffects';
-import palette from '../styles/palette';
 import { settings } from '../settings';
-
-export const VoicedStatuses = {
-  none: 'none',
-  processing: 'processing',
-  voiced: 'voiced',
-  obsolete: 'obsolete',
-};
-
-export function getSubVoicedStatus(sub) {
-  if (sub.data) {
-    if (sub.data === VoicedStatuses.processing) {
-      return VoicedStatuses.processing;
-    }
-    if (sub.data.src === VoicedStatuses.voiced) {
-      return VoicedStatuses.voiced;
-    }
-    if (sub.text.trim() === sub.data.text
-      // && Math.abs((sub.end - sub.start) - (sub.data.end - sub.data.start)) < 0.001
-      && sub.data.src) {
-      return VoicedStatuses.voiced;
-    } else if (sub.text !== sub.data.text) {
-      return VoicedStatuses.obsolete;
-    }
-  }
-
-  return VoicedStatuses.none;
-}
-
-export function canSubBeVoiced(sub) {
-  const status = getSubVoicedStatus(sub);
-  return status === VoicedStatuses.none
-    || status === VoicedStatuses.obsolete
-    || status === VoicedStatuses.processing;
-}
-
-export function getSubVoicedStatusColor(sub) {
-  const status = getSubVoicedStatus(sub);
-  if (status === VoicedStatuses.voiced) return palette.statusColors.ok;
-  if (status === VoicedStatuses.processing) return palette.statusColors.warn;
-  if (status === VoicedStatuses.none) return palette.statusColors.temp;
-  if (status === VoicedStatuses.obsolete) return palette.statusColors.danger;
-  return palette.statusColors.none;
-}
-
+import { canSubBeVoiced, getSubVoicedStatus, getSubVoicedStatusColor } from './Sub.functions';
 
 export class Sub {
   constructor(obj) {

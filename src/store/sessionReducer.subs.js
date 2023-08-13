@@ -1,15 +1,5 @@
-import { Sub } from '../models';
+import { Sub, validateSubs } from '../models';
 
-function validateSubs(subs) {
-  let prev = null;
-  for (let i = 0; i < subs.length; i++) {
-    const curr = subs[i];
-    const next = subs[i + 1];
-    if (prev) curr.invalidStart = curr.start < prev.end;
-    if (next) curr.invalidEnd = curr.end > next.start;
-    prev = curr;
-  }
-}
 
 const subsReducer = {
   setAllSubs: (state, action) => {

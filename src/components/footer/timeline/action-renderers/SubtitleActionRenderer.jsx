@@ -14,6 +14,7 @@ const SubtitleActionRenderer = ({ action, row }) => {
       row.selected ? 'focus-sub' : '',
       action.selected ? 'selected-sub' : '',
       action.recording ? 'recording-sub' : '',
+      action.invalidStart || action.invalidEnd ? 'illegal' : '',
     ].join(' ').trim()} style={{
       backgroundColor: row.color,
     }}>

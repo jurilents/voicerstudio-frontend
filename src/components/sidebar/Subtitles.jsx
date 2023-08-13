@@ -48,7 +48,8 @@ const Style = styled.div`
 
         &.illegal {
           //background-color: var(--c-danger);
-          border: 1px solid var(--c-danger);
+          border: solid var(--c-danger);
+          border-width: 1px 1px 1px 10px;
         }
 
         .textarea {

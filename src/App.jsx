@@ -11,7 +11,7 @@ import { useSubsAudioStorage, useVideoStorage } from './hooks';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVideo } from './store/sessionReducer';
 import { ToastContainer } from 'react-toastify';
-import { VoicedStatuses } from './models/Sub';
+import { VoicedStatuses } from './models';
 import { addAudio } from './store/audioReducer';
 import 'react-toastify/dist/ReactToastify.css';
 import HotkeysWrap from './components/HotkeysWrap';

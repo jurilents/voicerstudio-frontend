@@ -1,15 +1,13 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSettings } from '../../../store/settingsReducer';
 import { Col, Container, Form, Row } from 'react-bootstrap';
-import { speechApi } from '../../../api/axios';
-import { download, getExt } from '../../../utils';
+import { download } from '../../../utils';
 import { selectSpeaker } from '../../../store/sessionReducer';
-import { file2sub, sub2srt, sub2txt, sub2vtt } from '../../../libs/readSub';
-import { t } from 'react-i18nify';
+import { sub2srt, sub2txt, sub2vtt } from '../../../libs/readSub';
 import { toast } from 'react-toastify';
-import { VoicingService } from '../../../models/enums';
+import { useVoicer } from '../../../hooks';
 
 const Style = styled.div`
   .app-input {
@@ -35,54 +33,12 @@ const codec = {
   ],
 };
 
-export default function ExportTab(props) {
+export default function ExportTab() {
   const dispatch = useDispatch();
+  const [isPending, setIsPending] = useState();
   const { exportCodec, exportFormat, exportFileName } = useSelector(store => store.settings);
-  const { speakers, selectedSpeaker, selectedCredentials } = useSelector(store => store.session);
-
-  const ensureExtension = useCallback((fileName, ext) => {
-    const extension = '.' + ext.toLowerCase();
-    if (typeof fileName === 'string') {
-      if (!fileName.trimEnd().endsWith(extension)) {
-        return fileName + extension;
-      }
-      return fileName;
-    }
-    return extension;
-  }, []);
-
-  const buildExportFileName = useCallback((ext) => {
-    if (typeof exportFileName === 'string') {
-      const fileName = ensureExtension(exportFileName, ext);
-      const tz = new Date().getTimezoneOffset() * 60000;
-      const date = new Date(Date.now() - tz).toISOString().split('T');
-      return fileName
-        .replace(/\{[S|s]}/g, selectedSpeaker.displayName)
-        .replace(/\{[L|l]}/g, selectedSpeaker.preset?.locale || '???')
-        .replace(/\{[F|f]}/g, exportCodec)
-        .replace(/\{[D|d]}/g, date[0])
-        .replace(/\{[T|t]}/g, date[1].substring(0, 5).replaceAll(':', '-'));
-    }
-  }, [selectedSpeaker, exportCodec, exportFileName]);
-
-  const onSubtitleChange = useCallback((event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const ext = getExt(file.name);
-      if (['ass', 'vtt', 'srt', 'json'].includes(ext)) {
-        file2sub(file)
-          .then((res) => {
-            // props.clearSubs();
-            // props.setSubtitle(res);
-          })
-          .catch((err) => {
-            toast.error(err.message);
-          });
-      } else {
-        toast.error(`${t('SUB_EXT_ERR')}: ${ext}`);
-      }
-    }
-  }, []);
+  const { speakers, selectedSpeaker } = useSelector(store => store.session);
+  const { buildExportFileName, generateAndExport } = useVoicer();
 
   const downloadSub = useCallback((type) => {
     try {
@@ -113,44 +69,6 @@ export default function ExportTab(props) {
       toast.error(`Export file failed: ${e}`);
     }
   }, [selectedSpeaker]);
-
-  const generateAndExport = useCallback(() => {
-    async function fetch(fileName) {
-      console.log(selectedSpeaker.preset);
-      const request = selectedSpeaker.subs.map(sub => ({
-        service: selectedSpeaker.preset.service,
-        locale: selectedSpeaker.preset.locale,
-        voice: selectedSpeaker.preset.voice,
-        text: sub.text,
-        style: selectedSpeaker.preset.style,
-        styleDegree: selectedSpeaker.preset.styleDegree,
-        // role: 'string',
-        pitch: selectedSpeaker.preset.pitch,
-        volume: selectedSpeaker.preset.service === VoicingService.VoiceMaker ? 0 : 1,
-        start: sub.startStr,
-        end: sub.endStr,
-        outputFormat: exportFormat,
-        sampleRate: exportCodec,
-      }));
-      console.log('Batch speech request:', request);
-      const cred = selectedCredentials[selectedSpeaker.preset.service];
-      const audio = await speechApi.batch(request, cred.value);
-      console.log('result audio url', audio);
-      download(audio.url, fileName);
-    }
-
-    const fileName = buildExportFileName(exportFormat);
-    const promise = fetch(fileName);
-    toast.promise(
-      promise,
-      {
-        success: <>Export file "<b>{fileName}</b>" succeed</>,
-        pending: <i>Voicing a file for export...</i>,
-        error: ':(',
-      },
-    );
-  }, [selectedSpeaker, selectedSpeaker.subs, exportFormat, exportCodec, buildExportFileName]);
-
 
   return (
     <Style className='tab-outlet'>
@@ -229,7 +147,8 @@ export default function ExportTab(props) {
           </Row>
           <Row className='mt-4'>
             <Col>
-              <button className='btn btn-primary' onClick={generateAndExport}>
+              <button className='btn btn-primary'
+                      onClick={() => generateAndExport(setIsPending)}>
                 Export {exportFormat}
               </button>
             </Col>

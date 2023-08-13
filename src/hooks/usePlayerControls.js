@@ -46,7 +46,7 @@ export function usePlayerControls({ player }) {
       engine.play({ autoEnd: true });
       if (player.paused) player.play();
     }, 10);
-  }, [window.timelineEngine, dispatch, player, togglePlay]);
+  }, [selectedSpeaker, dispatch, player, togglePlay]);
 
   const completeRecording = useCallback(() => {
     if (window.recordingSub) {
@@ -63,7 +63,7 @@ export function usePlayerControls({ player }) {
       dispatch(setPlaying(false));
     }
     delete window.recordingSub;
-  }, [window.timelineEngine, dispatch, player]);
+  }, [dispatch, player]);
 
   return { startRecording, completeRecording, togglePlay };
 }

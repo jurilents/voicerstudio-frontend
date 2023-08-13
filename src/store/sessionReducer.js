@@ -1,9 +1,8 @@
-import { Speaker, Sub } from '../models';
+import { Speaker, Sub, VoicedStatuses } from '../models';
 import colors from '../utils/colors';
 import speakersReducer, { setGlobalSpeakerVolume } from './sessionReducer.speakers';
 import subsReducer from './sessionReducer.subs';
 import presetsReducer from './sessionReducer.presets';
-import { VoicedStatuses } from '../models/Sub';
 import timeMachine from '../utils/TimeMachine';
 import { cloneByKeys, objectsHaveSameKeys } from '../utils';
 import credsReducer from './sessionReducer.creds';

@@ -214,7 +214,7 @@ export const useHotkeys = ({ player }) => {
       default:
         break;
     }
-  }, [dispatch, createDefaultMarker, handlePlayOrPause, selectedSub, player]);
+  }, [dispatch, createDefaultMarker, handlePlayOrPause, startRecording, selectedSub, player]);
 
   const onKeyUp = useCallback((event) => {
     if (!window.timelineEngine) return;

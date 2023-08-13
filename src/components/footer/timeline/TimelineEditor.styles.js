@@ -71,6 +71,11 @@ export const Style = styled.div`
       border-color: rgba(180, 180, 180, 0.8);
     }
 
+    &.illegal {
+      //border-color: var(--c-danger);
+      box-shadow: 0 0 0 3px var(--c-danger);
+    }
+
     .sub-text {
       display: block;
       width: calc(100% - 10px);
