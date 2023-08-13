@@ -46,22 +46,9 @@ const AddCredsModal = ({ isOpen, setIsOpen }) => {
     }
   };
 
-  const submit = async () => {
+  const submitCheck = async () => {
     if (status === Status.loading) {
       toast.info('Wait. We are checking your credentials...');
-      return;
-    }
-    if (status === Status.success) {
-      dispatch(addCreds(new Creds({
-        service: voicingService,
-        value: securedCreds,
-        displayName: `${voicingService} ${credentials.length + 1}`,
-      })));
-      setIsOpen(false);
-      handleCredChange();
-      setAzureSubscriptionKey('');
-      setAzureRegion('');
-      toast.success('Credentials added!');
       return;
     }
 
@@ -79,6 +66,27 @@ const AddCredsModal = ({ isOpen, setIsOpen }) => {
       console.log(err);
       setStatus(Status.failure);
       toast.error(err.response?.data.message || 'Unknown error :(');
+    }
+  };
+
+  const submitAdd = async () => {
+    if (status === Status.loading) {
+      toast.info('Wait. We are checking your credentials...');
+      return;
+    }
+    if (status === Status.success) {
+      dispatch(addCreds(new Creds({
+        service: voicingService,
+        value: securedCreds,
+        displayName: `${voicingService} ${credentials.length + 1}`,
+      })));
+      setIsOpen(false);
+      handleCredChange();
+      setAzureSubscriptionKey('');
+      setAzureRegion('');
+      toast.success('Credentials added!');
+    } else {
+      toast.info('Check credentials before add');
     }
   };
 
@@ -156,12 +164,17 @@ const AddCredsModal = ({ isOpen, setIsOpen }) => {
         )}
         <Row>
           <Col>
-            <button className='btn btn-modal btn-outline'
-                    onClick={submit}
-                    disabled={voicingService !== VoicingService.Azure}>
-              {status === Status.success
-                ? 'Add' : status === Status.loading
-                  ? 'Checking...' : 'Check'}
+            <button className='btn btn-modal btn-primary btn-outline-disabled'
+                    onClick={submitCheck}
+                    disabled={voicingService !== VoicingService.Azure || status === Status.success}>
+              {status === Status.loading ? 'Checking...' : 'Check'}
+            </button>
+          </Col>
+          <Col>
+            <button className='btn btn-modal btn-primary btn-outline-disabled'
+                    onClick={submitAdd}
+                    disabled={voicingService !== VoicingService.Azure || status !== Status.success}>
+              Add
             </button>
           </Col>
         </Row>

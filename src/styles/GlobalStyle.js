@@ -83,6 +83,11 @@ export default createGlobalStyle`
         background-color: var(--c-primary);
       }
     }
+
+    &.btn-outline-disabled:disabled {
+      background-color: transparent;
+      border: 2px solid var(--c-primary);
+    }
   }
 
   .icon-btn {
