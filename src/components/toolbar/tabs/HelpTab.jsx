@@ -73,6 +73,10 @@ export default function HelpTab() {
           <Col><span className='hotkey-key'>(⇧) + →</span></Col>
         </Row>
         <Row className='mt-4'>
+          <Col>Add/remove marker</Col>
+          <Col><span className='hotkey-key'>M</span></Col>
+        </Row>
+        <Row>
           <Col>Move to prev marker</Col>
           <Col><span className='hotkey-key'>⌥ + ←</span></Col>
         </Row>

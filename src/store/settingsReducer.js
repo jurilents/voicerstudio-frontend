@@ -7,7 +7,7 @@ const STORAGE_KEY = 'settings';
 const rootState = {
   selectedSpeaker: null,
   selectedSubtitle: null,
-  scrollableMode: true,
+  scrollableMode: false,
   magnetMode: true,
   timelineZoom: 1,
   waveZoom: 1,
