@@ -1,7 +1,7 @@
 import { d2t, formatTime, getDurationStatusColor, toPercentsDelta } from '../../utils';
 import unescape from 'lodash/unescape';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faPlay, faRocket, faStopwatch, faUndo } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faRocket, faStopwatch, faUndo } from '@fortawesome/free-solid-svg-icons';
 import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { patchSub, selectSub } from '../../store/sessionReducer';
@@ -54,18 +54,21 @@ export default function SubtitleItem(
              selectedSub?.id === sub.id ? 'highlight' : '',
              sub.isValid ? '' : 'illegal',
            ].join(' ')}>
+
         {/* ************ Text ************ */}
         <textarea maxLength={settings.subtitleTextLimit}
                   spellCheck={false}
                   className='textarea'
                   value={unescape(sub.text)}
                   onChange={handleSubTextChange} />
+
         {/* ************ Note ************ */}
         <textarea maxLength={settings.subtitleTextLimit}
                   spellCheck={false}
                   className='textarea'
                   value={unescape(sub.note)}
                   onChange={handleSubNoteTextChange} />
+
         {/* ************ Start and End Time ************ */}
         <div className='item-bar item-info'>
           <div className='item-bar-center-row'>
@@ -85,6 +88,7 @@ export default function SubtitleItem(
                    onChange={() => {
                    }} />
           </div>
+
           {/* ************ Duration ************ */}
           <div className='item-bar-center-row item-timing' title='Duration'>
             <input className='dimmed' type='text'
@@ -100,6 +104,7 @@ export default function SubtitleItem(
                    title='Acceleration %'
                    disabled={true} />
           </div>
+
           {/* ************ Action Buttons ************ */}
           <div className='item-bar-row item-actions'>
             <button className='icon-btn'
@@ -108,12 +113,12 @@ export default function SubtitleItem(
                     disabled={!sub?.data?.baseDuration}>
               <FontAwesomeIcon icon={faDownload} />
             </button>
-            <button className='icon-btn'
-                    title='Listen this subtitle'
-                    onClick={() => playSub(sub)}
-                    disabled={!sub?.data?.baseDuration}>
-              <FontAwesomeIcon icon={faPlay} />
-            </button>
+            {/*<button className='icon-btn'*/}
+            {/*        title='Listen this subtitle'*/}
+            {/*        onClick={() => playSub(sub)}*/}
+            {/*        disabled={!sub?.data?.baseDuration}>*/}
+            {/*  <FontAwesomeIcon icon={faPlay} />*/}
+            {/*</button>*/}
             <button className='icon-btn highlight'
                     style={{ color: sub.voicedStatusColor }}
                     title='Speak this subtitle'
@@ -128,6 +133,7 @@ export default function SubtitleItem(
             </button>
           </div>
         </div>
+
         {/* ************ Index ************ */}
         <div className='item-bar item-index'
              style={{ borderColor: selectedSpeaker.color }}>

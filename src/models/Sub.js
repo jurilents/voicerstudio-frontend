@@ -90,8 +90,8 @@ export class Sub {
   }
 
   buildVoicedStamp(audioUrl, baseDuration) {
-    console.log('baseDuration', baseDuration);
-    return new VoicedSubStamp(this, audioUrl, baseDuration);
+    const speakerSpeed = window.speakersData?.[this.speakerId]?.speed || 0;
+    return new VoicedSubStamp(this, audioUrl, baseDuration / (1 + speakerSpeed));
   }
 
   get voicedStatus() {

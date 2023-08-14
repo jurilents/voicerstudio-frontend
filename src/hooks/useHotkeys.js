@@ -15,20 +15,22 @@ import colors from '../utils/colors';
 
 const HOTKEYS = {
   deleteSub: { key: 'BACKSPACE' },
-  playPause: { key: ' ' },
-  record: { key: 'R' },
-  pasteSubText: { key: 'V', meta: true },
-  save: { key: 'S', meta: true },
-  refreshPage: { key: 'R', meta: true },
-  undo: { key: 'Z', meta: true },
-  redo: { key: 'Z', meta: true, shift: true },
-  setMarker: { key: 'M', meta: true },
-  speakAll: { key: 'G', meta: true },
-  showMotivation: { key: 'O', meta: true, shift: true },
-  moveCursorRight: { key: 'ARROWRIGHT' },
-  moveCursorVeryRight: { key: 'ARROWRIGHT', shift: true },
-  moveCursorLeft: { key: 'ARROWLEFT' },
-  moveCursorVeryLeft: { key: 'ARROWLEFT', shift: true },
+  playPause: { key: 'SPACE' },
+  record: { key: 'KEYR' },
+  pasteSubText: { key: 'KEYV', meta: true },
+  save: { key: 'KEYS', meta: true },
+  refreshPage: { key: 'KEYR', meta: true },
+  undo: { key: 'KEYZ', meta: true },
+  redo: { key: 'KEYZ', meta: true, shift: true },
+  setMarker: { key: 'KEYM' },
+  speakAll: { key: 'KEYG', meta: true },
+  showMotivation: { key: 'KEYO', meta: true, shift: true },
+  moveRight: { key: 'ARROWRIGHT' },
+  // moveCursorVeryRight: { key: 'ARROWRIGHT', shift: true },
+  // moveCursorToNextMarker: { key: 'ARROWRIGHT', alt: true },
+  moveLeft: { key: 'ARROWLEFT' },
+  // moveCursorVeryLeft: { key: 'ARROWLEFT', shift: true },
+  // moveCursorToPrevMarker: { key: 'ARROWLEFT', alt: true },
 };
 
 let playing = false;
@@ -40,20 +42,32 @@ function checkMetaKeys(event, hotkey) {
     && (!hotkey.alt || event.altKey);
 }
 
+function metaKeyPressed(event) {
+  return event.ctrlKey || event.metaKey;
+}
+
+function shiftKeyPressed(event) {
+  return event.shiftKey;
+}
+
+function altKeyPressed(event) {
+  return event.altKey;
+}
+
 export const useHotkeys = ({ player }) => {
   const dispatch = useDispatch();
   const { selectedSub, markers } = useSelector(store => store.session);
-  const { startRecording, completeRecording } = usePlayerControls({ player });
+  const { startRecording, completeRecording, play, pause } = usePlayerControls(player);
 
   const createDefaultMarker = useCallback(() => {
     let maxMarkerId = Math.max.apply(null, markers.map(x => x.id));
-    if (isNaN(+maxMarkerId) || maxMarkerId < 0 || maxMarkerId > 99) maxMarkerId = 0;
+    if (isNaN(+maxMarkerId) || maxMarkerId < 0) maxMarkerId = 0;
     maxMarkerId++;
 
     return new Marker({
       id: maxMarkerId,
       text: `Marker #${maxMarkerId}`,
-      color: colors.teal,
+      color: colors.randomColor(),
       time: window.timelineEngine.getTime(),
     });
   }, [markers]);
@@ -63,15 +77,10 @@ export const useHotkeys = ({ player }) => {
     const engine = window.timelineEngine;
     playing = !playing;
     if (engine.isPlaying !== playing) {
-      if (engine.isPlaying) {
-        engine.pause();
-        if (!player.paused) player.pause();
-      } else {
-        engine.play({ autoEnd: true });
-        if (player.paused) player.play();
-      }
+      if (engine.isPlaying) pause();
+      else play();
     }
-  }, [player]);
+  }, [play, pause]);
 
   const onKeyDown = useCallback(async (event) => {
     if (!window.timelineEngine) return;
@@ -80,7 +89,7 @@ export const useHotkeys = ({ player }) => {
     const key = getKeyCode(event);
     if (!key) return;
 
-    if (key !== 'F' || !checkMetaKeys(event, { meta: true })) {
+    if (key !== 'KEYF' || !checkMetaKeys(event, { meta: true })) {
       event.preventDefault();
     }
 
@@ -141,13 +150,24 @@ export const useHotkeys = ({ player }) => {
         break;
       }
 
-      // ----- Move cursor right |–>  -----
-      case HOTKEYS.moveCursorRight.key: {
-        if (checkMetaKeys(event, HOTKEYS.moveCursorVeryRight)) {
+      // ----- Move cursor right |——>  -----
+      case HOTKEYS.moveRight.key: {
+        if (shiftKeyPressed(event)) {
+          // Move cursor x10 times forward when SHiFT pressed
+          pause();
           const newTime = Math.min(engine.getTime() + 1, player.duration);
           engine.setTime(newTime);
           player.currentTime = newTime;
-        } else if (checkMetaKeys(event, HOTKEYS.moveCursorRight)) {
+        } else if (altKeyPressed(event)) {
+          // Move cursor to next marker
+          pause();
+          const currentTime = engine.getTime();
+          let targetTime = markers.find(x => x.time > currentTime)?.time;
+          if (!targetTime) targetTime = player.duration || currentTime;
+          engine.setTime(targetTime);
+        } else if (checkMetaKeys(event, HOTKEYS.moveRight)) {
+          // Move cursor forward
+          pause();
           const newTime = Math.min(engine.getTime() + 0.1, player.duration);
           engine.setTime(newTime);
           player.currentTime = newTime;
@@ -155,13 +175,24 @@ export const useHotkeys = ({ player }) => {
         break;
       }
 
-      // ----- Move cursor left <–|  -----
-      case HOTKEYS.moveCursorLeft.key: {
-        if (checkMetaKeys(event, HOTKEYS.moveCursorVeryLeft)) {
+      // ----- Move cursor left <——|  -----
+      case HOTKEYS.moveLeft.key: {
+        if (shiftKeyPressed(event)) {
+          // Move cursor x10 times backward when SHiFT pressed
+          pause();
           const newTime = Math.max(engine.getTime() - 1, 0);
           engine.setTime(newTime);
           player.currentTime = newTime;
-        } else if (checkMetaKeys(event, HOTKEYS.moveCursorLeft)) {
+        } else if (altKeyPressed(event)) {
+          // Move cursor to previous marker
+          pause();
+          const currentTime = engine.getTime();
+          let targetTime = markers.findLast(x => x.time < currentTime)?.time;
+          if (!targetTime) targetTime = 0;
+          engine.setTime(targetTime);
+        } else if (checkMetaKeys(event, HOTKEYS.moveLeft)) {
+          // Move cursor backward
+          pause();
           const newTime = Math.max(engine.getTime() - 0.1, 0);
           engine.setTime(newTime);
           player.currentTime = newTime;
@@ -172,7 +203,7 @@ export const useHotkeys = ({ player }) => {
       // ----- Speak All -----
       case HOTKEYS.speakAll.key: {
         if (!checkMetaKeys(event, HOTKEYS.speakAll)) break;
-        handlePlayOrPause();
+        // TODO: speak all by hotkey
         break;
       }
 
@@ -214,7 +245,7 @@ export const useHotkeys = ({ player }) => {
       default:
         break;
     }
-  }, [dispatch, createDefaultMarker, handlePlayOrPause, startRecording, selectedSub, player]);
+  }, [dispatch, createDefaultMarker, handlePlayOrPause, startRecording, selectedSub, player, pause]);
 
   const onKeyUp = useCallback((event) => {
     if (!window.timelineEngine) return;

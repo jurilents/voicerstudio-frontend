@@ -63,7 +63,7 @@ export function Actions({ player }) {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.timelineSettings);
   const { playing, recording } = useSelector(store => store.timeline);
-  const { startRecording, completeRecording, togglePlay } = usePlayerControls({ player });
+  const { startRecording, completeRecording, togglePlay, pause } = usePlayerControls(player);
 
   useEffect(() => {
     document.addEventListener('mouseup', completeRecording);
@@ -71,10 +71,9 @@ export function Actions({ player }) {
   }, [completeRecording]);
 
   const patchSettings = useCallback((patch) => {
-    if (!player?.paused) player.pause();
-    if (window.timelineEngine) window.timelineEngine.pause();
+    pause();
     dispatch(setTimelineSettings(patch));
-  }, [player, dispatch]);
+  }, [pause, dispatch]);
 
 
   return (

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { settings } from '../settings';
+import { Fragment } from 'react';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -37,13 +38,13 @@ api.interceptors.response.use(
             <h6>Validation Failed</h6>
             <ul>
               {Object.entries(json.errors).map(([key, messages]) => (
-                <>
+                <Fragment key={key}>
                   {messages.map((message, index) => (
                     <li key={index}>
                       {message?.endsWith('.') ? message.substring(0, message.length - 1) : message}
                     </li>
                   ))}
-                </>
+                </Fragment>
               ))}
             </ul>
           </>

@@ -1,6 +1,6 @@
 import { Speaker, Sub, VoicedStatuses } from '../models';
 import colors from '../utils/colors';
-import speakersReducer, { setGlobalSpeakerVolume } from './sessionReducer.speakers';
+import speakersReducer, { setGlobalSpeakerParams } from './sessionReducer.speakers';
 import subsReducer from './sessionReducer.subs';
 import presetsReducer from './sessionReducer.presets';
 import timeMachine from '../utils/TimeMachine';
@@ -62,6 +62,13 @@ function parseSessionJson(json) {
   const obj = JSON.parse(json);
   if (obj.speakers && Array.isArray(obj.speakers)) {
     obj.speakers = obj.speakers.map((speaker) => {
+      setGlobalSpeakerParams({
+        speakerId: speaker.id,
+        volume: speaker.volume + (speaker.preset?.volume || 0),
+        mute: speaker.mute,
+        speed: speaker.preset?.speed || 0,
+      });
+
       if (speaker?.subs && Array.isArray(speaker.subs)) {
         speaker.subs = speaker.subs.map(sub => {
           if (sub.data === VoicedStatuses.processing) {
@@ -73,7 +80,7 @@ function parseSessionJson(json) {
           return new Sub(sub);
         });
       }
-      setGlobalSpeakerVolume(speaker.id, speaker.volume, speaker.mute);
+
       return new Speaker(speaker);
     });
   }

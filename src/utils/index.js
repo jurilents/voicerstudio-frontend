@@ -36,7 +36,7 @@ export function getKeyCode(event) {
   const tag = document.activeElement.tagName.toUpperCase();
   // const editable = document.activeElement.getAttribute('contenteditable');
   if ((tag !== 'INPUT' && tag !== 'TEXTAREA') || document.activeElement.type === 'range') {
-    return event.key.toUpperCase();
+    return event.code.toUpperCase();
   }
 }
 

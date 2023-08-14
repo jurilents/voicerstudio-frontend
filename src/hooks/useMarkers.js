@@ -1,10 +1,12 @@
+import { usePlayPause } from './usePlayPause';
+
 export const useMarkers = (player) => {
+  const { pause } = usePlayPause(player);
+
   function goToMarker(marker) {
     if (!window.timelineEngine) return;
-    const engine = window.timelineEngine;
-    engine.pause();
-    if (!player.paused) player.pause();
-    engine.setTime(marker.time);
+    pause();
+    window.timelineEngine.setTime(marker.time);
   }
 
   return { goToMarker };

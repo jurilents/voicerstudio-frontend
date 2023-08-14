@@ -4,17 +4,17 @@ import { audioController } from '../utils/timelineEffects';
 import { isBool } from '../utils';
 
 
-export function setGlobalSpeakerVolume(speakerId, volume, mute) {
-  if (volume === undefined) volume = 1;
+export function setGlobalSpeakerParams({ speakerId, volume, mute, speed }) {
+  if (volume === undefined || volume > 1) volume = 1;
   volume = mute ? 0 : +volume;
   if (isNaN(volume)) return;
-  if (window.speakersVolume) {
-    window.speakersVolume[speakerId] = volume;
+  if (window.speakersData) {
+    window.speakersData[speakerId] = { volume, speed };
   } else {
-    window.speakersVolume = { [speakerId]: volume };
+    window.speakersData = { [speakerId]: { volume, speed } };
   }
 
-  audioController.setSpeakerVolume({ speakerId, volume });
+  audioController.setSpeakerData({ speakerId, volume, speedRate: speed });
 }
 
 const speakersReducer = {
@@ -30,7 +30,12 @@ const speakersReducer = {
     if (!state.selectedSpeaker) {
       session.selectedSpeaker = session.speakers[0];
     }
-    setGlobalSpeakerVolume(action.payload.speaker.id, action.payload.speaker.volume, action.payload.speaker.mute);
+    setGlobalSpeakerParams({
+      speakerId: action.payload.speaker.id,
+      volume: action.payload.speaker.volume,
+      mute: action.payload.speaker.mute,
+      speed: action.payload.speaker.preset?.speed || 0,
+    });
     return session;
   },
   removeSpeaker: (state, action) => {
@@ -54,7 +59,7 @@ const speakersReducer = {
     const muteChanged = isBool(action.payload.patch.mute);
     if (!isNaN(+action.payload.patch.volume) || muteChanged) {
       const vol = action.payload.patch.volume === undefined ? speaker.volume : action.payload.patch.volume;
-      setGlobalSpeakerVolume(action.payload.id, vol, action.payload.patch.mute);
+      setGlobalSpeakerParams(action.payload.id, vol, action.payload.patch.mute);
       // If only volume changes, do not change the state, only value
       if (action.payload.patch.volume) speaker.volume = action.payload.patch.volume;
       if (isBool(action.payload.patch.mute)) speaker.mute = action.payload.patch.mute;

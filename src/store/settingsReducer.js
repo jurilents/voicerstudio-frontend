@@ -18,7 +18,7 @@ const rootState = {
   originalMute: false,
   originalSolo: false,
   exportFormat: 'WAV',
-  exportCodec: 'Riff48Khz16BitMonoPcm',
+  exportCodec: 'Rate48000',
   exportFileName: '{L}_{s}_{d}-{t}',
   timelineRowHeight: 50,
   showCat: false,

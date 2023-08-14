@@ -30,25 +30,25 @@ import MarkersTab from './tabs/MarkersTab';
 
 const Toolbar = (props) => {
   // const singleRecordMode = useSelector(store => store.settings.singleRecordMode);
-  const [translate, setTranslate] = useState('en');
+  // const [translate, setTranslate] = useState('en');
   // const [videoFile, setVideoFile] = useState(null);
 
-  const onTranslate = useCallback(() => {
-    props.setLoading(t('TRANSLATING'));
-    googleTranslate(props.formatSub(props.subtitle), translate)
-      .then((res) => {
-        props.setLoading('');
-        // props.setSubtitle(props.formatSub(res));
-        toast.error(t('TRANSLAT_SUCCESS'));
-      })
-      .catch((err) => {
-        props.setLoading('');
-        props.notify({
-          message: err.message,
-          level: 'error',
-        });
-      });
-  }, [props.subtitle, props.setLoading, props.translate, props.notify]);
+  // const onTranslate = useCallback(() => {
+  //   props.setLoading(t('TRANSLATING'));
+  //   googleTranslate(props.formatSub(props.subtitle), translate)
+  //     .then((res) => {
+  //       props.setLoading('');
+  //       // props.setSubtitle(props.formatSub(res));
+  //       toast.error(t('TRANSLAT_SUCCESS'));
+  //     })
+  //     .catch((err) => {
+  //       props.setLoading('');
+  //       props.notify({
+  //         message: err.message,
+  //         level: 'error',
+  //       });
+  //     });
+  // }, [props.subtitle, props.setLoading, props.translate, props.notify]);
 
   const onDocumentMouseUp = useCallback(() => {
     if (props.recording) {

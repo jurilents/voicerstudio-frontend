@@ -74,10 +74,12 @@ export default function Header() {
   return (
     <Style className='header noselect'>
       <div className='logo'>
-        <img src='/images/logo-silver.png' alt='Creative Society' />
+        <a href='https://creativesociety.com/' target='_blank'>
+          <img src='/images/logo-silver.png' alt='Creative Society' />
+        </a>
         <div className='logo-content'>
           <span className='logo-title'>Voicer Studio</span>
-          <span className='logo-version'>v2.0.2b – 08/08/23</span>
+          <span className='logo-version'>v2.1.0 – 14/08/23</span>
         </div>
       </div>
       <nav>

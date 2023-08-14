@@ -34,7 +34,7 @@ export default createGlobalStyle`
     display: flex;
     font-size: 14px;
     color: #ccc;
-    background-color: rgb(45 45 45);
+    background-color: rgb(50 50 50);
   }
 
   ::-webkit-scrollbar {
@@ -194,7 +194,7 @@ export default createGlobalStyle`
     padding-bottom: 20vh;
 
     .ReactModal__Content {
-      background-color: rgb(15 15 15 / 80%) !important;
+      background-color: rgb(20 20 25 / 80%) !important;
       border: none !important;
       color: white;
       padding: 20px 50px 60px 50px !important;
@@ -278,7 +278,8 @@ export default createGlobalStyle`
   input[type=range] {
     width: 100%;
     min-width: 100%;
-    height: 28px;
+    height: 24px;
+    margin-top: 4px;
   }
 
   .speaker-form {

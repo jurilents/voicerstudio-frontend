@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSubsAudioStorage } from './useSubsAudioStorage';
 import React, { useCallback } from 'react';
 import { settings } from '../settings';
-import { VoicingService } from '../models/enums';
 import { download } from '../utils';
 
 export const useVoicer = () => {
@@ -148,7 +147,7 @@ export const useVoicer = () => {
           styleDegree: selectedSpeaker.preset.styleDegree,
           // role: 'string',
           pitch: selectedSpeaker.preset.pitch,
-          volume: selectedSpeaker.preset.service === VoicingService.VoiceMaker ? 0 : 1,
+          volume: selectedSpeaker.preset.volume || 1,
           start: sub.startStr,
           end: sub.endStr,
           outputFormat: exportFormat,

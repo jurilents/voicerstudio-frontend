@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const colors = {
   blue: '#324F85',
   violet: '#552F73',
@@ -8,5 +10,10 @@ const colors = {
   yellow: '#6c5d0f',
   dirt: '#5e341a',
 };
+
+const colorsCopy = { ...colors };
+
+colors.randomColor = () => _.sample(Object.values(colorsCopy));
+colors.list = Object.entries(colorsCopy);
 
 export default colors;

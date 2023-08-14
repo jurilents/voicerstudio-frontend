@@ -56,7 +56,7 @@ export default function HelpTab() {
           <Col>Paste copied text to selected subtitle</Col>
           <Col><span className='hotkey-key'>⌘ + V</span></Col>
         </Row>
-        <Row>
+        <Row className='mt-3'>
           <Col>Undo</Col>
           <Col><span className='hotkey-key'>⌘ + Z</span></Col>
         </Row>
@@ -64,13 +64,21 @@ export default function HelpTab() {
           <Col>Redo</Col>
           <Col><span className='hotkey-key'>⌘ + ⇧ + Z</span></Col>
         </Row>
+        <Row className='mt-4'>
+          <Col>Move backward</Col>
+          <Col><span className='hotkey-key'>(⇧) + ←</span></Col>
+        </Row>
         <Row>
           <Col>Move forward</Col>
           <Col><span className='hotkey-key'>(⇧) + →</span></Col>
         </Row>
+        <Row className='mt-4'>
+          <Col>Move to prev marker</Col>
+          <Col><span className='hotkey-key'>⌥ + ←</span></Col>
+        </Row>
         <Row>
-          <Col>Move backward</Col>
-          <Col><span className='hotkey-key'>(⇧) + ←</span></Col>
+          <Col>Move to next marker</Col>
+          <Col><span className='hotkey-key'>⌥ + →</span></Col>
         </Row>
       </Container>
       <div className='offset'></div>

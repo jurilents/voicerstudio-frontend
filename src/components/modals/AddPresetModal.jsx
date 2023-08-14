@@ -23,6 +23,10 @@ const Style = styled.div`
     height: 40px !important;
     margin: 5px 0 15px 0;
   }
+
+  .range-details {
+    margin-top: 4px;
+  }
 `;
 
 const AddPresetModal = ({ isOpen, setIsOpen }) => {
@@ -41,6 +45,8 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
   const [style, setStyle] = useState('');
   const [styleDegree, setStyleDegree] = useState(1);
   const [pitch, setPitch] = useState(0);
+  const [speed, setSpeed] = useState(0);
+  const [volume, setVolume] = useState(0);
   const [text, setText] = useState(`This priceless pearl of the primordial knowledge removes the cloak from all mysteries of the material world`);
 
   const dispatch = useDispatch();
@@ -91,7 +97,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
     }
   }, [voicingService, languages, lang.locale, allSelectedCredentials, dispatch]);
 
-  const speak = useCallback(() => {
+  const speak = () => {
     async function speakAsync() {
       const request = {
         service: voicingService,
@@ -102,15 +108,14 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
         styleDegree: styleDegree,
         // role: 'string',
         pitch: pitch,
-        volume: 0,
-        speed: 0,
+        volume: volume,
+        speed: speed,
         outputFormat: 'Wav',
         sampleRate: 'Rate48000',
       };
 
       try {
         console.log('test speech request', request);
-        console.log('selectedCred.value', selectedCred.value);
         const response = await speechApi.single(request, selectedCred.value);
         if (!response) return;
         setSampleSrc(response.url);
@@ -127,7 +132,7 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
     speakAsync().catch(err => {
       toast.error(`Speak failed ${err}`);
     });
-  }, [voicingService, lang, voice, text, style, styleDegree, pitch, setSampleSrc]);
+  };
 
   useEffect(() => {
     if ($audioPlayer.current) {
@@ -136,17 +141,24 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
   }, [sampleSrc, $audioPlayer.current]);
 
 
-  const createPreset = useCallback(() => new Preset({
-    id: ++maxPresetId,
-    service: voicingService,
-    displayName: `${voice.displayName} ${style ? style + ' ' : ''}${maxPresetId} (${lang.displayName.split(' ')[0]})`,
-    locale: lang.locale,
-    voice: voice.key,
-    style,
-    styleDegree,
-    pitch,
-    wordsPerMinute: voice.wordsPerMinute,
-  }), [maxPresetId, voicingService, lang, voice, style, styleDegree, pitch]);
+  const createPreset = () => {
+    const langName = lang.displayName.split(' ')[0];
+    const voiceName = voice.displayName;
+    const styleName = style || '';
+    return new Preset({
+      id: ++maxPresetId,
+      service: voicingService,
+      displayName: `${langName} / ${voiceName} ${styleName} ${maxPresetId}`.replaceAll('  ', ' '),
+      locale: lang.locale,
+      voice: voice.key,
+      style,
+      styleDegree,
+      pitch,
+      speed,
+      volume,
+      wordsPerMinute: voice.wordsPerMinute,
+    });
+  };
 
   const onSavePreset = useCallback(() => {
     const preset = createPreset();
@@ -234,11 +246,11 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
             <Col xs={4} className='label'>Language</Col>
             <Col xs={8}>
               <Form.Select className='app-select'
-                           onChange={(event) => handleLanguageChange(event.target.value)}
-                           defaultValue={lang.locale}>
-                {languages.map((lang, index) => (
-                  <option key={index} value={lang.locale}>
-                    {lang.displayName}
+                           value={lang.locale}
+                           onChange={(event) => handleLanguageChange(event.target.value)}>
+                {languages.map((lang_, index) => (
+                  <option key={index} value={lang_.locale}>
+                    {lang_.displayName}
                   </option>
                 ))}
               </Form.Select>
@@ -246,26 +258,25 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
           </Row>
 
           {/* ************ Voice ************ */}
-          {lang.voices ? (
+          {!!lang.voices && (
             <Row>
               <Col xs={4} className='label'>Voice</Col>
               <Col xs={8}>
-                <Form.Select
-                  className='app-select'
-                  defaultValue=''
-                  onChange={(event) => handleVoiceChange(event.target.value)}>
-                  {lang.voices.map((voice) => (
-                    <option key={voice.key} value={voice.key}>
-                      {voice.displayName} ({voice.gender}) {voice.styles.length > 0 ? ` ${voice.styles.length} styles` : null}
+                <Form.Select className='app-select'
+                             value={voice?.key}
+                             onChange={(event) => handleVoiceChange(event.target.value)}>
+                  {lang.voices.map((voice_) => (
+                    <option key={voice_.key} value={voice_.key}>
+                      {voice_.displayName} ({voice_.gender}) {voice_.styles.length > 0 ? ` ${voice_.styles.length} styles` : null}
                     </option>
                   ))}
                 </Form.Select>
               </Col>
             </Row>
-          ) : null}
+          )}
 
           {/* ************ Voice Style ************ */}
-          {voice?.styles?.length ? (
+          {!!voice?.styles?.length && (
             <Row>
               <Col xs={4} className='label'>Style</Col>
               <Col xs={8}>
@@ -281,10 +292,10 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
                 </Form.Select>
               </Col>
             </Row>
-          ) : null}
+          )}
 
           {/* ************ Style Degree ************ */}
-          {!!style ? (
+          {!!style && (
             <Row>
               <Col xs={4} className='label'>Style degree</Col>
               <Col xs={6}>
@@ -294,22 +305,22 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
                        value={styleDegree}
                        onChange={(event) => setStyleDegree(+event.target.value)} />
               </Col>
-              <Col xs={1}>
+              <Col xs={1} className='range-details'>
                 <button
                   className='app-reset-btn'
                   onClick={() => setStyleDegree(1)}>
                   <FontAwesomeIcon icon={faRedoAlt} />
                 </button>
               </Col>
-              <Col xs={1}>
+              <Col xs={1} className='range-details'>
                 <span>{toPercentsDelta(styleDegree, false, extraAccuracy ? 1 : 0)}</span>
               </Col>
             </Row>
-          ) : null}
+          )}
 
           {/* ************ Baseline Pitch ************ */}
           <Row>
-            <Col xs={4} className='label'>Baseline pitch</Col>
+            <Col xs={4} className='label'>Base pitch</Col>
             <Col xs={6}>
               <input type='range'
                      min={-0.5} max={0.5}
@@ -317,15 +328,59 @@ const AddPresetModal = ({ isOpen, setIsOpen }) => {
                      value={pitch}
                      onChange={(event) => setPitch(+event.target.value)} />
             </Col>
-            <Col xs={1}>
+            <Col xs={1} className='range-details'>
               <button
                 className='app-reset-btn'
                 onClick={() => setPitch(0)}>
                 <FontAwesomeIcon icon={faRedoAlt} />
               </button>
             </Col>
-            <Col xs={1}>
+            <Col xs={1} className='range-details'>
               <span>{toPercentsDelta(pitch, true, extraAccuracy ? 1 : 0)}</span>
+            </Col>
+          </Row>
+
+          {/* ************ Playback Speed ************ */}
+          <Row>
+            <Col xs={4} className='label'>Base speed</Col>
+            <Col xs={6}>
+              <input type='range'
+                     min={-0.2} max={0.2}
+                     step={extraAccuracy ? 0.001 : 0.01}
+                     value={speed}
+                     onChange={(event) => setSpeed(+event.target.value)} />
+            </Col>
+            <Col xs={1} className='range-details'>
+              <button
+                className='app-reset-btn'
+                onClick={() => setSpeed(0)}>
+                <FontAwesomeIcon icon={faRedoAlt} />
+              </button>
+            </Col>
+            <Col xs={1} className='range-details'>
+              <span>{toPercentsDelta(speed, true, extraAccuracy ? 1 : 0)}</span>
+            </Col>
+          </Row>
+
+          {/* ************ Volume ************ */}
+          <Row>
+            <Col xs={4} className='label'>Base volume</Col>
+            <Col xs={6}>
+              <input type='range'
+                     min={-0.5} max={0.5}
+                     step={extraAccuracy ? 0.001 : 0.01}
+                     value={volume}
+                     onChange={(event) => setVolume(+event.target.value)} />
+            </Col>
+            <Col xs={1}>
+              <button
+                className='app-reset-btn'
+                onClick={() => setVolume(0)}>
+                <FontAwesomeIcon icon={faRedoAlt} />
+              </button>
+            </Col>
+            <Col xs={1}>
+              <span>{toPercentsDelta(volume, true, extraAccuracy ? 1 : 0)}</span>
             </Col>
           </Row>
 

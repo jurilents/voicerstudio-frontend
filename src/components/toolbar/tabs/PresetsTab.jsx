@@ -8,6 +8,7 @@ import { faAdd, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import AddCredsModal from '../../modals/AddCredsModal';
 import AddPresetModal from '../../modals/AddPresetModal';
 import { VoicingService } from '../../../models/enums';
+import { toast } from 'react-toastify';
 
 const Style = styled.div`
   .presets-list {
@@ -39,6 +40,14 @@ const PresetsTab = () => {
 
   const isCredSelected = (cred) => {
     return selectedCredentials.Azure && cred.value === selectedCredentials.Azure.value;
+  };
+
+  const showAddPresetModal = () => {
+    if (credentials?.length) {
+      togglePresetModal(true);
+    } else {
+      toast.info('Add credentials before adding preset');
+    }
   };
 
   return (
@@ -130,7 +139,7 @@ const PresetsTab = () => {
         <ListGroup className='presets-list app-list-group'>
           <ListGroup.Item>
             <button className='btn add-button'
-                    onClick={() => togglePresetModal(true)}>
+                    onClick={showAddPresetModal}>
               <FontAwesomeIcon icon={faAdd} />
             </button>
           </ListGroup.Item>

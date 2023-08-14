@@ -10,6 +10,8 @@ export class Preset {
     this.style = obj.style;
     this.styleDegree = obj.styleDegree;
     this.pitch = obj.pitch;
+    this.speed = obj.speed;
+    this.volume = obj.volume;
     this.wordsPerMinute = obj.wordsPerMinute;
     this.token = obj.token; // buildPreset();
   }

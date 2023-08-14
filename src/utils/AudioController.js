@@ -14,7 +14,6 @@ class AudioController {
     const cachedListeners = this._getCachedSpeakerListeners(speakerId);
     let item = cached[id];
     if (!speedRate) speedRate = 1;
-    // if (Math.abs(speedRate) > 0.1) speedRate *= 1.0001;
 
     if (item && item._src === src) {
       item.volume(volume);
@@ -39,8 +38,6 @@ class AudioController {
       });
     }
 
-    console.log('item', item._rate);
-
     const timeListener = ({ time }) => {
       item.seek(time);
     };
@@ -54,11 +51,15 @@ class AudioController {
     cachedListeners[id].rate = rateListener;
   }
 
-  setSpeakerVolume({ speakerId, volume }) {
+  setSpeakerData({ speakerId, volume, speedRate }) {
+    if (!window.timelineEngine) return;
+    const engine = window.timelineEngine;
+    const engineRate = engine.getPlayRate();
     const cachedSpeaker = this._getCachedSpeaker(speakerId);
     if (cachedSpeaker) {
       for (const item of Object.values(cachedSpeaker)) {
         item.volume(volume);
+        item.rate(engineRate * speedRate);
       }
     }
   }

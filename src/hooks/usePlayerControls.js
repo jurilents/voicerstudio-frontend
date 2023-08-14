@@ -4,25 +4,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useCallback } from 'react';
 import { setPlaying } from '../store/timelineReducer';
 import { toast } from 'react-toastify';
+import { usePlayPause } from './usePlayPause';
 
-export function usePlayerControls({ player }) {
+export const usePlayerControls = (player) => {
   const dispatch = useDispatch();
   const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
   const playing = useSelector(store => store.timeline.playing);
+  const { play, pause } = usePlayPause(player);
 
   const togglePlay = () => {
-    if (!window.timelineEngine) return;
-    const engine = window.timelineEngine;
-
-    if (playing) {
-      dispatch(setPlaying(false));
-      if (!player.paused) player.pause();
-      engine.pause();
-    } else {
-      dispatch(setPlaying(true));
-      if (player.paused) player.play();
-      engine.play({ autoEnd: true });
-    }
+    if (playing) pause();
+    else play();
   };
 
   const startRecording = useCallback((time) => {
@@ -65,5 +57,5 @@ export function usePlayerControls({ player }) {
     delete window.recordingSub;
   }, [dispatch, player]);
 
-  return { startRecording, completeRecording, togglePlay };
-}
+  return { startRecording, completeRecording, togglePlay, play, pause };
+};

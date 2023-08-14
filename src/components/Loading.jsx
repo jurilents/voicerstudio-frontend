@@ -16,7 +16,7 @@ const Style = styled.div`
   backdrop-filter: saturate(180%) blur(2px);
   background-color: rgba(0, 0, 0, 0.5);
 
-  .loading-inner {
+  .loading-inner {8
     display: flex;
     justify-content: center;
     align-items: center;

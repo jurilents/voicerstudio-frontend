@@ -84,7 +84,7 @@ export default function SpeakersTab(props) {
                 style={{ backgroundColor: selectedSpeaker?.color || 'rgb(255 255 255 / 60%)' }}
                 onChange={(event) =>
                   dispatch(patchSpeaker(selectedSpeaker.id, { color: event.target.value }))}>
-                {Object.entries(colors).map(([name, value], index) => (
+                {colors.list.map(([name, value], index) => (
                   <option key={index} value={value}>
                     {name}
                   </option>

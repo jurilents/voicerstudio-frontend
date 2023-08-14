@@ -46,5 +46,4 @@ export class TimeMachine {
 }
 
 
-const timeMachine = new TimeMachine();
-export default timeMachine;
+export default new TimeMachine();
