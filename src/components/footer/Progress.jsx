@@ -86,11 +86,6 @@ const Progress = ({ player }) => {
     player.currentTime = newTime;
     dispatch(setTime(newTime));
     window.timelineEngine.setTime(newTime);
-    if (window.timelineEngine) {
-      const vale = newTime * 96;
-      console.log('value: ', window.timelineEngine);
-      window.timelineEngine.setScrollLeft(vale);
-    }
   }, [dispatch, window.timelineEngine]);
 
   const onProgressClick = useCallback((event) => {

@@ -67,3 +67,7 @@ export function allSubsAreValid(subs) {
 
   return true;
 }
+
+export function sortSubs(subs) {
+  subs.sort((a, b) => a.start - b.start);
+}

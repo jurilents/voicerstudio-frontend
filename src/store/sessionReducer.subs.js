@@ -1,5 +1,4 @@
-import { Sub, validateSubs } from '../models';
-
+import { sortSubs, Sub, validateSubs } from '../models';
 
 const subsReducer = {
   setAllSubs: (state, action) => {
@@ -19,7 +18,7 @@ const subsReducer = {
       return state;
     }
     speaker.subs = [...(speaker.subs || []), action.payload.sub];
-    speaker.subs.sort((a, b) => a.start - b.start);
+    sortSubs(speaker.subs);
     validateSubs(speaker.subs);
 
     const session = { ...state };
@@ -36,6 +35,7 @@ const subsReducer = {
     const index = speaker.subs.findIndex(x => x.id === action.payload.sub.id);
     if (index < 0) return state;
     speaker.subs.splice(index, 1);
+    validateSubs(speaker.subs);
 
     return {
       ...state,
@@ -59,13 +59,14 @@ const subsReducer = {
     if (subIndex === -1) return state;
     const sub = speaker.subs[subIndex];
     speaker.subs[subIndex] = new Sub({ ...sub, ...action.payload.patch });
+
     if (action.payload.patch.start) {
-      console.log('sorting....');
-      speaker.subs.sort((a, b) => a.start - b.start);
+      sortSubs(speaker.subs);
     }
     if (action.payload.patch.start || action.payload.patch.end) {
       validateSubs(speaker.subs);
     }
+
     return {
       ...state,
       speakers: [...state.speakers],

@@ -2,7 +2,6 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSub, patchMarker, patchSub, selectSpeaker, selectSub } from '../../../store/sessionReducer';
 import { Sub } from '../../../models';
-import { t } from 'react-i18nify';
 import { setPlaying, setTime } from '../../../store/timelineReducer';
 import TimelineWrap from './TimelineWrap';
 import AudioActionRenderer from './action-renderers/AudioActionRenderer';
@@ -134,9 +133,10 @@ const TimelineEditor = ({ player }) => {
       dispatch(setTime(time));
       setTimeout(() => {
         scrollToCursor(time);
-      }, 50);
+      }, 10);
     });
     engine.listener.on('setTimeByTick', function handler_({ time }) {
+      console.log('set time by tick', time);
       if (window.recordingSub) window.recordingSub.end = time;
       dispatch(setTime(time));
       scrollToCursor(time);
@@ -169,8 +169,8 @@ const TimelineEditor = ({ player }) => {
       const newSub = new Sub({
         speakerId: selectedSpeaker.id,
         start: startTime,
-        end: startTime + 5,
-        text: t('SUB_TEXT'),
+        end: startTime + 2,
+        text: '',
       });
       dispatch(addSub(newSub));
     }
