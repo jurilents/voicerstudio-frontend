@@ -71,3 +71,8 @@ input[type="range"] {
 ::-ms-tooltip {
   display: none;
 }
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+  background: none;
+  display: none;
+}

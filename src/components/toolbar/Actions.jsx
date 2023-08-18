@@ -1,5 +1,7 @@
 import styled from 'styled-components';
-import { faLocationCrosshairs, faMagnet, faPause, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
+import { faLocationCrosshairs, faMagnet, faPause, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faStopCircle } from '@fortawesome/free-regular-svg-icons';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TimeIndicator from './TimeIndicator';
 import React, { useCallback, useEffect } from 'react';
@@ -99,7 +101,7 @@ export function Actions({ player }) {
         <div className={'btn btn-icon focus' + (recording ? ' record' : '')}
              onMouseDown={() => startRecording(window.currentTime)}
              title='Hold to record subtitle'>
-          <FontAwesomeIcon icon={faStop} />
+          <FontAwesomeIcon icon={faStopCircle} />
         </div>
       </div>
       <div className='duration-container'>

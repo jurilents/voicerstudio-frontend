@@ -1,24 +1,28 @@
-import { d2t, formatTime, getDurationStatusColor, toPercentsDelta } from '../../utils';
+import { d2t, getDurationStatusColor, time2seconds, toPercentsDelta } from '../../utils';
 import unescape from 'lodash/unescape';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faRocket, faStopwatch, faUndo } from '@fortawesome/free-solid-svg-icons';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { patchSub, selectSub } from '../../store/sessionReducer';
 import { settings } from '../../settings';
+import { usePlayPause } from '../../hooks';
 
-export default function SubtitleItem(
-  {
-    player,
-    props,
-    sub,
-    speakSub,
-    playSub,
-    downloadSub,
-    selectedSub,
-    selectedSpeaker,
-  }) {
+let requestSync = false;
+
+const SubtitleItem = (params) => {
+  const { player, props, sub, speakSub, playSub, downloadSub, selectedSub, selectedSpeaker, showNote } = params;
   const dispatch = useDispatch();
+  const { pause } = usePlayPause(player);
+  const [startTime, setStartTime] = useState(sub.startStr || '');
+  const [endTime, setEndTime] = useState(sub.endStr || '');
+
+  if (requestSync) {
+    console.log('sub.startStrsub.startStr', { subStart: sub.startStr, local: startTime });
+    setStartTime(sub.startStr);
+    setEndTime(sub.endStr);
+    requestSync = false;
+  }
 
   const handleSubClick = useCallback(() => {
     if (window.timelineEngine) window.timelineEngine.setTime(sub.start);
@@ -26,13 +30,17 @@ export default function SubtitleItem(
     dispatch(selectSub(sub));
   }, [window.timelineEngine, sub, dispatch, player]);
 
-  const handleSubTextChange = useCallback((event) => {
+  const handleSubTextChange = useCallback((event, trim = false) => {
+    if (trim) event.target.value = event.target.value.trim();
+    if (sub.text === event.target.value) return;
     dispatch(patchSub(sub, {
       text: event.target.value,
     }));
   }, [dispatch, sub]);
 
-  const handleSubNoteTextChange = useCallback((event) => {
+  const handleSubNoteTextChange = useCallback((event, trim = false) => {
+    if (trim) event.target.value = event.target.value.trim();
+    if (sub.note === event.target.value) return;
     dispatch(patchSub(sub, {
       note: event.target.value,
     }));
@@ -42,6 +50,18 @@ export default function SubtitleItem(
     dispatch(patchSub(sub, {
       end: sub.start + sub.data.baseDuration,
     }));
+  };
+
+  const updateSubStartTime = (patch) => {
+    pause();
+    dispatch(patchSub(sub, patch));
+    requestSync = true;
+  };
+
+  const updateSubEndTime = (time) => {
+    pause();
+    dispatch(patchSub(sub, { end: time }));
+    setEndTime(time);
   };
 
   return (
@@ -55,37 +75,48 @@ export default function SubtitleItem(
              sub.isValid ? '' : 'illegal',
            ].join(' ')}>
 
+        {/* ************ Index ************ */}
+        <div className='item-bar item-index'
+             style={{ borderColor: selectedSpeaker.color }}>
+          <span>{props.index + 1}</span>
+        </div>
+
         {/* ************ Text ************ */}
         <textarea maxLength={settings.subtitleTextLimit}
                   spellCheck={false}
                   className='textarea'
                   value={unescape(sub.text)}
-                  onChange={handleSubTextChange} />
+                  onChange={handleSubTextChange}
+                  onBlur={(e) => handleSubTextChange(e, true)} />
 
         {/* ************ Note ************ */}
-        <textarea maxLength={settings.subtitleTextLimit}
-                  spellCheck={false}
-                  className='textarea'
-                  value={unescape(sub.note)}
-                  onChange={handleSubNoteTextChange} />
+        {showNote && (
+          <textarea maxLength={settings.subtitleTextLimit}
+                    spellCheck={false}
+                    className='textarea'
+                    value={unescape(sub.note)}
+                    onChange={handleSubNoteTextChange}
+                    onBlur={(e) => handleSubNoteTextChange(e, true)} />
+        )}
 
         {/* ************ Start and End Time ************ */}
         <div className='item-bar item-info'>
           <div className='item-bar-center-row'>
-            <input type='text'
+            <input type='time'
+                   step={0.001}
                    className={sub.invalidStart ? 'invalid' : ''}
-                   value={formatTime(sub.start)}
+                   value={startTime}
                    title='Start time'
-                   disabled={true}
-                   onChange={() => {
-                   }} />
-            <span>–</span>
-            <input type='text'
+                   onChange={(event) => setStartTime(event.target.value)}
+                   onBlur={() => updateSubStartTime({ start: time2seconds(startTime) })} />
+            <span className='time-sep'>–</span>
+            <input type='time'
+                   value={sub.endStr}
+                   step={1}
                    className={sub.invalidEnd ? 'invalid' : ''}
-                   value={formatTime(sub.end)}
+              // value={formatTime(sub.end)}
                    title='End time'
-                   disabled={true}
-                   onChange={() => {
+                   onChange={(event) => {
                    }} />
           </div>
 
@@ -133,13 +164,9 @@ export default function SubtitleItem(
             </button>
           </div>
         </div>
-
-        {/* ************ Index ************ */}
-        <div className='item-bar item-index'
-             style={{ borderColor: selectedSpeaker.color }}>
-          <span>{props.index + 1}</span>
-        </div>
       </div>
     </div>
   );
-}
+};
+
+export default SubtitleItem;

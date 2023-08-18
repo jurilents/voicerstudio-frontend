@@ -22,6 +22,7 @@ const rootState = {
   exportFileName: '{L}_{s}_{d}-{t}',
   timelineRowHeight: 50,
   showCat: false,
+  showNote: true,
 };
 
 const storedState = localStorage.getItem(STORAGE_KEY);

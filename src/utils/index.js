@@ -22,11 +22,11 @@ export function download(url, exportName) {
   document.body.removeChild(link);
 }
 
-export function downloadObjectAsJson(obj, exportName) {
+export function downloadObjectAsJson(obj, exportName, exportExtension = 'json') {
   const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj, null, 2));
   const downloadAnchorNode = document.createElement('a');
   downloadAnchorNode.setAttribute('href', dataStr);
-  downloadAnchorNode.setAttribute('download', exportName + '.json');
+  downloadAnchorNode.setAttribute('download', `${exportName}.${exportExtension}`);
   document.body.appendChild(downloadAnchorNode); // required for firefox
   downloadAnchorNode.click();
   downloadAnchorNode.remove();
@@ -101,6 +101,17 @@ export function cloneByKeys(obj, keysToClone) {
     clone[key] = obj[key];
   }
   return clone;
+}
+
+export function time2seconds(timeStr) {
+  if (typeof timeStr !== 'string') return 0;
+  let ms = 0;
+  if (timeStr.includes('.')) {
+    const parts = timeStr.split('.');
+    timeStr = parts[0];
+    ms = +('0.' + parts[1]);
+  }
+  return timeStr.split(':').reduce((acc, time) => (60 * acc) + +time) + ms;
 }
 
 export function isBool(value) {

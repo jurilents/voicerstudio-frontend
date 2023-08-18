@@ -73,7 +73,7 @@ export const Style = styled.div`
 
     &.illegal {
       //border-color: var(--c-danger);
-      box-shadow: 0 0 0 3px var(--c-danger);
+      box-shadow: 0 0 0 2px var(--c-danger);
     }
 
     .sub-text {

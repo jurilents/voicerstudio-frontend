@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Form, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSettings } from '../../../store/settingsReducer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -84,6 +84,15 @@ export default function GeneralTab(props) {
           {/*    <span>{toPercentsDelta(settings.waveZoom)}</span>*/}
           {/*  </Col>*/}
           {/*</Row>*/}
+          <Row className='mt-3'>
+            <Col xs={6} className='label'>Show subtitle note</Col>
+            <Col xs={6} className='custom-input-wrap'>
+              <Form.Check checked={settings.showNote}
+                          onChange={() => dispatch(setSettings({
+                            showNote: !settings.showNote,
+                          }))} />
+            </Col>
+          </Row>
           <Row className='mt-4'>
             <Col>
               <button className='btn btn-outline'

@@ -9,27 +9,11 @@ import { useVideoStorage } from '../../../hooks';
 import { toast } from 'react-toastify';
 import { dropDatabase } from '../../../hooks/openDatabase';
 
-const Style = styled.div`
-  .file {
-    border-radius: 1px;
-    background-color: transparent;
-    color: white;
-    border: 1px solid rgb(255 255 255 / 25%);
-
-    &::file-selector-button {
-      background-color: rgb(255 255 255 / 10%);
-      color: white;
-    }
-
-    &:hover {
-      &::file-selector-button {
-        background-color: rgb(255 255 255 / 25%) !important;
-      }
-    }
-  }
-`;
+const Style = styled.div``;
 
 let resetCountdown = 5;
+
+const backupExtension = 'voicer';
 
 export default function ImportTab(props) {
   const dispatch = useDispatch();
@@ -54,7 +38,7 @@ export default function ImportTab(props) {
         toast.error(`${t('VIDEO_EXT_ERR')}: ${file.type || ext}`);
       }
     }
-  }, [dispatch, props.notify, props.player]);
+  }, [dispatch, props.player, saveVideo]);
 
   const onInputClick = useCallback((event) => {
     event.target.value = '';
@@ -65,11 +49,10 @@ export default function ImportTab(props) {
   };
 
   const restoreFromBackupFile = (event) => {
-
     const file = event.target.files[0];
     if (file) {
       const ext = getExt(file.name);
-      if (ext !== 'json') {
+      if (ext !== backupExtension) {
         toast.warn('Invalid backup file format');
         return;
       }
@@ -82,9 +65,9 @@ export default function ImportTab(props) {
   const saveBackupFile = () => {
     const tz = new Date().getTimezoneOffset() * 60000;
     const date = new Date(Date.now() - tz).toISOString().substring(0, 16).replaceAll(':', '-').replace('T', ' ');
-    const filename = `voicerbackup-${date}`;
+    const filename = `backup_${date}`;
 
-    downloadObjectAsJson(session, filename);
+    downloadObjectAsJson(session, filename, backupExtension);
   };
 
   const handleResetClick = () => {
@@ -117,12 +100,13 @@ export default function ImportTab(props) {
             </Col>
           </Row>
           <Row className='mt-4'>
-            <Col className='label'>Restore from backup file</Col>
+            <Col className='label'>Restore from backup file&nbsp;<b>*.voicer</b></Col>
           </Row>
           <Row>
             <Col>
               <Form.Control className='file'
                             type='file'
+                            accept={'.' + backupExtension}
                             onChange={restoreFromBackupFile}
                             onClick={onInputClick} />
             </Col>

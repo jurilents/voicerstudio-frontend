@@ -1,6 +1,4 @@
-import { t } from 'react-i18nify';
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import googleTranslate from '../../libs/googleTranslate';
+import React, { memo, useCallback, useEffect } from 'react';
 import { Nav, Tab } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -8,8 +6,8 @@ import {
   faCircleQuestion,
   faCloudArrowDown,
   faCloudArrowUp,
+  faGear,
   faHeadphonesAlt,
-  faHouseChimney,
   faRobot,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +19,6 @@ import SpeakersTab from './tabs/SpeakersTab';
 import PresetsTab from './tabs/PresetsTab';
 import { Style } from './Toolbar.styles';
 import ImportTab from './tabs/ImportTab';
-import { toast } from 'react-toastify';
 import MarkersTab from './tabs/MarkersTab';
 
 
@@ -73,8 +70,8 @@ const Toolbar = (props) => {
       <Tab.Container id='left-tabs-example' defaultActiveKey='presets'>
         <Nav variant='pills' className='tabs-buttons'>
           <Nav.Item>
-            <Nav.Link as='span' eventKey='general' title='General'>
-              <FontAwesomeIcon icon={faHouseChimney} />
+            <Nav.Link as='span' eventKey='configuration' title='Configuration'>
+              <FontAwesomeIcon icon={faGear} />
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -103,7 +100,7 @@ const Toolbar = (props) => {
           {/*  </Nav.Link>*/}
           {/*</Nav.Item>*/}
           <Nav.Item>
-            <Nav.Link as='span' eventKey='import' title='Import'>
+            <Nav.Link as='span' eventKey='import' title='Import and backup'>
               <FontAwesomeIcon icon={faCloudArrowUp} />
             </Nav.Link>
           </Nav.Item>
@@ -119,7 +116,7 @@ const Toolbar = (props) => {
           </Nav.Item>
         </Nav>
         <Tab.Content>
-          <Tab.Pane eventKey='general'>
+          <Tab.Pane eventKey='configuration'>
             <GeneralTab {...props} />
           </Tab.Pane>
           <Tab.Pane eventKey='presets'>

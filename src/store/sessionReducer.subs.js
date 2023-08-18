@@ -60,6 +60,7 @@ const subsReducer = {
     const sub = speaker.subs[subIndex];
     speaker.subs[subIndex] = new Sub({ ...sub, ...action.payload.patch });
     if (action.payload.patch.start) {
+      console.log('sorting....');
       speaker.subs.sort((a, b) => a.start - b.start);
     }
     if (action.payload.patch.start || action.payload.patch.end) {

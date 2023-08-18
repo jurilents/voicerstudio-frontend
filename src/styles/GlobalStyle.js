@@ -225,16 +225,16 @@ export default createGlobalStyle`
   .modal-container {
     max-width: 500px;
 
-    .label {
-      text-align: right;
-      margin: auto 0;
-    }
-
     input, select {
       min-width: 300px;
       //width: 300px;
       margin: 0;
     }
+  }
+
+  .label {
+    text-align: right;
+    margin: auto 0;
   }
 
   .btn-app-close {
@@ -280,6 +280,10 @@ export default createGlobalStyle`
     min-width: 100%;
     height: 24px;
     margin-top: 4px;
+  }
+
+  input[type=checkbox] {
+    cursor: pointer;
   }
 
   .speaker-form {
@@ -332,6 +336,27 @@ export default createGlobalStyle`
 
     &:hover {
       background-color: var(--c-primary);
+    }
+  }
+
+  .file {
+    border-radius: 1px;
+    background-color: transparent;
+    color: white;
+    border: 1px solid rgb(255 255 255 / 25%);
+
+    &::file-selector-button {
+      background-color: rgb(255 255 255 / 10%);
+      color: white;
+    }
+
+    &:hover, &:focus {
+      background-color: inherit !important;
+      color: inherit !important;
+
+      &::file-selector-button {
+        background-color: rgb(255 255 255 / 25%) !important;
+      }
     }
   }
 `;

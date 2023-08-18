@@ -4,9 +4,11 @@ import { Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { addSpeaker, patchSpeaker, removeSpeaker, selectSpeaker } from '../../../store/sessionReducer';
+import { addSpeaker, patchSpeaker, removeSpeaker, restoreFromJson, selectSpeaker } from '../../../store/sessionReducer';
 import { Speaker } from '../../../models';
 import colors from '../../../utils/colors';
+import { getExt } from '../../../utils';
+import { toast } from 'react-toastify';
 
 const Style = styled.div`
   display: flex;
@@ -23,11 +25,16 @@ const Style = styled.div`
     margin: auto 5px;
     border-radius: 50%;
   }
+
+  .file-wrapper {
+    padding: 0 12px 0 0;
+  }
 `;
 
 export default function SpeakersTab(props) {
   const dispatch = useDispatch();
-  const { speakers, presets, selectedSpeaker } = useSelector(store => store.session);
+  const session = useSelector(store => store.session);
+  const { speakers, presets, selectedSpeaker } = session;
   let maxSpeakerId = useSelector(store => Math.max.apply(null, store.session.speakers.map(x => x.id)));
   if (!maxSpeakerId || maxSpeakerId < 0 || maxSpeakerId > 100) {
     maxSpeakerId = 0;
@@ -39,6 +46,25 @@ export default function SpeakersTab(props) {
     color: colors.teal,
     preset: presets?.length ? presets[0] : null,
   });
+
+  const importSubs = (event) => {
+    function handleFileLoaded(event) {
+      session.selectedSpeaker.subs = JSON.parse(event.target.result);
+      dispatch(restoreFromJson(JSON.stringify(session)));
+    }
+
+    const file = event.target.files[0];
+    if (file) {
+      const ext = getExt(file.name);
+      if (ext !== 'json') {
+        toast.warn('Invalid backup file format');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = handleFileLoaded;
+      reader.readAsText(file);
+    }
+  };
 
   return (
     <Style className='tab-outlet'>
@@ -78,12 +104,11 @@ export default function SpeakersTab(props) {
           <Row>
             <Col className='label'>Color</Col>
             <Col>
-              <Form.Select
-                className='app-select'
-                value={selectedSpeaker.color}
-                style={{ backgroundColor: selectedSpeaker?.color || 'rgb(255 255 255 / 60%)' }}
-                onChange={(event) =>
-                  dispatch(patchSpeaker(selectedSpeaker.id, { color: event.target.value }))}>
+              <Form.Select className='app-select'
+                           value={selectedSpeaker.color}
+                           style={{ backgroundColor: selectedSpeaker?.color || 'rgb(255 255 255 / 60%)' }}
+                           onChange={(event) =>
+                             dispatch(patchSpeaker(selectedSpeaker.id, { color: event.target.value }))}>
                 {colors.list.map(([name, value], index) => (
                   <option key={index} value={value}>
                     {name}
@@ -95,25 +120,33 @@ export default function SpeakersTab(props) {
           <Row>
             <Col className='label'>Speaker Preset</Col>
             <Col>
-              <Form.Select
-                className='app-select'
-                value={selectedSpeaker.preset?.id}
-                onChange={(event) => {
-                  return dispatch(patchSpeaker(selectedSpeaker.id, {
-                    preset: presets.find(x => x.id === +event.target.value),
-                    subs: selectedSpeaker.subs.map(sub => {
-                      // Reset subs voicing
-                      sub.data = null;
-                      return sub;
-                    }),
-                  }));
-                }}>
+              <Form.Select className='app-select'
+                           value={selectedSpeaker.preset?.id}
+                           onChange={(event) => {
+                             return dispatch(patchSpeaker(selectedSpeaker.id, {
+                               preset: presets.find(x => x.id === +event.target.value),
+                               subs: selectedSpeaker.subs.map(sub => {
+                                 // Reset subs voicing
+                                 sub.data = null;
+                                 return sub;
+                               }),
+                             }));
+                           }}>
                 {presets.map((preset, index) => (
                   <option key={index} value={preset.id}>
                     {preset.displayName}
                   </option>
                 ))}
               </Form.Select>
+            </Col>
+          </Row>
+          <Row>
+            <Col className='label'>Import Subtitles</Col>
+            <Col className='file-wrapper'>
+              <Form.Control className='file'
+                            type='file'
+                            accept='.json'
+                            onChange={importSubs} />
             </Col>
           </Row>
         </Container>
