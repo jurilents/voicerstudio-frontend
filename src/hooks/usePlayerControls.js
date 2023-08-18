@@ -5,6 +5,7 @@ import { useCallback } from 'react';
 import { setPlaying } from '../store/timelineReducer';
 import { toast } from 'react-toastify';
 import { usePlayPause } from './usePlayPause';
+import timeMachine from '../utils/TimeMachine';
 
 export const usePlayerControls = (player) => {
   const dispatch = useDispatch();
@@ -17,7 +18,7 @@ export const usePlayerControls = (player) => {
     else play();
   };
 
-  const startRecording = useCallback((time) => {
+  const startRecording = useCallback((time, play = true) => {
     if (!window.timelineEngine) return;
     const engine = window.timelineEngine;
 
@@ -29,15 +30,15 @@ export const usePlayerControls = (player) => {
     });
     sub.recording = true;
 
-    // sub.startOffset = ;
-    // dispatch(setRecordingSub(sub));
     window.recordingSub = sub;
     dispatch(addSub(sub));
 
-    setTimeout(() => {
-      engine.play({ autoEnd: true });
-      if (player.paused) player.play();
-    }, 10);
+    if (play) {
+      setTimeout(() => {
+        engine.play({ autoEnd: true });
+        if (player.paused) player.play();
+      }, 10);
+    }
   }, [selectedSpeaker, dispatch, player, togglePlay]);
 
   const completeRecording = useCallback(() => {
@@ -46,8 +47,9 @@ export const usePlayerControls = (player) => {
       if (recSub.end - recSub.start > 0.5) {
         dispatch(patchSub(recSub, { end: recSub.end }));
       } else {
-        dispatch(removeSub(recSub));
-        toast.info('Hold the button to record a subtitle');
+        dispatch(patchSub(recSub, { end: recSub.start + 1 }));
+        // dispatch(removeSub(recSub));
+        // toast.info('Hold the button to record a subtitle');
       }
 
       if (!player.paused) player.pause();

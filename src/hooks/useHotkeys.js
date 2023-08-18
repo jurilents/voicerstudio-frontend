@@ -225,7 +225,8 @@ export const useHotkeys = ({ player }) => {
         if (!holdingRecord) {
           console.log('rec start');
           holdingRecord = true;
-          startRecording(window.currentTime);
+          const play = !altKeyPressed(event);
+          startRecording(window.currentTime, play);
         }
         break;
       }
