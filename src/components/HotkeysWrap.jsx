@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { useHotkeys } from '../hooks';
 
 
-export default function HotkeysWrap({ player }) {
+const HotkeysWrap = ({ player }) => {
   const { onKeyDown, onKeyUp } = useHotkeys({ player });
 
   // ---------- Timeline Hotkeys ----------
@@ -11,10 +11,14 @@ export default function HotkeysWrap({ player }) {
     window.addEventListener('keyup', onKeyUp);
 
     return () => {
-      window.removeEventListener('keydown', onKeyUp);
       window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
     };
   }, [onKeyDown, onKeyUp]);
 
   return <></>;
-}
+};
+
+export default memo(HotkeysWrap, (prevProps, nextProps) => {
+  return prevProps.player === nextProps.player;
+});

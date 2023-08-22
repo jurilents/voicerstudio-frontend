@@ -9,7 +9,7 @@ class AudioController {
     if (!window.listenerMap) window.listenerMap = {};
   }
 
-  start({ speakerId, id, src, startTime, time, speedRate, volume, engine }) {
+  add({ speakerId, id, src, startTime, time, speedRate, volume, engine }) {
     const cached = this._getCachedSpeaker(speakerId);
     const cachedListeners = this._getCachedSpeakerListeners(speakerId);
     let item = cached[id];
@@ -49,6 +49,10 @@ class AudioController {
     engine.on('afterSetPlayRate', rateListener);
     cachedListeners[id].time = timeListener;
     cachedListeners[id].rate = rateListener;
+  }
+
+  start({ speakerId, id, src, startTime, time, speedRate, volume, engine }) {
+
   }
 
   setSpeakerData({ speakerId, volume, speedRate }) {

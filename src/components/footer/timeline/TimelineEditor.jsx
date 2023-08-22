@@ -136,7 +136,6 @@ const TimelineEditor = ({ player }) => {
       }, 10);
     });
     engine.listener.on('setTimeByTick', function handler_({ time }) {
-      console.log('set time by tick', time);
       if (window.recordingSub) window.recordingSub.end = time;
       dispatch(setTime(time));
       scrollToCursor(time);
