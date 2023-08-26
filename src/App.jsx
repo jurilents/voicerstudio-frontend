@@ -1,11 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Toolbar from './components/toolbar/Toolbar';
 import Subtitles from './components/sidebar/Subtitles';
 import Player from './components/player/Player';
 import Footer from './components/footer/Footer';
-import Loading from './components/Loading';
-import ProgressBar from './components/header/ProgressBar';
 import Header from './components/header/Header';
 import { useSubsAudioStorage, useVideoStorage } from './hooks';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,6 +14,8 @@ import { addAudio } from './store/audioReducer';
 import 'react-toastify/dist/ReactToastify.css';
 import HotkeysWrap from './components/HotkeysWrap';
 import CatWrap from './components/CatWrap';
+import audioController from './utils/AudioController';
+import debounce from 'lodash/debounce';
 
 const Style = styled.div`
   height: 100%;
@@ -64,26 +64,22 @@ export default function App({ defaultLang }) {
   const { loadVideo } = useVideoStorage();
   const { loadSubAudio } = useSubsAudioStorage();
 
-  const subtitleHistory = useRef([]);
   const [player, setPlayer] = useState(null);
-  const [loading, setLoading] = useState('');
-  const [processing, setProcessing] = useState(0);
-  const [language, setLanguage] = useState(defaultLang);
-  const [preset, setPreset] = useState('');
-  const [playing, setPlaying] = useState(false);
-  const [recording, setRecording] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [currentLang, setCurrentLang] = useState(null);
+  // const [loading, setLoading] = useState('');
+  // const [processing, setProcessing] = useState(0);
 
   useEffect(() => {
     async function load() {
       const url = await loadVideo('video1');
+      if (videoUrl === url) return;
       dispatch(setVideo(url));
+      const engine = window.timelineEngine;
 
       for (const speaker of speakers) {
         for (const sub of speaker.subs) {
           if (sub.data && sub.voicedStatus === VoicedStatuses.voiced) {
             sub.data.src = await loadSubAudio(sub.id);
+            audioController.addFromSub(sub, engine);
             dispatch(addAudio(sub.data.src));
           }
         }
@@ -92,31 +88,31 @@ export default function App({ defaultLang }) {
     }
 
     if (videoUrl) {
-      load();
+      debounce(load, 100)();
     }
   }, []);
 
   const props = {
     player,
     setPlayer,
-    currentTime,
-    setCurrentTime,
-    playing,
-    setPlaying,
-    language,
-    setLanguage,
-    loading,
-    setLoading,
-    setProcessing,
-    subtitleHistory,
-
-    preset,
-    setPreset,
-
-    recording,
-    setRecording,
-    currentLang,
-    setCurrentLang,
+    // currentTime,
+    // setCurrentTime,
+    // playing,
+    // setPlaying,
+    // language,
+    // setLanguage,
+    // loading,
+    // setLoading,
+    // setProcessing,
+    // subtitleHistory,
+    //
+    // preset,
+    // setPreset,
+    //
+    // recording,
+    // setRecording,
+    // currentLang,
+    // setCurrentLang,
   };
 
   return (
@@ -134,8 +130,8 @@ export default function App({ defaultLang }) {
         </div>
       </div>
       <Footer {...props} />
-      {loading ? <Loading loading={loading} /> : null}
-      {processing > 0 && processing < 100 ? <ProgressBar processing={processing} /> : null}
+      {/*{loading ? <Loading loading={loading} /> : null}*/}
+      {/*{processing > 0 && processing < 100 ? <ProgressBar processing={processing} /> : null}*/}
       <ToastContainer
         position='top-center'
         theme='dark'

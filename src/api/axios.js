@@ -39,11 +39,15 @@ api.interceptors.response.use(
             <ul>
               {Object.entries(json.errors).map(([key, messages]) => (
                 <Fragment key={key}>
-                  {messages.map((message, index) => (
-                    <li key={index}>
-                      {message?.endsWith('.') ? message.substring(0, message.length - 1) : message}
-                    </li>
-                  ))}
+                  {messages.map((message, index) => {
+                    message = message.replaceAll(`'`, '');
+
+                    return (
+                      <li key={index}>
+                        {message?.endsWith('.') ? message.substring(0, message.length - 1) : message}
+                      </li>
+                    );
+                  })}
                 </Fragment>
               ))}
             </ul>

@@ -1,41 +1,50 @@
 import { Howl } from 'howler';
 
 class AudioController {
-  // cacheMap = {};
-  // listenerMap = {};
-
   constructor() {
     if (!window.cacheMap) window.cacheMap = {};
     if (!window.listenerMap) window.listenerMap = {};
   }
 
-  add({ speakerId, id, src, startTime, time, speedRate, volume, engine }) {
+  addFromSub(sub, engine) {
+    if (!engine) {
+      if (!window.timelineEngine) return;
+      engine = window.timelineEngine;
+    }
+    this.add({
+      speakerId: sub.speakerId,
+      id: sub.id,
+      src: sub.data?.src,
+      startTime: sub.start,
+      time: engine.getTime(),
+      speedRate: 1,
+      volume: 1,
+      engine,
+    });
+  }
+
+  add({ speakerId, id, src, startTime, time, speedRate, volume, engine, autoplay }) {
     const cached = this._getCachedSpeaker(speakerId);
     const cachedListeners = this._getCachedSpeakerListeners(speakerId);
     let item = cached[id];
     if (!speedRate) speedRate = 1;
 
-    if (item && item._src === src) {
-      item.volume(volume);
-      const rate = engine.getPlayRate() * speedRate;
-      item.rate(rate);
-      item.seek(((time - startTime) * rate) % (item.duration() * rate));
-      item.play();
-    } else {
+    if (!item || item._src !== src) {
       item = new Howl({
         src: src,
         format: 'wav',
-        loop: false,
-        autoplay: true,
-        volume: volume,
+        // loop: false,
+        // autoplay: autoplay === true,
+        // volume: volume,
         html5: true,
+        onload: () => {
+          console.log('loaded!');
+          const rate = engine.getPlayRate() * speedRate;
+          item.rate(rate);
+          item.seek(((time - startTime) * rate) % (item.duration() * rate));
+        },
       });
       cached[id] = item;
-      item.on('load', () => {
-        const rate = engine.getPlayRate() * speedRate;
-        item.rate(rate);
-        item.seek(((time - startTime) * rate) % (item.duration() * rate));
-      });
     }
 
     const timeListener = ({ time }) => {
@@ -45,14 +54,28 @@ class AudioController {
       item.rate(rate * speedRate);
     };
     if (!cachedListeners[id]) cachedListeners[id] = {};
-    engine.on('afterSetTime', timeListener);
-    engine.on('afterSetPlayRate', rateListener);
+    console.log('e', engine);
+    engine.listener.on('afterSetTime', timeListener);
+    engine.listener.on('afterSetPlayRate', rateListener);
     cachedListeners[id].time = timeListener;
     cachedListeners[id].rate = rateListener;
   }
 
-  start({ speakerId, id, src, startTime, time, speedRate, volume, engine }) {
+  start(params) {
+    const { speakerId, id, src, startTime, time, speedRate, volume, engine } = params;
+    const cached = this._getCachedSpeaker(speakerId);
+    let item = cached[id];
 
+    if (item && item._src === src) {
+      item.volume(volume);
+      const rate = engine.getPlayRate() * (speedRate ?? 1);
+      item.rate(rate);
+      item.seek(((time - startTime) * rate) % (item.duration() * rate));
+      item.play();
+    } else {
+      params.autoplay = true;
+      this.add(params);
+    }
   }
 
   setSpeakerData({ speakerId, volume, speedRate }) {

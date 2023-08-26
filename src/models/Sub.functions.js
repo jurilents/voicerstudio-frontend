@@ -48,8 +48,8 @@ export function validateSubs(subs) {
   for (let i = 0; i < subs.length; i++) {
     const curr = subs[i];
     const next = subs[i + 1];
-    if (prev) curr.invalidStart = curr.start < prev.end;
-    if (next) curr.invalidEnd = curr.end > next.start;
+    curr.invalidStart = prev ? curr.start < prev.end : false;
+    curr.invalidEnd = next ? curr.end > next.start : false;
     prev = curr;
   }
 }

@@ -1,5 +1,5 @@
 import hotkeys from './HotkeyController';
-import { patchSub, removeSub, setMarker } from '../store/sessionReducer';
+import { patchSub, removeSub, selectSpeaker, selectSub, setMarker } from '../store/sessionReducer';
 import { Marker } from '../models';
 import colors from './colors';
 import { setSettings } from '../store/settingsReducer';
@@ -35,18 +35,23 @@ export const ensureHotkeyHandlersRegistered = () => {
 [M]      Set marker
 
 ====== Arrows ======
-[–>]    Move cursor forward
-[⇧ –>]  Move cursor x10 times forward
-[⌥ –>]  Move cursor to next marker
+[→]    Move cursor forward
+[⇧ →]  Move cursor x10 times forward
+[⌥ →]  Move cursor to next marker
 
-[<–]    Move cursor backward
-[⇧ <–]  Move cursor x10 times backward
-[⌥ <–]  Move cursor to previous marker
+[←]    Move cursor backward
+[⇧ ←]  Move cursor x10 times backward
+[⌥ ←]  Move cursor to prev marker
+
+[↑]      Select prev subtitle
+[↓]      Select next subtitle
 
 ====== Subtitles Control ======
 [R]          Start/stop recording
 [Backspace]  Delete subtitle
 [⌘ G]        Speak all subtitles
+[Tab]        Select next speaker
+[⇧ Tab]      Select prev speaker
 
 */
 
@@ -188,6 +193,36 @@ function registerAllHotkeys() {
     engine.setTime(targetTime);
   });
 
+  // ====== Select next subtitle ====== //
+  hotkeys.add('ArrowDown', {}, async ({ session, dispatch }) => {
+    if (!session.selectedSpeaker.subs?.length) return;
+    if (!session.selectedSub) {
+      dispatch(selectSub(session.selectedSpeaker.subs[0]));
+      return;
+    }
+
+    const selectedIndex = session.selectedSpeaker.subs.findIndex(x => x.id === session.selectedSub.id);
+    if (selectedIndex < 0) return;
+    const next = selectedIndex === session.selectedSpeaker.subs.length - 1 ? selectedIndex : selectedIndex + 1;
+    const nextSub = session.selectedSpeaker.subs[next];
+    dispatch(selectSub(nextSub));
+  });
+
+  // ====== Select prev subtitle ====== //
+  hotkeys.add('ArrowUp', {}, async ({ session, dispatch }) => {
+    if (!session.selectedSpeaker.subs?.length || !session.selectedSub) return;
+    if (!session.selectedSub) {
+      dispatch(selectSub(session.selectedSpeaker.subs[0]));
+      return;
+    }
+
+    const selectedIndex = session.selectedSpeaker.subs.findIndex(x => x.id === session.selectedSub.id);
+    if (selectedIndex < 0) return;
+    const prev = selectedIndex === 0 ? selectedIndex : selectedIndex - 1;
+    const nextSub = session.selectedSpeaker.subs[prev];
+    dispatch(selectSub(nextSub));
+  });
+
   // =========================================== //
   // ============ Subtitles Control ============ //
   // =========================================== //
@@ -210,8 +245,8 @@ function registerAllHotkeys() {
   });
 
   // ====== Speak all ====== //
-  hotkeys.add('G', { meta: true }, ({}) => {
-    // TODO: speak all
+  hotkeys.add('G', { meta: true }, ({ voicer }) => {
+    voicer.speakAll();
   });
 
   // ====== Delete subtitle ====== //
@@ -222,6 +257,25 @@ function registerAllHotkeys() {
       console.warn('No sub selected!');
     }
   });
+
+  // ====== Select next speaker ====== //
+  hotkeys.add('Tab', {}, ({ session, dispatch }) => {
+    const selectedIndex = session.speakers.indexOf(session.selectedSpeaker);
+    if (selectedIndex < 0) return;
+    const next = selectedIndex === session.speakers.length - 1 ? 0 : selectedIndex + 1;
+    const nextSpeaker = session.speakers[next];
+    dispatch(selectSpeaker(nextSpeaker.id));
+  });
+
+  // ====== Select prev speaker ====== //
+  hotkeys.add('Tab', { shift: true }, ({ session, dispatch }) => {
+    const selectedIndex = session.speakers.indexOf(session.selectedSpeaker);
+    if (selectedIndex < 0) return;
+    const prev = selectedIndex === 0 ? session.speakers.length - 1 : selectedIndex - 1;
+    const nextSpeaker = session.speakers[prev];
+    dispatch(selectSpeaker(nextSpeaker.id));
+  });
+
 }
 
 function metaKeyPressed(event) {

@@ -44,6 +44,12 @@ export function isPlaying($video) {
   return !!($video.currentTime > 0 && !$video.paused && !$video.ended && $video.readyState > 2);
 }
 
+export function replaceAt(str, index, replacement) {
+  if (index > str.length - 1) return str;
+  console.log('index:', index);
+  return str.substring(0, index) + replacement + str.substring(index + 1);
+}
+
 export function getWaveformZoomSteps(waveform) {
   if (!waveform) {
     return 1;
@@ -85,8 +91,12 @@ export function formatTime(time) {
 }
 
 export function toPercentsDelta(num, sign, accuracy = 0) {
-  num = (num * 100).toFixed(accuracy);
+  num = toPercentsNumber(num, accuracy);
   return (num > 0 ? (sign ? '+' : '') + num : num) + '%';
+}
+
+export function toPercentsNumber(num, accuracy = 0) {
+  return (num * 100).toFixed(accuracy);
 }
 
 export function objectsHaveSameKeys(...objects) {

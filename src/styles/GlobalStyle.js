@@ -49,6 +49,21 @@ export default createGlobalStyle`
     background-color: #ccc;
   }
 
+  ul {
+    list-style-type: circle;
+  }
+
+  .noselect, .btn-icon, body {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+  }
+
+  .nofocus {
+    border: none;
+    outline: none;
+  }
+
   .btn {
     position: relative;
     opacity: 0.85;
@@ -93,12 +108,6 @@ export default createGlobalStyle`
   .icon-btn {
     color: #fff;
     font-size: 12px;
-  }
-
-  .noselect, .btn-icon {
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
   }
 
   .app-select {

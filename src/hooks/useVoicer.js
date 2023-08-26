@@ -1,7 +1,6 @@
 import { patchSub } from '../store/sessionReducer';
 import { validateSubs, VoicedStatuses } from '../models';
 import { speechApi } from '../api/axios';
-import { addAudio, removeAudio } from '../store/audioReducer';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSubsAudioStorage } from './useSubsAudioStorage';
@@ -24,9 +23,6 @@ export const useVoicer = () => {
     if (!sub.canBeVoiced) {
       if (!options.fromBatch) toast.info('Subtitle cannot be voiced, because it is already voiced');
       return true;
-    }
-    if (sub.data?.src) {
-      dispatch(removeAudio(sub.data?.src));
     }
 
     const cred = selectedCredentials[selectedSpeaker.preset.service];
@@ -58,7 +54,6 @@ export const useVoicer = () => {
     const audio = await speechApi.single(request, cred.value);
     if (!audio) return false;
     console.log('single audio url', audio);
-    dispatch(addAudio(audio.url));
 
     sub.data = sub.buildVoicedStamp(audio.url, audio.baseDuration);
     // If rate is too high or to low, reset it to default

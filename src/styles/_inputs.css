@@ -76,3 +76,13 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   background: none;
   display: none;
 }
+
+::-moz-selection {
+  color: white !important;
+  background: var(--c-primary) !important;
+}
+
+::selection {
+  color: white !important;
+  background: var(--c-primary) !important;
+}

@@ -1,7 +1,6 @@
 import React, { createRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { VideoWrap } from './VideoWrap';
-import { AudioWrap } from './AudioWrap';
 import { Actions } from '../toolbar/Actions';
 
 const Style = styled.div`
@@ -156,7 +155,6 @@ export default function Player(props) {
     <Style className='player'>
       <div className='video' ref={$player}>
         {/*<SpeakersAudio {...props} />*/}
-        <AudioWrap {...props} />
         <VideoWrap {...props} />
         <Actions {...props} />
         {/*{props.player && currentSub ? (*/}

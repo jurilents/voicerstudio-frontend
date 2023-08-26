@@ -2,14 +2,11 @@ import React, { createRef, memo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVideoDuration } from '../../store/sessionReducer';
 
-export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
+export const VideoWrap = memo(({ setPlayer }) => {
   const $video = createRef();
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
   const videoUrl = useSelector(store => store.session.videoUrl) || '/images/video_placeholder.mp4';
-  // const selectedSpeaker = useSelector(store => store.session.selectedSpeaker);
-  // const [playingSub, setPlayingSub] = useState(null);
-  // const [endSubTime, setEndSubTime] = useState(0);
 
   useEffect(() => {
     if ($video.current) {
@@ -70,16 +67,6 @@ export const VideoWrap = memo(({ setPlayer, setCurrentTime, setPlaying }) => {
 
   useEffect(() => {
     setPlayer($video.current);
-    //   (function loop() {
-    //     window.requestAnimationFrame(() => {
-    //       if ($video.current) {
-    //         setPlaying(isPlaying($video.current));
-    //         const currentTime = $video.current.currentTime || 0;
-    //         setCurrentTime(currentTime);
-    //       }
-    //       loop();
-    //     });
-    //   })();
   }, [setPlayer, $video]);
 
   // const onClick = useCallback(() => {

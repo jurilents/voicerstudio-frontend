@@ -4,33 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import hotkeys from '../utils/HotkeyController';
 import { usePlayerControls } from './usePlayerControls';
 import { ensureHotkeyHandlersRegistered } from '../utils/hotkeyHandlers';
+import { useVoicer } from './useVoicer';
 
-// meta: CTRL / COMMAND
-// shift: SHIFT
-// alt: ALT / OPTION
-
-const HOTKEYS = {
-  deleteSub: { key: 'BACKSPACE' },
-  playPause: { key: 'SPACE' },
-  record: { key: 'KEYR' },
-  pasteSubText: { key: 'KEYV', meta: true },
-  save: { key: 'KEYS', meta: true },
-  refreshPage: { key: 'KEYR', meta: true },
-  undo: { key: 'KEYZ', meta: true },
-  redo: { key: 'KEYZ', meta: true, shift: true },
-  setMarker: { key: 'KEYM' },
-  speakAll: { key: 'KEYG', meta: true },
-  showMotivation: { key: 'KEYO', meta: true, shift: true },
-  moveRight: { key: 'ARROWRIGHT' },
-  // moveCursorVeryRight: { key: 'ARROWRIGHT', shift: true },
-  // moveCursorToNextMarker: { key: 'ARROWRIGHT', alt: true },
-  moveLeft: { key: 'ARROWLEFT' },
-  // moveCursorVeryLeft: { key: 'ARROWLEFT', shift: true },
-  // moveCursorToPrevMarker: { key: 'ARROWLEFT', alt: true },
-};
-
-let playing = false;
-let holdingRecord = false;
+ensureHotkeyHandlersRegistered();
 
 function checkMetaKeys(event, hotkey) {
   return (!hotkey.meta || event.ctrlKey || event.metaKey)
@@ -43,10 +19,7 @@ export const useHotkeys = ({ player }) => {
   const session = useSelector(store => store.session);
   const settings = useSelector(store => store.settings);
   const controls = usePlayerControls(player);
-
-  console.log('....controls....');
-
-  ensureHotkeyHandlersRegistered();
+  const voicer = useVoicer();
 
   const createHandlerContext = useCallback((event) => {
     return {
@@ -57,6 +30,7 @@ export const useHotkeys = ({ player }) => {
       player,
       dispatch,
       controls,
+      voicer,
     };
   }, [session, settings, player, dispatch, controls]);
 

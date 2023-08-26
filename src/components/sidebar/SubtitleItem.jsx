@@ -1,28 +1,33 @@
-import { d2t, getDurationStatusColor, time2seconds, toPercentsDelta } from '../../utils';
+import { d2t, getDurationStatusColor, toPercentsNumber } from '../../utils';
 import unescape from 'lodash/unescape';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faRocket, faStopwatch, faUndo } from '@fortawesome/free-solid-svg-icons';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { patchSub, selectSub } from '../../store/sessionReducer';
 import { settings } from '../../settings';
 import { usePlayPause } from '../../hooks';
+import _ from 'lodash';
+import { NumericInput } from '../shared/NumericInput';
 
 let requestSync = false;
+const rateLimit = settings.rateLimit * 100;
 
 const SubtitleItem = (params) => {
-  const { player, props, sub, speakSub, playSub, downloadSub, selectedSub, selectedSpeaker, showNote } = params;
+  const { player, props, sub, speakSub, downloadSub, selectedSub, selectedSpeaker, showNote } = params;
   const dispatch = useDispatch();
   const { pause } = usePlayPause(player);
   const [startTime, setStartTime] = useState(sub.startStr || '');
   const [endTime, setEndTime] = useState(sub.endStr || '');
+  const [duration, setDuration] = useState('');
+  const [speedRate, setSpeedRate] = useState('');
 
-  if (requestSync) {
-    console.log('sub.startStrsub.startStr', { subStart: sub.startStr, local: startTime });
+  useEffect(() => {
+    console.log('syncreq', { subStart: sub.startStr, local: startTime });
     setStartTime(sub.startStr);
     setEndTime(sub.endStr);
-    requestSync = false;
-  }
+    setSpeedRate(toPercentsNumber(sub.speedRate - 1, 2));
+  }, []);
 
   const handleSubClick = useCallback(() => {
     if (window.timelineEngine) window.timelineEngine.setTime(sub.start);
@@ -64,9 +69,19 @@ const SubtitleItem = (params) => {
     setEndTime(time);
   };
 
+  const onSpeedChange = (event) => {
+    const val = +event.target.value;
+    if (isNaN(val) || !sub.data?.baseDuration) return;
+    if (val < -rateLimit || val > rateLimit) return;
+    const speed = _.clamp(val, -rateLimit, rateLimit) / 100;
+
+    dispatch(patchSub(sub, { end: sub.start + sub.data.baseDuration * (1 + speed) }));
+    setSpeedRate(event.target.value);
+  };
+
   return (
     <div className={props.className}
-         style={props.style}
+         style={params.style}
          onClick={handleSubClick}>
       <div style={{ '--c-speaker': selectedSpeaker.color }}
            className={[
@@ -107,17 +122,17 @@ const SubtitleItem = (params) => {
                    className={sub.invalidStart ? 'invalid' : ''}
                    value={startTime}
                    title='Start time'
-                   onChange={(event) => setStartTime(event.target.value)}
-                   onBlur={() => updateSubStartTime({ start: time2seconds(startTime) })} />
+              // onChange={(event) => setStartTime(event.target.value)}
+              // onBlur={() => updateSubStartTime({ start: time2seconds(startTime) })}
+                   disabled={true} />
             <span className='time-sep'>–</span>
             <input type='time'
                    value={sub.endStr}
                    step={1}
                    className={sub.invalidEnd ? 'invalid' : ''}
-              // value={formatTime(sub.end)}
                    title='End time'
-                   onChange={(event) => {
-                   }} />
+              // onChange={(event) => {}}
+                   disabled={true} />
           </div>
 
           {/* ************ Duration ************ */}
@@ -129,11 +144,14 @@ const SubtitleItem = (params) => {
               <FontAwesomeIcon icon={faStopwatch} />
             </div>
             {/*<span><FontAwesomeIcon icon={faGaugeSimpleHigh} /></span>*/}
-            <input type='text'
-                   style={{ color: getDurationStatusColor(sub.speedRate - 1) }}
-                   value={toPercentsDelta(sub.speedRate - 1, true, 1)}
-                   title='Acceleration %'
-                   disabled={true} />
+            <NumericInput className='nofocus'
+                          style={{ color: getDurationStatusColor(sub.speedRate - 1) }}
+                          accuracy={2}
+                          minValue={-rateLimit}
+                          maxValue={rateLimit}
+                          value={speedRate}
+                          onValueChange={onSpeedChange}
+                          title='Acceleration %' />
           </div>
 
           {/* ************ Action Buttons ************ */}

@@ -23,7 +23,7 @@ export class HotkeyController {
       shift: event.shiftKey,
       alt: event.altKey,
     });
-    console.log('key', key);
+    console.log(`${event.type}\t${key}`);
     return event.type === 'keyup'
       ? this.keyUpHandlers[key]
       : this.keyDownHandlers[key];

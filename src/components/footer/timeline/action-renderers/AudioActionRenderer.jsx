@@ -14,6 +14,7 @@ const AudioActionRenderer = ({ action, row }) => {
     progressColor: 'rgb(100,100,100)',
     interact: false,
     fillParent: true,
+    autoplay: false,
     // media: action.data.player,
     // url: action.data.src,
     // minPxPerSec: 10,

@@ -36,7 +36,7 @@ const Style = styled.div`
   }
 `;
 
-export default function GeneralTab(props) {
+export default function GeneralTab() {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
   const { speakAll } = useVoicer();
