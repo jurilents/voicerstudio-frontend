@@ -9,6 +9,7 @@ import SubtitleActionRenderer from './action-renderers/SubtitleActionRenderer';
 import { calculateScaleAndWidth } from '../../../utils/timelineScale';
 import MarkerActionRenderer from './action-renderers/MarkerActionRenderer';
 import { Style } from './TimelineEditor.styles';
+import debounce from 'lodash/debounce';
 
 const origAudioRowName = 'original-audio-row';
 const markersRowName = 'markers-row';
@@ -217,19 +218,18 @@ const TimelineEditor = ({ player }) => {
   }
 
   function setMarkerTime({ action, start }) {
-    console.log('param.action is marker', action);
     dispatch(patchMarker(action, {
       time: start,
     }));
   }
 
-  const handleActionMoveOrResize = (param) => {
+  const handleActionMoveOrResize = debounce((param) => {
     if (isSpeakerRow(param.row)) {
       setSubStartEndTime(param);
     } else if (param.row.id === markersRowName) {
       setMarkerTime(param);
     }
-  };
+  }, 12);
 
   const onTimeChange = useCallback((time) => {
     if (!window.timelineEngine) return;

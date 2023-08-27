@@ -17,17 +17,19 @@ const SubtitleItem = (params) => {
   const { player, props, sub, speakSub, downloadSub, selectedSub, selectedSpeaker, showNote } = params;
   const dispatch = useDispatch();
   const { pause } = usePlayPause(player);
-  const [startTime, setStartTime] = useState(sub.startStr || '');
-  const [endTime, setEndTime] = useState(sub.endStr || '');
+  // const [startTime, setStartTime] = useState(sub.startStr || '');
+  // const [endTime, setEndTime] = useState(sub.endStr || '');
   const [duration, setDuration] = useState('');
   const [speedRate, setSpeedRate] = useState('');
 
   useEffect(() => {
-    console.log('syncreq', { subStart: sub.startStr, local: startTime });
-    setStartTime(sub.startStr);
-    setEndTime(sub.endStr);
+    // const startTimeChanged = startTime !== sub.startStr;
+    // const endTimeChanged = endTime !== sub.endStr;
+    // if (startTimeChanged) setStartTime(sub.startStr);
+    // if (endTimeChanged) setEndTime(sub.endStr);
+    // if (startTimeChanged || endTimeChanged)
     setSpeedRate(toPercentsNumber(sub.speedRate - 1, 2));
-  }, []);
+  }, [sub]);
 
   const handleSubClick = useCallback(() => {
     if (window.timelineEngine) window.timelineEngine.setTime(sub.start);
@@ -57,17 +59,17 @@ const SubtitleItem = (params) => {
     }));
   };
 
-  const updateSubStartTime = (patch) => {
-    pause();
-    dispatch(patchSub(sub, patch));
-    requestSync = true;
-  };
-
-  const updateSubEndTime = (time) => {
-    pause();
-    dispatch(patchSub(sub, { end: time }));
-    setEndTime(time);
-  };
+  // const updateSubStartTime = (patch) => {
+  //   pause();
+  //   dispatch(patchSub(sub, patch));
+  //   requestSync = true;
+  // };
+  //
+  // const updateSubEndTime = (time) => {
+  //   pause();
+  //   dispatch(patchSub(sub, { end: time }));
+  //   setEndTime(time);
+  // };
 
   const onSpeedChange = (event) => {
     const val = +event.target.value;
@@ -120,7 +122,7 @@ const SubtitleItem = (params) => {
             <input type='time'
                    step={0.001}
                    className={sub.invalidStart ? 'invalid' : ''}
-                   value={startTime}
+                   value={sub.startStr}
                    title='Start time'
               // onChange={(event) => setStartTime(event.target.value)}
               // onBlur={() => updateSubStartTime({ start: time2seconds(startTime) })}
@@ -128,7 +130,7 @@ const SubtitleItem = (params) => {
             <span className='time-sep'>–</span>
             <input type='time'
                    value={sub.endStr}
-                   step={1}
+                   step={0.001}
                    className={sub.invalidEnd ? 'invalid' : ''}
                    title='End time'
               // onChange={(event) => {}}

@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
-import { replaceAt } from '../../utils';
+import { getSign, replaceAt } from '../../utils';
 import _ from 'lodash';
 
 function prependPaddingZero(num, accuracy = 2) {
-  const sign = +num < 0 ? '-' : '';
+  const sign = +num < 0 ? '-' : '+';
   num = Math.abs(+num).toFixed(accuracy);
   if (num < 10) return `${sign}0${num}`;
   return `${sign}${num}`;
@@ -11,6 +11,8 @@ function prependPaddingZero(num, accuracy = 2) {
 
 export const NumericInput = ({ accuracy, value, onValueChange, minValue, maxValue, ...props }) => {
   const inputRef = useRef();
+
+  // console.log('value ->', value);
 
   function applySelectionAt(event, val, caretPos) {
     if (isNaN(+caretPos)) caretPos = 0;
@@ -28,37 +30,36 @@ export const NumericInput = ({ accuracy, value, onValueChange, minValue, maxValu
     event.preventDefault();
     const key = event.code.toUpperCase();
     let val = prependPaddingZero(value, accuracy);
+    let valNum = +value;
     let caretPos = event.target.selectionStart;
-    const isNegative = val.startsWith('-');
-    const negativism = isNegative ? -1 : 1;
-    let extraLen = isNegative ? 2 : 2;
-    extraLen += caretPos > val.indexOf('.') ? -1 : 0;
+    const dotIndex = val.indexOf('.');
+    let extraLen = caretPos > dotIndex ? 1 : 2;
     const step = 10 ** ((val.length - caretPos - extraLen) - accuracy);
+    // console.log('stepp:', step);
 
     if (key === 'ARROWUP') {
-      if (caretPos === 0 && isNegative) caretPos++;
-      val = +val + step;
-      if (isNaN((val))) return;
-      if (isNegative && val >= 0) caretPos--;
-      val = prependPaddingZero(val, accuracy);
-      applyValueChange(event, val);
-      applySelectionAt(event, val, caretPos);
+      if (caretPos === 0) caretPos++;
+      let newVal = valNum + step;
+      if (isNaN((newVal))) return;
+      newVal = prependPaddingZero(newVal, accuracy);
+      applyValueChange(event, newVal);
+      applySelectionAt(event, newVal, caretPos);
 
     } else if (key === 'ARROWDOWN') {
-      if (caretPos === 0 && isNegative) caretPos++;
-      val = +val - step;
-      if (isNaN((val))) return;
-      if (!isNegative && val < 0) caretPos++;
-      val = prependPaddingZero(val, accuracy);
-      applyValueChange(event, val);
-      applySelectionAt(event, val, caretPos);
+      if (caretPos === 0) caretPos++;
+      let newVal = valNum - step;
+      if (isNaN((newVal))) return;
+      newVal = prependPaddingZero(newVal, accuracy);
+      applyValueChange(event, newVal);
+      applySelectionAt(event, newVal, caretPos);
 
     } else if (key === 'ARROWLEFT') {
-      const increment = caretPos === val.indexOf('.') + 1 ? 2 : 1;
+      const increment = caretPos === (dotIndex + 1) ? 2 : 1;
+      console.log('caretPos left', { val, idx: dotIndex, caretPos, to: caretPos - increment });
       applySelectionAt(event, val, caretPos - increment);
 
     } else if (key === 'ARROWRIGHT') {
-      const increment = caretPos === val.indexOf('.') - 1 ? 2 : 1;
+      const increment = caretPos === (dotIndex - 1) ? 2 : 1;
       applySelectionAt(event, val, caretPos + increment);
 
     } else if (key === 'BACKSPACE') {
@@ -81,6 +82,7 @@ export const NumericInput = ({ accuracy, value, onValueChange, minValue, maxValu
         }
 
       } else if (!isNaN(+event.key)) {
+        const isNegative = val.startsWith('-');
         if (caretPos === 0 && isNegative) caretPos++;
         const keyNum = +event.key;
         val = replaceAt(val, caretPos, keyNum);

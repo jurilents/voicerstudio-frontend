@@ -12,7 +12,7 @@ function calcScaleCount(duration, scale) {
 window.isPlaying = false;
 
 const TimelineWrap = (props) => {
-  console.log('<redraw wrap>');
+  // console.log('<redraw wrap>');
   const settings = useSelector(store => store.timelineSettings);
   // const { selectedSub } = useSelector(store => store.session);
   let [ref, setRef] = useState(null);

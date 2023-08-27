@@ -128,6 +128,12 @@ export function isBool(value) {
   return value === true || value === false;
 }
 
+export function getSign(num) {
+  num = +num;
+  if (isNaN(num)) throw new Error('Value must be a number.');
+  return num === 0 ? 0 : num < 0 ? -1 : 1;
+}
+
 export function getDurationStatusColor(durationCoef) {
   if (isNaN(+durationCoef)) durationCoef = 1;
   // durationCoef = Math.abs(durationCoef);

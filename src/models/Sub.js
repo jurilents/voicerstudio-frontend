@@ -54,7 +54,7 @@ export class Sub {
     const maxDuration = this.maxDuration;
     if (minDuration && duration < minDuration) this.end = this.start + minDuration;
     else if (maxDuration && duration > maxDuration) this.end = this.start + maxDuration;
-    this.endStr = DT.d2t(clamp(time, 0, Infinity));
+    this.endStr = DT.d2t(clamp(this.end, 0, Infinity));
     this.recalcRate();
   }
 
