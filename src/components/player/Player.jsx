@@ -1,7 +1,7 @@
 import React, { createRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { VideoWrap } from './VideoWrap';
-import { Actions } from '../toolbar/Actions';
+import VideoWrap from './VideoWrap';
+import Actions from './Actions';
 
 const Style = styled.div`
   display: flex;

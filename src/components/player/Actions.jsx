@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { faCircle, faLocationCrosshairs, faMagnet, faPause, faPlay } from '@fortawesome/free-solid-svg-icons';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import TimeIndicator from './TimeIndicator';
+import TimeIndicator from '../toolbar/TimeIndicator';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePlayerControls } from '../../hooks/usePlayerControls';
@@ -60,7 +60,7 @@ const Style = styled.div`
   }
 `;
 
-export function Actions({ player }) {
+const Actions = ({ player }) => {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.timelineSettings);
   const { playing, recording } = useSelector(store => store.timeline);
@@ -108,4 +108,6 @@ export function Actions({ player }) {
       </div>
     </Style>
   );
-}
+};
+
+export default Actions;

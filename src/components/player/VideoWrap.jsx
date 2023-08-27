@@ -2,7 +2,7 @@ import React, { createRef, memo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVideoDuration } from '../../store/sessionReducer';
 
-export const VideoWrap = memo(({ setPlayer }) => {
+const VideoWrap = ({ setPlayer }) => {
   const $video = createRef();
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
@@ -80,4 +80,9 @@ export const VideoWrap = memo(({ setPlayer }) => {
   // }, [$video]);
 
   return <video src={videoUrl} ref={$video} />;
-}, () => true);
+};
+
+export default memo(
+  VideoWrap,
+  () => true,
+);
