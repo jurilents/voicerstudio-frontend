@@ -12,8 +12,6 @@ function prependPaddingZero(num, accuracy = 2) {
 export const NumericInput = ({ accuracy, value, onValueChange, minValue, maxValue, ...props }) => {
   const inputRef = useRef();
 
-  // console.log('value ->', value);
-
   function applySelectionAt(event, val, caretPos) {
     if (isNaN(+caretPos)) caretPos = 0;
     caretPos = _.clamp(caretPos, 0, val.toString().length);
@@ -35,7 +33,7 @@ export const NumericInput = ({ accuracy, value, onValueChange, minValue, maxValu
     const dotIndex = val.indexOf('.');
     let extraLen = caretPos > dotIndex ? 1 : 2;
     const step = 10 ** ((val.length - caretPos - extraLen) - accuracy);
-    // console.log('stepp:', step);
+    // console.log('step:', step);
 
     if (key === 'ARROWUP') {
       if (caretPos === 0) caretPos++;
@@ -95,7 +93,7 @@ export const NumericInput = ({ accuracy, value, onValueChange, minValue, maxValu
 
   function handleClickSelection(event) {
     let caretPos = event.target.selectionStart;
-    if (caretPos === value.indexOf('.')) caretPos--;
+    if (caretPos === (value.indexOf('.') + 1)) caretPos--;
     applySelectionAt(event, value, caretPos);
   }
 
