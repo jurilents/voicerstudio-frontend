@@ -1,8 +1,9 @@
 import React, { createRef, memo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVideoDuration } from '../../store/sessionReducer';
+import { setVideoPlayer } from '../../store/playerReducer';
 
-const VideoWrap = ({ setPlayer }) => {
+const VideoWrap = () => {
   const $video = createRef();
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
@@ -54,32 +55,26 @@ const VideoWrap = ({ setPlayer }) => {
     };
 
     videoElm.onloadedmetadata = setupDuration;
-    videoElm.addEventListener('timeupdate', handleTimeUpdate);
+    // videoElm.addEventListener('timeupdate', handleTimeUpdate);
     videoElm.addEventListener('play', handlePlay);
     videoElm.addEventListener('pause', handlePause);
     return () => {
       setupDuration();
-      videoElm.removeEventListener('timeupdate', handleTimeUpdate);
+      // videoElm.removeEventListener('timeupdate', handleTimeUpdate);
       videoElm.removeEventListener('play', handlePlay);
       videoElm.removeEventListener('pause', handlePause);
     };
   }, [$video]);
 
   useEffect(() => {
-    setPlayer($video.current);
-  }, [setPlayer, $video]);
+    if ($video.current) {
+      dispatch(setVideoPlayer($video.current));
+    }
+  }, [$video]);
 
-  // const onClick = useCallback(() => {
-  //   if ($video.current) {
-  //     if (isPlaying($video.current)) {
-  //       $video.current.pause();
-  //     } else {
-  //       $video.current.play();
-  //     }
-  //   }
-  // }, [$video]);
-
-  return <video src={videoUrl} ref={$video} />;
+  return (
+    <video src={videoUrl} ref={$video} />
+  );
 };
 
 export default memo(

@@ -14,8 +14,9 @@ function checkMetaKeys(event, hotkey) {
     && (!hotkey.alt || event.altKey);
 }
 
-export const useHotkeys = ({ player }) => {
+export const useHotkeys = () => {
   const dispatch = useDispatch();
+  const player = useSelector(store => store.player.videoPlayer);
   const session = useSelector(store => store.session);
   const settings = useSelector(store => store.settings);
   const controls = usePlayerControls(player);
@@ -40,7 +41,7 @@ export const useHotkeys = ({ player }) => {
     const key = getKeyCode(event);
     if (!key) return;
 
-    if (key !== 'KEYF' || !checkMetaKeys(event, { meta: true })) {
+    if ((key !== 'KEYF' && key !== 'KEYR') || !checkMetaKeys(event, { meta: true })) {
       event.preventDefault();
     }
 

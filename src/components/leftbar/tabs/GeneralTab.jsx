@@ -52,7 +52,7 @@ export default function GeneralTab() {
   return (
     <Style className='tab-outlet'>
       <div>
-        <h3></h3>
+        <h3>Configuration</h3>
         <Container>
           {/* ************ Playback speed ************ */}
           <Row>

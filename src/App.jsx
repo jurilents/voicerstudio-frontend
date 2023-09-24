@@ -1,10 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import Toolbar from './components/toolbar/Toolbar';
-import Subtitles from './components/sidebar/Subtitles';
-import Player from './components/player/Player';
 import Footer from './components/footer/Footer';
-import Header from './components/header/Header';
 import { useSubsAudioStorage, useVideoStorage } from './hooks';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVideo } from './store/sessionReducer';
@@ -12,10 +8,16 @@ import { ToastContainer } from 'react-toastify';
 import { VoicedStatuses } from './models';
 import { addAudio } from './store/audioReducer';
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-reflex/styles.css';
 import HotkeysWrap from './components/HotkeysWrap';
 import CatWrap from './components/CatWrap';
 import audioController from './utils/AudioController';
 import debounce from 'lodash/debounce';
+import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
+import LeftBar from './components/leftbar/LeftBar';
+import Player from './components/player/Player';
+import RightBar from './components/rightbar/RightBar';
+import Header from './components/header/Header';
 
 const Style = styled.div`
   height: 100%;
@@ -27,13 +29,12 @@ const Style = styled.div`
     justify-content: flex-end;
     //padding-bottom: 35px;
 
-    .subtitles {
-      padding-top: 5px;
-      width: 600px;
+    .right {
+      //width: 600px;
       overflow: hidden;
       position: relative;
       //box-shadow: 0px 5px 25px 5px rgb(0 0 0 / 80%);
-      background-color: rgba(0, 0, 0, 50%);
+      //background-color: rgba(0, 0, 0, 50%);
       display: flex;
       justify-content: space-between;
       flex-direction: column;
@@ -47,6 +48,15 @@ const Style = styled.div`
     flex: 1;
     height: 100%;
     max-height: 100%;
+
+    .tool {
+      max-width: 420px;
+    }
+  }
+
+  .tool .tab-content {
+    overflow: hidden;
+    padding: 0;
   }
 
   .left-content {
@@ -56,6 +66,20 @@ const Style = styled.div`
     flex: 1;
     height: calc(100% - 60px);
   }
+
+  .footer-container {
+    background-color: rgb(0 0 0 / 50%);
+    position: relative;
+    padding-bottom: 35px;
+  }
+
+  .layout-center {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 export default function App({ defaultLang }) {
@@ -63,10 +87,6 @@ export default function App({ defaultLang }) {
   const { videoUrl, speakers } = useSelector(store => store.session);
   const { loadVideo } = useVideoStorage();
   const { loadSubAudio } = useSubsAudioStorage();
-
-  const [player, setPlayer] = useState(null);
-  // const [loading, setLoading] = useState('');
-  // const [processing, setProcessing] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -92,59 +112,53 @@ export default function App({ defaultLang }) {
     }
   }, []);
 
-  const props = {
-    player,
-    setPlayer,
-    // currentTime,
-    // setCurrentTime,
-    // playing,
-    // setPlaying,
-    // language,
-    // setLanguage,
-    // loading,
-    // setLoading,
-    // setProcessing,
-    // subtitleHistory,
-    //
-    // preset,
-    // setPreset,
-    //
-    // recording,
-    // setRecording,
-    // currentLang,
-    // setCurrentLang,
-  };
-
   return (
     <Style>
-      <div className='main'>
-        <div className='left'>
-          <Header {...props} />
-          <div className='left-content'>
-            <Toolbar {...props} />
-            <Player {...props} />
-          </div>
-        </div>
-        <div className='subtitles'>
-          <Subtitles {...props} />
-        </div>
-      </div>
-      <Footer {...props} />
+      <ReflexContainer orientation='horizontal'>
+        <ReflexElement className='main'>
+          <ReflexContainer orientation='vertical'>
+            <ReflexElement minSize={280}>
+              <LeftBar />
+            </ReflexElement>
+
+            <ReflexSplitter />
+
+            <ReflexElement minSize={340}>
+              <div className='layout-center'>
+                <Header />
+                <Player />
+              </div>
+            </ReflexElement>
+
+            <ReflexSplitter />
+
+            <ReflexElement minSize={360} propagateDimensions={true}>
+              <RightBar />
+            </ReflexElement>
+          </ReflexContainer>
+        </ReflexElement>
+
+        <ReflexSplitter />
+
+        <ReflexElement className='footer-container'
+                       minSize={100}
+                       maxSize={450}>
+          <Footer />
+        </ReflexElement>
+      </ReflexContainer>
       {/*{loading ? <Loading loading={loading} /> : null}*/}
       {/*{processing > 0 && processing < 100 ? <ProgressBar processing={processing} /> : null}*/}
-      <ToastContainer
-        position='top-center'
-        theme='dark'
-        autoClose={6000}
-        limit={4}
-        newestOnTop={false}
-        draggable
-        closeOnClick
-        pauseOnHover
-        hideProgressBar
-        pauseOnFocusLoss
-      />
-      {player && <HotkeysWrap player={player} />}
+      <ToastContainer position='top-center'
+                      theme='dark'
+                      autoClose={6000}
+                      limit={4}
+                      newestOnTop={false}
+                      draggable
+                      closeOnClick
+                      pauseOnHover
+                      hideProgressBar
+                      pauseOnFocusLoss />
+      <HotkeysWrap />
       <CatWrap />
     </Style>
   );

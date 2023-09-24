@@ -36,6 +36,19 @@ function getTimelineData({ speakers, selectedSpeaker, markers, player }) {
 
   if (!player || isNaN(+player.duration)) return data;
 
+  // Add markers
+  data.unshift({
+    id: markersRowName,
+    rowHeight: 1,
+    classNames: ['markers-row'],
+    actions: markers.map((marker) => ({
+      id: marker.id,
+      start: marker.time,
+      end: marker.time,
+      flexible: false,
+      data: { color: marker.color, text: marker.text },
+    })),
+  });
   // Add original audio
   data.unshift({
     id: origAudioRowName,
@@ -54,26 +67,14 @@ function getTimelineData({ speakers, selectedSpeaker, markers, player }) {
       },
     ],
   });
-  // Add markers
-  data.unshift({
-    id: markersRowName,
-    rowHeight: 1,
-    classNames: ['markers-row'],
-    actions: markers.map((marker) => ({
-      id: marker.id,
-      start: marker.time,
-      end: marker.time,
-      flexible: false,
-      data: { color: marker.color, text: marker.text },
-    })),
-  });
 
   prevData = data;
   return data;
 }
 
-const TimelineEditor = ({ player }) => {
+const TimelineEditor = ({ headingRef }) => {
   const dispatch = useDispatch();
+  const player = useSelector(store => store.player.videoPlayer);
   const { speakers, selectedSpeaker, selectedSub, markers, videoUrl } = useSelector(store => store.session);
   const timelineZoom = useSelector(store => store.timelineSettings.timelineZoom);
   const [zoom, setZoom] = useState({ scale: 1, scaleWidth: 100, scaleCount: 60 });
@@ -154,9 +155,11 @@ const TimelineEditor = ({ player }) => {
     };
   }, [window.timelineEngine, scrollToCursor]);
 
-  const handleScroll = useCallback((param) => {
-    // TODO: Use it or remove
-  }, []);
+  const handleScroll = useCallback(({ scrollTop }) => {
+    if (headingRef.current) {
+      headingRef.current.scrollTop = scrollTop;
+    }
+  }, [headingRef]);
 
   const addSubtitle = useCallback((param) => {
     const selectedAction = param.row.actions.find(x => x.selected);
@@ -176,12 +179,11 @@ const TimelineEditor = ({ player }) => {
     }
   }, [dispatch, selectedSpeaker]);
 
-  const setSubtitle = useCallback((param, lockCursor) => {
+  const setSubtitle = useCallback((param, lockCursor = false) => {
     if (param.row.id !== origAudioRowName) {
       if (window.timelineEngine) {
         const cursorTime = window.timelineEngine.getTime();
-        if (!lockCursor && (param.action.start >= cursorTime || param.action.end <= cursorTime)) {
-          dispatch(setTime(param.action.start));
+        if (!lockCursor && (param.action.start > cursorTime || param.action.end <= cursorTime)) {
           window.timelineEngine.setTime(param.action.start);
         }
       }

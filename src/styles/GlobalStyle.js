@@ -1,6 +1,7 @@
 import { createGlobalStyle } from 'styled-components';
 import './_inputs.css';
 import palette from './palette';
+import { borderRadius } from './constants';
 
 export default createGlobalStyle`
   :root {
@@ -72,7 +73,7 @@ export default createGlobalStyle`
     align-items: center;
     height: 35px;
     width: 100%;
-    border-radius: 3px;
+    border-radius: ${borderRadius};
     color: #fff;
     cursor: pointer;
     font-size: 13px;
@@ -112,7 +113,7 @@ export default createGlobalStyle`
 
   .app-select {
     min-width: 160px;
-    border-radius: 1px;
+    border-radius: ${borderRadius};
     border-color: rgb(255 255 255 / 30%);
     color: #ffffff;
     background-color: transparent;
@@ -122,7 +123,7 @@ export default createGlobalStyle`
 
   .app-input {
     height: 35px;
-    border-radius: 1px;
+    border-radius: ${borderRadius};
     border-color: rgb(255 255 255 / 30%);
     color: #ffffff;
     background-color: transparent;
@@ -349,7 +350,7 @@ export default createGlobalStyle`
   }
 
   .file {
-    border-radius: 1px;
+    border-radius: ${borderRadius};
     background-color: transparent;
     color: white;
     border: 1px solid rgb(255 255 255 / 25%);
@@ -366,6 +367,19 @@ export default createGlobalStyle`
       &::file-selector-button {
         background-color: rgb(255 255 255 / 25%) !important;
       }
+    }
+  }
+
+  .reflex-size-aware {
+    overflow: hidden;
+  }
+
+  .reflex-splitter {
+    border-color: rgba(0, 0, 0, 0.8) !important;
+    opacity: 75%;
+
+    &:hover {
+      border-color: var(--c-primary) !important;
     }
   }
 `;

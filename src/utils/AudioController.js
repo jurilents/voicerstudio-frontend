@@ -54,7 +54,6 @@ class AudioController {
       item.rate(rate * speedRate);
     };
     if (!cachedListeners[id]) cachedListeners[id] = {};
-    console.log('e', engine);
     engine.listener.on('afterSetTime', timeListener);
     engine.listener.on('afterSetPlayRate', rateListener);
     cachedListeners[id].time = timeListener;

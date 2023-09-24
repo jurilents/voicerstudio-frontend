@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { t } from 'react-i18nify';
+import { borderRadius } from '../styles/constants';
 
 const Style = styled.div`
   position: absolute;
@@ -24,7 +25,7 @@ const Style = styled.div`
     width: 200px;
     height: 200px;
     padding: 0 10px;
-    border-radius: 10px;
+    border-radius: ${borderRadius};
     color: #fff;
     background-color: rgb(34 36 60 / 95%);
     box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.5);

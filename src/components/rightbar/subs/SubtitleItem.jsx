@@ -1,14 +1,14 @@
-import { d2t, getDurationStatusColor, toPercentsNumber } from '../../utils';
+import { d2t, getDurationStatusColor, toPercentsNumber } from '../../../utils';
 import unescape from 'lodash/unescape';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faRocket, faStopwatch, faUndo } from '@fortawesome/free-solid-svg-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { patchSub, selectSub } from '../../store/sessionReducer';
-import { settings } from '../../settings';
-import { usePlayPause } from '../../hooks';
+import { patchSub, selectSub } from '../../../store/sessionReducer';
+import { settings } from '../../../settings';
+import { usePlayPause } from '../../../hooks';
 import _ from 'lodash';
-import { NumericInput } from '../shared/NumericInput';
+import { NumericInput } from '../../shared/NumericInput';
 
 let requestSync = false;
 const rateLimit = settings.rateLimit * 100;
@@ -101,7 +101,7 @@ const SubtitleItem = (params) => {
         {/* ************ Text ************ */}
         <textarea maxLength={settings.subtitleTextLimit}
                   spellCheck={false}
-                  className='textarea'
+                  className={'textarea textarea-left' + (showNote ? '' : ' textarea-right')}
                   value={unescape(sub.text)}
                   onChange={handleSubTextChange}
                   onBlur={(e) => handleSubTextChange(e, true)} />
@@ -110,7 +110,7 @@ const SubtitleItem = (params) => {
         {showNote && (
           <textarea maxLength={settings.subtitleTextLimit}
                     spellCheck={false}
-                    className='textarea'
+                    className='textarea textarea-right'
                     value={unescape(sub.note)}
                     onChange={handleSubNoteTextChange}
                     onBlur={(e) => handleSubNoteTextChange(e, true)} />

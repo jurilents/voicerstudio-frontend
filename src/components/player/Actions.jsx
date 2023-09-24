@@ -2,11 +2,12 @@ import styled from 'styled-components';
 import { faCircle, faLocationCrosshairs, faMagnet, faPause, faPlay } from '@fortawesome/free-solid-svg-icons';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import TimeIndicator from '../toolbar/TimeIndicator';
+import TimeIndicator from './TimeIndicator';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePlayerControls } from '../../hooks/usePlayerControls';
 import { setTimelineSettings } from '../../store/timelineSettingsReducer';
+import { borderRadius } from '../../styles/constants';
 
 const Style = styled.div`
   position: absolute;
@@ -44,7 +45,7 @@ const Style = styled.div`
     width: 2px;
     min-width: 2px;
     min-height: 25px;
-    border-radius: 5px;
+    border-radius: ${borderRadius};
   }
 
   .btn {
@@ -60,8 +61,9 @@ const Style = styled.div`
   }
 `;
 
-const Actions = ({ player }) => {
+const Actions = () => {
   const dispatch = useDispatch();
+  const player = useSelector(store => store.player.videoPlayer);
   const settings = useSelector(store => store.timelineSettings);
   const { playing, recording } = useSelector(store => store.timeline);
   const { startRecording, completeRecording, togglePlay, pause } = usePlayerControls(player);

@@ -7,10 +7,12 @@ import sessionReducer from './sessionReducer';
 import settingsReducer from './settingsReducer';
 import timelineReducer from './timelineReducer';
 import timelineSettingsReducer from './timelineSettingsReducer';
+import playerReducer from './playerReducer';
 
 const rootReducer = combineReducers({
   audio: audioReducer,
   languages: languagesReducer,
+  player: playerReducer,
   session: sessionReducer,
   settings: settingsReducer,
   timeline: timelineReducer,

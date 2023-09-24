@@ -26,8 +26,9 @@ const Style = styled.div`
   }
 `;
 
-const MarkersTab = ({ player }) => {
+const MarkersTab = () => {
   const dispatch = useDispatch();
+  const player = useSelector(store => store.player.videoPlayer);
   const { markers } = useSelector(store => store.session);
   const [selectedMarker, setSelectedMarker] = useState(markers?.[0]);
   const { goToMarker } = useMarkers(player);

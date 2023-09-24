@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ListGroup } from 'react-bootstrap';
 import timelineStyles from '../timelineStyles';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectSpeaker } from '../../../store/sessionReducer';
 import { useAudioControls } from '../../../hooks';
+import { borderRadius } from '../../../styles/constants';
 
 const Style = styled.div`
-  width: ${timelineStyles.headingWidth};
+  width: ${timelineStyles.headingWidth + 10};
+  min-width: 210px;
+    //max-width: ${timelineStyles.headingWidth + 10};
   height: 100%;
-  padding: 42px 0 10px 0;
+  padding: 42px 0 5px 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  overflow-y: hidden;
 
   .inner {
     position: relative;
@@ -35,6 +39,7 @@ const Style = styled.div`
     flex-direction: column;
     //overflow-y: scroll;
     width: 200px;
+    overflow-y: scroll;
   }
 
   .list-group-item {
@@ -65,7 +70,7 @@ const Style = styled.div`
 
   .speaker-btn {
     background-color: rgb(255 255 255 / 10%);
-    border-radius: 1px;
+    border-radius: ${borderRadius};
     aspect-ratio: 1;
     height: 28px;
 
@@ -90,7 +95,7 @@ const Style = styled.div`
   }
 `;
 
-export const TimelineHeading = () => {
+export const TimelineHeading = ({ innerRef }) => {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
   const { speakers, selectedSpeaker } = useSelector(store => store.session);
@@ -98,11 +103,33 @@ export const TimelineHeading = () => {
   const [state, setState] = useState(false);
   const audioControls = useAudioControls();
 
+  useEffect(() => {
+    function handleScroll(e) {
+      console.log('scrolling', e);
+      if (window.timelineEngine) {
+        window.timelineEngine.setScrollTop(+e.target.scrollTop);
+      }
+    }
+
+    const elm = innerRef.current;
+    if (elm) {
+      elm.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      elm.removeEventListener('scroll', handleScroll);
+    };
+  }, [innerRef]);
+
 
   return (
     <Style className='timeline-heading'>
-      <ListGroup className='app-list-group'>
-        <ListGroup.Item style={{ borderColor: '#5e5e5e', height: timelineRowHeight * 2 }}>
+      <ListGroup ref={innerRef} className='app-list-group'>
+        <ListGroup.Item style={{
+          borderColor: '#5e5e5e',
+          height: timelineRowHeight * 2,
+          minHeight: timelineRowHeight * 2,
+        }}>
           <div className='speaker-actions'>
             <button className={'btn speaker-btn' + (settings.originalMute ? ' mute-active' : '')}
                     title='Mute'

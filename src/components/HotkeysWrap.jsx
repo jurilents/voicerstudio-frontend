@@ -2,8 +2,8 @@ import { memo, useEffect } from 'react';
 import { useHotkeys } from '../hooks';
 
 
-const HotkeysWrap = ({ player }) => {
-  const { onKeyDown, onKeyUp } = useHotkeys({ player });
+const HotkeysWrap = () => {
+  const { onKeyDown, onKeyUp } = useHotkeys();
 
   // ---------- Timeline Hotkeys ----------
   useEffect(() => {

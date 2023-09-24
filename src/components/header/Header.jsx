@@ -10,7 +10,6 @@ const Style = styled.div`
   position: relative;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 50%);
-  border-left: 1px solid rgb(255 255 255 / 20%);
   height: 60px;
 
   .logo {
@@ -79,7 +78,7 @@ export default function Header() {
         </a>
         <div className='logo-content'>
           <span className='logo-title'>Voicer Studio</span>
-          <span className='logo-version'>v2.3.0 – 26/08/23</span>
+          <span className='logo-version'>v2.3.0 – 20/09/23</span>
         </div>
       </div>
       <nav>

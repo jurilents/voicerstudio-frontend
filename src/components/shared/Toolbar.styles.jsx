@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { borderRadius } from '../../styles/constants';
 
 export const Style = styled.div`
   display: flex;
@@ -8,16 +9,15 @@ export const Style = styled.div`
   position: relative;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 50%);
-  border-left: 1px solid rgb(255 255 255 / 20%);
-  max-width: 420px;
+  //border-left: 1px solid rgb(255 255 255 / 20%);
+  width: 100%;
+  height: 100%;
 
   .tab-content {
-    width: 370px;
-    max-width: 100%;
-    min-height: 130px;
-    padding: 10px 10px 20px 10px;
-    margin-bottom: 5px;
+    width: 100%;
     height: 100%;
+    min-height: 130px;
+    margin-bottom: 5px;
     overflow-y: auto;
   }
 
@@ -42,6 +42,11 @@ export const Style = styled.div`
 
   .tab-pane {
     height: 100%;
+    padding: 10px 10px 20px 10px;
+
+    &.compact-tab {
+      padding: 0;
+    }
   }
 
   .tabs-buttons {
@@ -50,7 +55,7 @@ export const Style = styled.div`
 
     .nav-link {
       cursor: pointer;
-      border-radius: 0;
+      border-radius: ${borderRadius};
       padding: 10px 12px;
       color: white;
 
@@ -135,7 +140,7 @@ export const Style = styled.div`
       width: 65%;
       outline: none;
       padding: 0 5px;
-      border-radius: 3px;
+      border-radius: ${borderRadius};
     }
 
     .btn {

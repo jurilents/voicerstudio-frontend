@@ -70,14 +70,15 @@ const Style = styled.div`
   }
 `;
 
-const Progress = ({ player }) => {
+const Progress = () => {
+  const player = useSelector(store => store.player.videoPlayer);
   const [grabbing, setGrabbing] = useState(false);
   const dispatch = useDispatch();
   const speakers = useSelector(store => store.session.speakers);
   const currentTime = useSelector(store => store.timeline.time);
 
   const setProgress = useCallback((pageX) => {
-    if (!window.timelineEngine) return;
+    if (!player || !window.timelineEngine) return;
     const engine = window.timelineEngine;
     const totalWidth = engine.target.clientWidth;
 
@@ -86,7 +87,7 @@ const Progress = ({ player }) => {
     player.currentTime = newTime;
     dispatch(setTime(newTime));
     window.timelineEngine.setTime(newTime);
-  }, [dispatch, window.timelineEngine]);
+  }, [dispatch, player]);
 
   const onProgressClick = useCallback((event) => {
     if (event.button !== 0) return;
@@ -108,7 +109,7 @@ const Progress = ({ player }) => {
         setProgress(event.pageX);
       }
     },
-    [grabbing, player],
+    [grabbing],
   );
 
   const onDocumentMouseUp = useCallback(() => {
@@ -116,7 +117,7 @@ const Progress = ({ player }) => {
       setGrabbing(false);
       // waveform.seek(player.currentTime);
     }
-  }, [grabbing, player?.currentTime]);
+  }, [grabbing]);
 
   useEffect(() => {
     document.addEventListener('mouseup', onDocumentMouseUp);

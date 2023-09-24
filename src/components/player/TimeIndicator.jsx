@@ -13,7 +13,8 @@ const Style = styled.div`
   pointer-events: none;
 `;
 
-const TimeIndicator = ({ player }) => {
+const TimeIndicator = () => {
+  const player = useSelector(store => store.player.videoPlayer);
   const currentTime = useSelector(store => store.timeline.time);
   if (!player) {
     return (

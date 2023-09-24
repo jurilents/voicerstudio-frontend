@@ -79,7 +79,8 @@ function registerAllHotkeys() {
 
   // ====== Refresh page disabled ====== //
   hotkeys.add('R', { meta: true }, ({}) => {
-    toast.info('Refresh page hotkey disabled. Use browser button if you really want to refresh the page 😘');
+    // TODO: Uncomment
+    // toast.info('Refresh page hotkey disabled. Use browser button if you really want to refresh the page 😘');
   });
 
   // ================================= //

@@ -13,7 +13,7 @@ const Style = styled.div``;
 
 let resetCountdown = 5;
 
-const backupExtension = 'voicer';
+const backupExtension = 'json';
 
 export default function ImportTab(props) {
   const dispatch = useDispatch();
@@ -100,7 +100,7 @@ export default function ImportTab(props) {
             </Col>
           </Row>
           <Row className='mt-4'>
-            <Col className='label'>Restore from backup file&nbsp;<b>*.voicer</b></Col>
+            <Col className='label'>Restore from backup file&nbsp;<b>*.{backupExtension}</b></Col>
           </Row>
           <Row>
             <Col>
@@ -115,6 +115,13 @@ export default function ImportTab(props) {
             <Col>
               <button className='btn btn-primary' onClick={saveBackupFile}>
                 Save backup file
+              </button>
+            </Col>
+          </Row>
+          <Row className='mt-4'>
+            <Col>
+              <button className='btn btn-outline' onClick={handleResetClick}>
+                Reset Subtitles
               </button>
             </Col>
           </Row>

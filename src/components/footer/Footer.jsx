@@ -1,24 +1,24 @@
 import styled from 'styled-components';
-import React, { createRef, useState } from 'react';
+import React, { createRef, memo, useState } from 'react';
 import TimelineEditor from './timeline/TimelineEditor';
 import { TimelineHeading } from './timeline/TimelineHeading';
 import Progress from './Progress';
 import Zoom from './Zoom';
 
 const Style = styled.div`
-  height: 400px;
+  height: 100%;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: center;
-  padding-bottom: 35px;
-  margin-top: 10px;
-  position: relative;
-  background-color: rgb(0 0 0 / 50%);
+  //padding-bottom: 35px;
+  //margin-top: 10px;
+  //position: relative;
 `;
 
-export default function Footer(props) {
+function Footer() {
   const $footer = createRef();
+  const $heading = createRef();
   const [headingWidth, setHeadingWidth] = useState(200);
   // const [render, setRender] = useState({
   //   padding: 2,
@@ -68,9 +68,9 @@ export default function Footer(props) {
 
   return (
     <Style className='footer' ref={$footer}>
-      <TimelineHeading />
+      <TimelineHeading innerRef={$heading} />
       {/*<div className='timeline-outlet'>*/}
-      <TimelineEditor {...props} headingWidth={headingWidth} />
+      <TimelineEditor headingRef={$heading} headingWidth={headingWidth} />
       {/*  {props.player ? (*/}
       {/*    <>*/}
       {/*      <Waveform {...props} setRender={setRender} />*/}
@@ -78,12 +78,8 @@ export default function Footer(props) {
       {/*      <Metronome {...props} render={render} headingWidth={headingWidth} />*/}
       {/*      <Timeline {...props} render={render} headingWidth={headingWidth} />*/}
 
-      {props.player && (
-        <>
-          <Zoom {...props} headingWidth={headingWidth} />
-          <Progress {...props} headingWidth={headingWidth} />
-        </>
-      )}
+      <Zoom headingWidth={headingWidth} />
+      <Progress headingWidth={headingWidth} />
 
       {/*    </>*/}
       {/*  ) : null}*/}
@@ -91,3 +87,8 @@ export default function Footer(props) {
     </Style>
   );
 }
+
+export default memo(
+  Footer,
+  () => true,
+);

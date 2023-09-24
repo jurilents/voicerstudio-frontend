@@ -1,14 +1,15 @@
-import React, { createRef, useEffect } from 'react';
+import React, { createRef } from 'react';
 import styled from 'styled-components';
 import VideoWrap from './VideoWrap';
 import Actions from './Actions';
+import { borderRadius } from '../../styles/constants';
 
 const Style = styled.div`
   display: flex;
   flex: 1;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  height: calc(100% - 60px);
   width: 100%;
   min-width: 280px;
   padding: 2% 2%;
@@ -54,7 +55,7 @@ const Style = styled.div`
         padding: 5px 15px;
         color: #fff;
         font-size: 13px;
-        border-radius: 3px;
+        border-radius: ${borderRadius};
         margin-bottom: 5px;
         background-color: rgb(0 0 0 / 75%);
         border: 1px solid rgb(255 255 255 / 20%);
@@ -87,95 +88,11 @@ const Style = styled.div`
 `;
 
 export default function Player(props) {
-  // const [currentSub, setCurrentSub] = useState(null);
-  // const [focusing, setFocusing] = useState(false);
-  // const [inputItemCursor, setInputItemCursor] = useState(0);
-  const $player = createRef();
-
-  // useEffect(() => {
-  //   if ($player.current && props.player && !backlight.state) {
-  //     backlight.state = true;
-  //     backlight($player.current, props.player);
-  //   }
-  // }, [$player, props.player]);
-
-  // useMemo(() => {
-  //   const sub = props.subtitle.find(x => x.id === props.settings.currentSubtitle);
-  //   setCurrentSub(sub?.id || -1);
-  // }, [props.subtitle, props.settings]);
-
-  // const onChange = useCallback(
-  //   (event) => {
-  //     props.player.pause();
-  //     props.updateSub(currentSub, { text: event.target.value });
-  //     if (event.target.selectionStart) {
-  //       setInputItemCursor(event.target.selectionStart);
-  //     }
-  //   },
-  //   [props.player, props.updateSub, currentSub],
-  // );
-
-  // const onClick = useCallback(
-  //   (event) => {
-  //     props.player.pause();
-  //     if (event.target.selectionStart) {
-  //       setInputItemCursor(event.target.selectionStart);
-  //     }
-  //   },
-  //   [props.player],
-  // );
-
-  // const onFocus = useCallback((event) => {
-  //   setFocusing(true);
-  //   if (event.target.selectionStart) {
-  //     setInputItemCursor(event.target.selectionStart);
-  //   }
-  // }, []);
-
-  // const onBlur = useCallback(() => {
-  //   setTimeout(() => setFocusing(false), 500);
-  // }, []);
-
-  // const onSplit = useCallback(() => {
-  //   props.splitSub(currentSub, inputItemCursor);
-  // }, [props.splitSub, currentSub, inputItemCursor]);
-
-  useEffect(() => {
-    if (!props.player) {
-      return;
-    }
-    if (props.playing) {
-      props.player.play();
-    } else if (!props.player.paused) {
-      props.player.pause();
-    }
-  }, [props.player, props.playing]);
-
   return (
     <Style className='player'>
-      <div className='video' ref={$player}>
-        {/*<SpeakersAudio {...props} />*/}
+      <div className='video'>
         <VideoWrap {...props} />
         <Actions {...props} />
-        {/*{props.player && currentSub ? (*/}
-        {/*  <div className='subtitle'>*/}
-        {/*    {focusing ? (*/}
-        {/*      <div className='operate' onClick={onSplit}>*/}
-        {/*        <Translate value='SPLIT' />*/}
-        {/*      </div>*/}
-        {/*    ) : null}*/}
-        {/*    <TextareaAutosize*/}
-        {/*      className={`textarea ${!props.playing ? 'pause' : ''}`}*/}
-        {/*      value={currentSub.text}*/}
-        {/*      onChange={onChange}*/}
-        {/*      onClick={onClick}*/}
-        {/*      onFocus={onFocus}*/}
-        {/*      onBlur={onBlur}*/}
-        {/*      onKeyDown={onFocus}*/}
-        {/*      spellCheck={false}*/}
-        {/*    />*/}
-        {/*  </div>*/}
-        {/*) : null}*/}
       </div>
     </Style>
   );

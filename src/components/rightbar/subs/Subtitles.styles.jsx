@@ -1,10 +1,13 @@
 import styled from 'styled-components';
+import { borderRadius } from '../../../styles/constants';
 
 export const Style = styled.div`
   height: 100%;
+  width: 100%;
 
   .ReactVirtualized__Table {
     height: 100%;
+    width: 100%;
 
     .ReactVirtualized__Table__Grid {
       outline: none;
@@ -52,6 +55,16 @@ export const Style = styled.div`
           transition: all 0.2s ease;
           resize: none;
           outline: none;
+
+          &.textarea-left {
+            border-top-left-radius: ${borderRadius};
+            border-bottom-left-radius: ${borderRadius};
+          }
+
+          &.textarea-right {
+            border-top-right-radius: ${borderRadius};
+            border-bottom-right-radius: ${borderRadius};
+          }
         }
 
         .item-info {
@@ -111,6 +124,7 @@ export const Style = styled.div`
 
             &.invalid {
               color: var(--c-danger);
+              filter: brightness(200%);
             }
 
             &[type=time] {

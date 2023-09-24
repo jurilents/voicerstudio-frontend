@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { borderRadius } from '../../../styles/constants';
 
 export const Style = styled.div`
   width: 100%;
@@ -8,8 +9,15 @@ export const Style = styled.div`
 
   .timeline-editor {
     width: 100%;
+    height: 100%;
     z-index: 100;
     background-color: transparent;
+
+    //&:hover {
+    .timeline-editor-edit-area .ReactVirtualized__Grid::-webkit-scrollbar {
+      height: 4px;
+    }
+    //}
   }
 
   .timeline-editor-action-right-stretch,
@@ -62,6 +70,7 @@ export const Style = styled.div`
     opacity: 50%;
     border: 1px solid transparent;
     border-bottom: 4px solid inherit;
+    border-radius: ${borderRadius};
 
     &.focus-sub {
       opacity: 100%;

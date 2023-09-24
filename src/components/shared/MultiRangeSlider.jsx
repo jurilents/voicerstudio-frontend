@@ -101,7 +101,7 @@ const Style = styled.div`
   }
 `;
 
-export default function MultiRangeSlider({ min, max, step, onChange }) {
+const MultiRangeSlider = ({ min, max, step, onChange }) => {
   const [minVal, setMinVal] = useState(min);
   const [maxVal, setMaxVal] = useState(max);
   const minValRef = useRef(min);
@@ -177,3 +177,5 @@ export default function MultiRangeSlider({ min, max, step, onChange }) {
     </Style>
   );
 };
+
+export default MultiRangeSlider;

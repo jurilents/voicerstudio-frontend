@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSettings } from '../../../store/settingsReducer';
 import { patchSpeaker } from '../../../store/sessionReducer';
 import { useAudioControls } from '../../../hooks';
+import { borderRadius } from '../../../styles/constants';
 
 const Style = styled.div`
   display: flex;
@@ -59,7 +60,7 @@ const Style = styled.div`
   }
 
   .speaker-btn {
-    border-radius: 1px;
+    border-radius: ${borderRadius};
     width: 50%;
     aspect-ratio: 1;
     border: 1px solid rgb(255 255 255 / 20%);
@@ -160,7 +161,8 @@ function SpeakerAudioVolumeItem({ speaker, state, setState }) {
   );
 }
 
-export default function MixerTab({ player }) {
+export default function MixerTab() {
+  const player = useSelector(store => store.player.videoPlayer);
   const { speakers, selectedSpeaker } = useSelector(store => store.session);
   const [state, setState] = useState(false);
 
