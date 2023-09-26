@@ -36,6 +36,7 @@ const SELECT_CREDS = 'SELECT_CREDS';
 
 const SET_MARKER = 'SET_MARKER';
 const PATCH_MARKER = 'PATCH_MARKER';
+const SELECT_MARKER = 'SELECT_MARKER';
 
 // Storage keys
 const STORAGE_KEY = 'session';
@@ -44,7 +45,7 @@ const STORAGE_KEY = 'session';
 const defaultSpeaker = new Speaker({
   id: 1,
   displayName: 'Speaker 1',
-  color: colors.teal,
+  color: colors.blue,
 });
 const rootState = {
   speakers: [defaultSpeaker],
@@ -54,6 +55,7 @@ const rootState = {
   selectedCredentials: { Azure: null },
   presets: [],
   markers: [],
+  selectedMarker: null,
   videoUrl: null,
   videoDuration: 60,
 };
@@ -262,6 +264,10 @@ export default function sessionReducer(state = defaultState, action) {
       const session = markersReducer.patchMarker(state, action);
       return saveToLocalStorage(session);
     }
+    case SELECT_MARKER: {
+      const session = markersReducer.selectMarker(state, action);
+      return saveToLocalStorage(session);
+    }
 
     default:
       return state;
@@ -295,3 +301,4 @@ export const selectCreds = (cred, service) => ({ type: SELECT_CREDS, payload: { 
 
 export const setMarker = (marker) => ({ type: SET_MARKER, payload: { marker } });
 export const patchMarker = (marker, patch) => ({ type: PATCH_MARKER, payload: { marker, patch } });
+export const selectMarker = (marker) => ({ type: SELECT_MARKER, payload: { marker } });

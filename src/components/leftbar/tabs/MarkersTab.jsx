@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { patchMarker, setMarker } from '../../../store/sessionReducer';
+import { patchMarker, selectMarker, setMarker } from '../../../store/sessionReducer';
 import colors from '../../../utils/colors';
 import { formatTime } from '../../../utils';
 import { useMarkers } from '../../../hooks';
@@ -29,20 +29,19 @@ const Style = styled.div`
 const MarkersTab = () => {
   const dispatch = useDispatch();
   const player = useSelector(store => store.player.videoPlayer);
-  const { markers } = useSelector(store => store.session);
-  const [selectedMarker, setSelectedMarker] = useState(markers?.[0]);
+  const { markers, selectedMarker } = useSelector(store => store.session);
   const { goToMarker } = useMarkers(player);
 
   return (
     <Style className='tab-outlet'>
       <div>
         <h3>Markers</h3>
-        <ListGroup className='app-list-group'>
+        <ListGroup className='app-list-group app-list-group-bottom'>
           {markers?.map((marker) => (
             <ListGroup.Item className={(selectedMarker?.id && marker.id === selectedMarker?.id ? 'selected' : '')}
                             key={marker.id}
                             onClick={() => {
-                              setSelectedMarker(marker);
+                              dispatch(selectMarker(marker));
                               goToMarker(marker);
                             }}>
               <div className='color-preview' style={{ backgroundColor: marker.color || '#000' }}></div>

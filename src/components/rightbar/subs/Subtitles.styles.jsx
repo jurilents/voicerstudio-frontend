@@ -25,7 +25,7 @@ export const Style = styled.div`
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
-        border: 1px solid transparent;
+        border: 0 solid transparent;
 
         &.highlight {
           background-color: rgba(10, 10, 10, 0.33);
@@ -37,9 +37,10 @@ export const Style = styled.div`
         }
 
         &.illegal {
-          //background-color: var(--c-danger);
-          border: solid var(--c-danger);
-          border-width: 1px 1px 1px 10px;
+          border-left: solid var(--c-danger);
+          border-width: 1px 0 1px 10px !important;
+          border-top: solid transparent;
+          border-bottom: solid transparent;
         }
 
         .textarea {

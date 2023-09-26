@@ -1,7 +1,6 @@
 import React, { memo } from 'react';
-import { faCircleQuestion, faClipboardList, faComments } from '@fortawesome/free-solid-svg-icons';
+import { faCircleQuestion, faComments } from '@fortawesome/free-solid-svg-icons';
 import HelpTab from './tabs/HelpTab';
-import HistoryTab from './tabs/HistoryTab';
 import Toolbar from '../shared/Toolbar';
 import SubtitlesTab from './tabs/SubtitlesTab';
 
@@ -12,17 +11,19 @@ const tabs = [
     icon: faComments,
     component: SubtitlesTab,
     compact: true,
-  }, {
-    key: 'history',
-    title: 'History',
-    icon: faClipboardList,
-    component: HistoryTab,
   },
+  // {
+  //   key: 'history',
+  //   title: 'History',
+  //   icon: faClipboardList,
+  //   component: HistoryTab,
+  // },
   {
     key: 'help',
     title: 'Hotkeys & Help',
     icon: faCircleQuestion,
     component: HelpTab,
+    compact: true,
   },
 ];
 

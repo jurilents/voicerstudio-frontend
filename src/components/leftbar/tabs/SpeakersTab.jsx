@@ -4,11 +4,9 @@ import { Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { addSpeaker, patchSpeaker, removeSpeaker, restoreFromJson, selectSpeaker } from '../../../store/sessionReducer';
+import { addSpeaker, patchSpeaker, removeSpeaker, selectSpeaker } from '../../../store/sessionReducer';
 import { Speaker } from '../../../models';
 import colors from '../../../utils/colors';
-import { getExt } from '../../../utils';
-import { toast } from 'react-toastify';
 
 const Style = styled.div`
   display: flex;
@@ -47,30 +45,30 @@ export default function SpeakersTab(props) {
     preset: presets?.length ? presets[0] : null,
   });
 
-  const importSubs = (event) => {
-    function handleFileLoaded(event) {
-      session.selectedSpeaker.subs = JSON.parse(event.target.result);
-      dispatch(restoreFromJson(JSON.stringify(session)));
-    }
-
-    const file = event.target.files[0];
-    if (file) {
-      const ext = getExt(file.name);
-      if (ext !== 'json') {
-        toast.warn('Invalid backup file format');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = handleFileLoaded;
-      reader.readAsText(file);
-    }
-  };
+  // const importSubs = (event) => {
+  //   function handleFileLoaded(event) {
+  //     session.selectedSpeaker.subs = JSON.parse(event.target.result);
+  //     dispatch(restoreFromJson(JSON.stringify(session)));
+  //   }
+  //
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const ext = getExt(file.name);
+  //     if (ext !== 'json') {
+  //       toast.warn('Invalid backup file format');
+  //       return;
+  //     }
+  //     const reader = new FileReader();
+  //     reader.onload = handleFileLoaded;
+  //     reader.readAsText(file);
+  //   }
+  // };
 
   return (
     <Style className='tab-outlet'>
       <div>
         <h3>Speakers</h3>
-        <ListGroup className='app-list-group'>
+        <ListGroup className='app-list-group app-list-group-bottom'>
           {speakers.map((speaker) => (
             <ListGroup.Item className={(selectedSpeaker?.id && speaker.id === selectedSpeaker?.id ? 'selected' : '')}
                             key={speaker.id}
@@ -101,6 +99,11 @@ export default function SpeakersTab(props) {
       </div>
       {selectedSpeaker && (
         <Container className='speaker-form'>
+          <Row>
+            <Col xs={12}>
+              <h3>{selectedSpeaker.displayName}</h3>
+            </Col>
+          </Row>
           <Row>
             <Col className='label'>Color</Col>
             <Col>
@@ -140,15 +143,15 @@ export default function SpeakersTab(props) {
               </Form.Select>
             </Col>
           </Row>
-          <Row>
-            <Col className='label'>Import Subtitles</Col>
-            <Col className='file-wrapper'>
-              <Form.Control className='file'
-                            type='file'
-                            accept='.json'
-                            onChange={importSubs} />
-            </Col>
-          </Row>
+          {/*<Row>*/}
+          {/*  <Col className='label'>Import Subtitles</Col>*/}
+          {/*  <Col className='file-wrapper'>*/}
+          {/*    <Form.Control className='file'*/}
+          {/*                  type='file'*/}
+          {/*                  accept='.json'*/}
+          {/*                  onChange={importSubs} />*/}
+          {/*  </Col>*/}
+          {/*</Row>*/}
         </Container>
       )}
     </Style>

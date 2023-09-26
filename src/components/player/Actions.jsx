@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { usePlayerControls } from '../../hooks/usePlayerControls';
 import { setTimelineSettings } from '../../store/timelineSettingsReducer';
 import { borderRadius } from '../../styles/constants';
+import palette from '../../styles/palette';
 
 const Style = styled.div`
   position: absolute;
@@ -56,7 +57,7 @@ const Style = styled.div`
     color: white;
 
     &.active {
-      background-color: rgba(0, 150, 136, 0.9);
+      background-color: ${palette.colors.primary};
     }
   }
 `;

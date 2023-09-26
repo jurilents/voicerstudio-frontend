@@ -8,7 +8,6 @@ const Style = styled.div`
   flex-direction: column;
 
   h3 {
-    padding-top: 10px;
     margin-bottom: 5px;
   }
 `;

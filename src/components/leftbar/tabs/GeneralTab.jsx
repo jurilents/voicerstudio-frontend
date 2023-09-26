@@ -36,6 +36,12 @@ const Style = styled.div`
   }
 `;
 
+const translateTargetLanguages = [
+  { value: 'en', displayName: 'English' },
+  { value: 'ru', displayName: 'Russian / Русский' },
+  { value: 'uk', displayName: 'Ukrainian / Українська' },
+];
+
 export default function GeneralTab() {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
@@ -93,6 +99,34 @@ export default function GeneralTab() {
                           }))} />
             </Col>
           </Row>
+          {!!settings.showNote && (
+            <Row>
+              <Col xs={6} className='label'>Translate subtitle to note</Col>
+              <Col xs={6} className='custom-input-wrap'>
+                <Form.Check checked={settings.translateSub}
+                            onChange={() => dispatch(setSettings({
+                              translateSub: !settings.translateSub,
+                            }))} />
+              </Col>
+            </Row>
+          )}
+          {!!settings.showNote && !!settings.translateSub && (
+            <Row>
+              <Col className='label'>Translate to language</Col>
+              <Col>
+                <Form.Select className='app-select'
+                             value={settings.translateTargetLang}
+                             onChange={(event) =>
+                               dispatch(setSettings({ translateTargetLang: event.target.value }))}>
+                  {translateTargetLanguages.map((item) => (
+                    <option key={item.value} value={item.value}>
+                      {item.displayName}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
+            </Row>
+          )}
           <Row className='mt-4'>
             <Col>
               <button className='btn btn-outline'

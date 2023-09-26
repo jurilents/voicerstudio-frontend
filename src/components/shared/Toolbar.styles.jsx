@@ -46,6 +46,10 @@ export const Style = styled.div`
 
     &.compact-tab {
       padding: 0;
+
+      h3 {
+        padding-top: 10px;
+      }
     }
   }
 
@@ -53,11 +57,17 @@ export const Style = styled.div`
     justify-content: center;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
 
+    .nav-item {
+      height: 100%;
+      aspect-ratio: 1 / 1;
+    }
+
     .nav-link {
       cursor: pointer;
       border-radius: ${borderRadius};
       padding: 10px 12px;
       color: white;
+      text-align: center;
 
       &.active {
         background-color: var(--c-primary);

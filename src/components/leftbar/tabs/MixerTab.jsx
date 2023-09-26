@@ -7,9 +7,14 @@ import { useAudioControls } from '../../../hooks';
 import { borderRadius } from '../../../styles/constants';
 
 const Style = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  .mixer-content {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: scroll;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
 
   .master {
     ::-ms-fill-lower {
@@ -21,8 +26,18 @@ const Style = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
+    min-width: 70px;
     width: 70px;
     border: 1px solid rgb(255 255 255 / 20%);
+
+    &:first-child {
+      border-radius: ${borderRadius} 0 0 ${borderRadius};
+    }
+
+    &:last-child {
+      border-radius: 0 ${borderRadius} ${borderRadius} 0;
+    }
 
     input {
       transform: rotate(270deg);
@@ -31,6 +46,7 @@ const Style = styled.div`
       position: absolute;
       top: 42%;
       left: -99px;
+      border-radius: ${borderRadius};
     }
 
     label {
@@ -39,7 +55,7 @@ const Style = styled.div`
       text-align: center;
       padding: 5px 2px;
       border-top: 1px solid rgb(255 255 255 / 20%);
-      max-height: 62px;
+      height: 62px;
       //text-wrap: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -53,6 +69,7 @@ const Style = styled.div`
   }
 
   .mixer-actions {
+    height: 35px;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -64,6 +81,7 @@ const Style = styled.div`
     width: 50%;
     aspect-ratio: 1;
     border: 1px solid rgb(255 255 255 / 20%);
+    border-radius: 0;
 
     &:hover {
       background-color: var(--c-primary-dark);
@@ -101,7 +119,9 @@ function AudioVolumeItem({ title, propertyName, type, player }) {
         {Math.round(settings[propertyName] * 100)}%
       </div>
       <label>{title}</label>
-      {type !== 'master' && (
+      {type === 'master' ? (
+        <div className='mixer-actions'></div>
+      ) : (
         <div className='mixer-actions'>
           <button className={'btn speaker-btn' + (settings.originalMute ? ' mute-active' : '')}
                   title='Mute'
@@ -168,11 +188,14 @@ export default function MixerTab() {
 
   return (
     <Style className='mixer'>
-      <AudioVolumeItem title='Master' propertyName='masterVolume' type='master' player={player} />
-      <AudioVolumeItem title='Original' propertyName='originalVolume' player={player} />
-      {speakers.map((speaker) => (
-        <SpeakerAudioVolumeItem key={speaker.id} speaker={speaker} state={state} setState={setState} />
-      ))}
+      <h3>Audio Mixer</h3>
+      <div className='mixer-content'>
+        <AudioVolumeItem title='Master' propertyName='masterVolume' type='master' player={player} />
+        <AudioVolumeItem title='Original' propertyName='originalVolume' player={player} />
+        {speakers.map((speaker) => (
+          <SpeakerAudioVolumeItem key={speaker.id} speaker={speaker} state={state} setState={setState} />
+        ))}
+      </div>
     </Style>
   );
 }

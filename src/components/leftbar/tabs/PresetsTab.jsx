@@ -102,7 +102,7 @@ const PresetsTab = () => {
             </ListGroup.Item>
           ))}
         </ListGroup>
-        <ListGroup className='presets-list app-list-group'>
+        <ListGroup className='presets-list app-list-group-bottom'>
           <ListGroup.Item>
             <button className='btn add-button'
                     onClick={() => toggleCredsModal(true)}>
@@ -136,7 +136,7 @@ const PresetsTab = () => {
             </ListGroup.Item>
           ))}
         </ListGroup>
-        <ListGroup className='presets-list app-list-group'>
+        <ListGroup className='presets-list app-list-group-bottom'>
           <ListGroup.Item>
             <button className='btn add-button'
                     onClick={showAddPresetModal}>

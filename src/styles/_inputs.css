@@ -24,6 +24,7 @@ input[type="range"] {
   background: #fff;
   box-shadow: -200px 0 0 200px var(--c-primary); /* 2 */
   border: 2px solid #999; /* 1 */
+  border-radius: 5px !important;
 }
 
 ::-moz-range-track {
@@ -36,9 +37,9 @@ input[type="range"] {
   height: 40px;
   width: 20px;
   border: 3px solid #999;
-  border-radius: 0 !important;
   box-shadow: -200px 0 0 200px var(--c-primary);
   box-sizing: border-box;
+  border-radius: 5px !important;
 }
 
 ::-ms-fill-lower {
@@ -51,6 +52,7 @@ input[type="range"] {
   height: 40px;
   width: 20px;
   box-sizing: border-box;
+  border-radius: 5px !important;
 }
 
 ::-ms-ticks-after {

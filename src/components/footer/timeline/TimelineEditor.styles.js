@@ -146,7 +146,7 @@ export const Style = styled.div`
   .markers-row {
     .timeline-marker {
       position: absolute;
-      top: -20px;
+      top: -120px;
       z-index: 100;
       filter: brightness(175%);
     }

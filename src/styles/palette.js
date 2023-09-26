@@ -1,8 +1,11 @@
 const palette = {
   colors: {
-    primaryLight: '#0da295',
-    primary: '#087C71',
-    primaryDark: '#115d55',
+    primaryLight: '#4c73bd',
+    primary: '#324F85',
+    primaryDark: '#1c3157',
+    // primaryLight: '#0da295',
+    // primary: '#087C71',
+    // primaryDark: '#115d55',
     success: '#69c220',
     danger: '#b22e1c',
     warn: '#b28f1c',

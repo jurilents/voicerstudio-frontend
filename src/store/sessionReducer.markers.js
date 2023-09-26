@@ -46,6 +46,7 @@ const markersReducer = {
     return {
       ...state,
       markers: newMarkers,
+      selectedMarker: action.payload.marker,
     };
   },
   patchMarker: (state, action) => {
@@ -54,6 +55,7 @@ const markersReducer = {
     const markersCopy = [...state.markers];
     const marker = state.markers[index];
     markersCopy[index] = new Marker({ ...marker, ...action.payload.patch });
+    const selectedMarker = markersCopy[index];
 
     if (action.payload.patch.time) {
       markersCopy.sort((a, b) => a.time - b.time);
@@ -61,6 +63,13 @@ const markersReducer = {
     return {
       ...state,
       markers: markersCopy,
+      selectedMarker: selectedMarker,
+    };
+  },
+  selectMarker: (state, action) => {
+    return {
+      ...state,
+      selectedMarker: action.payload.marker,
     };
   },
 };

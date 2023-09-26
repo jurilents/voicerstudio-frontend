@@ -132,7 +132,7 @@ export default createGlobalStyle`
     font-size: inherit;
   }
 
-  .app-list-group {
+  .app-list-group, .app-list-group-bottom {
     width: 100%;
     border-radius: 0;
 
@@ -190,6 +190,20 @@ export default createGlobalStyle`
       &:hover {
         opacity: 100%;
       }
+    }
+  }
+
+  .app-list-group {
+    .list-group-item:first-child {
+      border-top-left-radius: ${borderRadius};
+      border-top-right-radius: ${borderRadius};
+    }
+  }
+
+  .app-list-group-bottom {
+    .list-group-item:last-child {
+      border-bottom-left-radius: ${borderRadius};
+      border-bottom-right-radius: ${borderRadius};
     }
   }
 

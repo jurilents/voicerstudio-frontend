@@ -78,7 +78,7 @@ const Progress = () => {
   const currentTime = useSelector(store => store.timeline.time);
 
   const setProgress = useCallback((pageX) => {
-    if (!player || !window.timelineEngine) return;
+    if (!player?.duration || !window.timelineEngine) return;
     const engine = window.timelineEngine;
     const totalWidth = engine.target.clientWidth;
 
@@ -93,7 +93,7 @@ const Progress = () => {
     if (event.button !== 0) return;
     setProgress(event.pageX);
     // props.waveform.seek(currentTime);
-  }, [dispatch, player]);
+  }, [dispatch]);
 
   const onGrabDown = useCallback(
     (event) => {
@@ -130,11 +130,13 @@ const Progress = () => {
 
   const subHeight = 100 / speakers.length;
   const subHeightStyle = `${subHeight}%`;
+
+  if (!player?.duration || player.duration !== 0) return <></>;
   const { duration } = player;
 
   return (
     <Style className='progress' onClick={onProgressClick}>
-      <div className='bar' style={{ width: `${(currentTime / player.duration) * 100}%` }}>
+      <div className='bar' style={{ width: `${(currentTime / duration) * 100}%` }}>
         <div className='handle' onMouseDown={onGrabDown}>
           <FontAwesomeIcon icon={faBars} />
         </div>

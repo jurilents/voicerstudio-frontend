@@ -4,9 +4,14 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { settings } from '../../../settings';
 
 const Style = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
+  height: 100%;
+  overflow-y: scroll;
+
+  .help-scrollable {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
 
   .row {
     margin-bottom: 10px;
@@ -68,30 +73,32 @@ const supportContacts = [
 
 function HelpTab() {
   return (
-    <Style className='hotkey pb-5'>
-      <h3>Hotkeys</h3>
-      <Container>
-        {hotkeys.map((hotkey) => (
-          <Row key={hotkey.key} className={hotkey.offset ? 'mb-4' : ''}>
-            <Col xs={7} className='hotkey-title'>{hotkey.title}</Col>
-            <Col xs={5}><span className='hotkey-key'>{hotkey.key}</span></Col>
-          </Row>
-        ))}
-      </Container>
-      <div className='offset'></div>
-      <h3>Support</h3>
-      <Container>
-        {supportContacts.map((contact) => (
-          <Row key={contact.link}>
-            <Col xs={7} className='hotkey-title'>{contact.title}</Col>
-            <Col xs={5}>
-              <a href={contact.link} target='_blank' rel='noreferrer' className='hotkey-key'>
-                {contact.displayName}
-              </a>
-            </Col>
-          </Row>
-        ))}
-      </Container>
+    <Style className='help pb-4'>
+      <div className='help-scrollable'>
+        <h3>Hotkeys</h3>
+        <Container>
+          {hotkeys.map((hotkey) => (
+            <Row key={hotkey.key} className={hotkey.offset ? 'mb-4' : ''}>
+              <Col xs={7} className='hotkey-title'>{hotkey.title}</Col>
+              <Col xs={5}><span className='hotkey-key'>{hotkey.key}</span></Col>
+            </Row>
+          ))}
+        </Container>
+        <div className='offset'></div>
+        <h3>Support</h3>
+        <Container>
+          {supportContacts.map((contact) => (
+            <Row key={contact.link}>
+              <Col xs={7} className='hotkey-title'>{contact.title}</Col>
+              <Col xs={5}>
+                <a href={contact.link} target='_blank' rel='noreferrer' className='hotkey-key'>
+                  {contact.displayName}
+                </a>
+              </Col>
+            </Row>
+          ))}
+        </Container>
+      </div>
     </Style>
   );
 }

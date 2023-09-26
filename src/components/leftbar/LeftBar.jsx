@@ -66,8 +66,8 @@ const LeftBar = (props) => {
   return (
     <Toolbar tabs={tabs}
              selectByDefault='presets'
-             props={props} />)
-    ;
+             props={props} />
+  );
 };
 
 export default memo(
