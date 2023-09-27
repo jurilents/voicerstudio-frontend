@@ -45,5 +45,4 @@ export class TimeMachine {
   }
 }
 
-
 export default new TimeMachine();

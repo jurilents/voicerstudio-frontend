@@ -23,8 +23,11 @@ const rootState = {
   timelineRowHeight: 50,
   showCat: false,
   showNote: true,
-  translateSub: true,
-  translateTargetLang: 'ru',
+  autoTranslateSub: true,
+  selectedTranslateSourceLang: 'tr',
+  selectedTranslateTargetLang: 'ru',
+  translateSourceLangs: [],
+  translateTargetLangs: [],
 };
 
 const storedState = localStorage.getItem(STORAGE_KEY);

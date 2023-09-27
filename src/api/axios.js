@@ -95,6 +95,17 @@ export const languagesApi = {
   },
 };
 
+export const translateApi = {
+  getLanguages: async () => {
+    const result = await api.get(`v1/translate/languages`);
+    return result?.data;
+  },
+  translate: async (body) => {
+    const result = await api.post(`v1/translate`, body);
+    return result?.data;
+  },
+};
+
 export const speechApi = {
   // getDuration: async (body, credentials) => {
   //   const result = await api.post(`v1/text-2-speech/duration`, body, {

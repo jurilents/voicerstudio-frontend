@@ -79,8 +79,8 @@ const Progress = () => {
 
   const setProgress = useCallback((pageX) => {
     if (!player?.duration || !window.timelineEngine) return;
-    const engine = window.timelineEngine;
-    const totalWidth = engine.target.clientWidth;
+    // const engine = window.timelineEngine;
+    // const totalWidth = engine.target.clientWidth;
 
     const screenDelta = pageX / document.body.clientWidth;
     const newTime = screenDelta * player.duration;

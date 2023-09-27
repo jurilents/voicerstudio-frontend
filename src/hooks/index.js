@@ -5,3 +5,4 @@ export { usePlayPause } from './usePlayPause';
 export { useVideoStorage } from './useVideoStorage';
 export { useSubsAudioStorage } from './useSubsAudioStorage';
 export { useVoicer } from './useVoicer';
+export { useTranslator } from './useTranslator';

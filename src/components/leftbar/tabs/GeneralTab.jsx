@@ -6,7 +6,7 @@ import { setSettings } from '../../../store/settingsReducer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faMinus, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash/fp';
-import { useVoicer } from '../../../hooks';
+import { useTranslator, useVoicer } from '../../../hooks';
 
 const Style = styled.div`
   .speed-wrapper {
@@ -34,6 +34,21 @@ const Style = styled.div`
       }
     }
   }
+
+  .powered-by-translator-mark {
+    display: inline-block;
+    margin-left: 1rem;
+    color: #7a7a7a;
+
+    a {
+      color: var(--c-primary-light);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
 `;
 
 const translateTargetLanguages = [
@@ -46,6 +61,7 @@ export default function GeneralTab() {
   const dispatch = useDispatch();
   const settings = useSelector(store => store.settings);
   const { speakAll } = useVoicer();
+  const { translateAll } = useTranslator();
 
   const setPlaybackSpeed = (value) => {
     if (!window.timelineEngine) return;
@@ -58,7 +74,7 @@ export default function GeneralTab() {
   return (
     <Style className='tab-outlet'>
       <div>
-        <h3>Configuration</h3>
+        <h3>Tools & Tranlsation</h3>
         <Container>
           {/* ************ Playback speed ************ */}
           <Row>
@@ -90,7 +106,7 @@ export default function GeneralTab() {
           {/*    <span>{toPercentsDelta(settings.waveZoom)}</span>*/}
           {/*  </Col>*/}
           {/*</Row>*/}
-          <Row className='mt-3'>
+          <Row className='mt-3 mb-0'>
             <Col xs={6} className='label'>Show subtitle note</Col>
             <Col xs={6} className='custom-input-wrap'>
               <Form.Check checked={settings.showNote}
@@ -100,36 +116,62 @@ export default function GeneralTab() {
             </Col>
           </Row>
           {!!settings.showNote && (
-            <Row>
-              <Col xs={6} className='label'>Translate subtitle to note</Col>
-              <Col xs={6} className='custom-input-wrap'>
-                <Form.Check checked={settings.translateSub}
-                            onChange={() => dispatch(setSettings({
-                              translateSub: !settings.translateSub,
-                            }))} />
-              </Col>
-            </Row>
-          )}
-          {!!settings.showNote && !!settings.translateSub && (
-            <Row>
-              <Col className='label'>Translate to language</Col>
-              <Col>
-                <Form.Select className='app-select'
-                             value={settings.translateTargetLang}
-                             onChange={(event) =>
-                               dispatch(setSettings({ translateTargetLang: event.target.value }))}>
-                  {translateTargetLanguages.map((item) => (
-                    <option key={item.value} value={item.value}>
-                      {item.displayName}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Col>
-            </Row>
+            <>
+              <Row>
+                <Col xs={6} className='label'>Auto-translate to note</Col>
+                <Col xs={6} className='custom-input-wrap'>
+                  <Form.Check checked={settings.autoTranslateSub}
+                              onChange={() => dispatch(setSettings({
+                                autoTranslateSub: !settings.autoTranslateSub,
+                              }))} />
+                  <em className='powered-by-translator-mark'>
+                    powered by <a href='https://deepl.com' target='_blank'>deepl.com</a>
+                  </em>
+                </Col>
+              </Row>
+              <Row>
+                <Col className='label'>Translate source language</Col>
+                <Col>
+                  <Form.Select className='app-select'
+                               value={settings.selectedTranslateSourceLang}
+                               onChange={(event) =>
+                                 dispatch(setSettings({ selectedTranslateSourceLang: event.target.value }))}>
+                    {settings.translateSourceLangs.map((item) => (
+                      <option key={item.locale} value={item.locale}>
+                        {item.displayName}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Col>
+              </Row>
+              <Row>
+                <Col className='label'>Translate target language</Col>
+                <Col>
+                  <Form.Select className='app-select'
+                               value={settings.selectedTranslateTargetLang}
+                               onChange={(event) =>
+                                 dispatch(setSettings({ selectedTranslateTargetLang: event.target.value }))}>
+                    {settings.translateTargetLangs.map((item) => (
+                      <option key={item.locale} value={item.locale}>
+                        {item.displayName}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Col>
+              </Row>
+              <Row className='mt-4'>
+                <Col>
+                  <button className='btn btn-outline'
+                          onClick={() => translateAll()}>
+                    Refresh Translations
+                  </button>
+                </Col>
+              </Row>
+            </>
           )}
           <Row className='mt-4'>
             <Col>
-              <button className='btn btn-outline'
+              <button className='btn btn-primary'
                       onClick={() => speakAll({ speed: 0 })}>
                 Speak All
               </button>

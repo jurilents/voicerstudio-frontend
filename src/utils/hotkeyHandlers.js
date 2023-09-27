@@ -73,12 +73,12 @@ function registerAllHotkeys() {
   });
 
   // ====== Fake save ====== //
-  hotkeys.add('S', { meta: true }, ({}) => {
+  hotkeys.add('S', { meta: true }, () => {
     toast.success(`Calm down, it's okay, everything is auto-saved 😎`);
   });
 
   // ====== Refresh page disabled ====== //
-  hotkeys.add('R', { meta: true }, ({}) => {
+  hotkeys.add('R', { meta: true }, () => {
     // TODO: Uncomment
     // toast.info('Refresh page hotkey disabled. Use browser button if you really want to refresh the page 😘');
   });

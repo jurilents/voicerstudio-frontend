@@ -3,15 +3,16 @@ import { Table } from 'react-virtualized';
 import { download } from '../../../utils';
 import { useSelector } from 'react-redux';
 import SubtitleItem from './SubtitleItem';
-import { useVoicer } from '../../../hooks';
+import { useTranslator, useVoicer } from '../../../hooks';
 import { toast } from 'react-toastify';
 import { Style } from './Subtitles.styles';
 
 export default function Subtitles({ width, height }) {
   const player = useSelector(store => store.player.videoPlayer);
-  const { showNote } = useSelector(store => store.settings);
+  const { showNote, autoTranslateSub } = useSelector(store => store.settings);
   const { selectedSpeaker, selectedSub } = useSelector(store => store.session);
   const { speakSub } = useVoicer();
+  const { translateSub } = useTranslator();
 
   const downloadSub = useCallback((sub, index) => {
     if (sub.data?.src) {
@@ -49,7 +50,10 @@ export default function Subtitles({ width, height }) {
                              selectedSub={selectedSub}
                              selectedSpeaker={selectedSpeaker}
                              player={player}
-                             speakSub={speakSub}
+                             speakSub={async (...params) => {
+                               if (autoTranslateSub) await translateSub(props.rowData);
+                               await speakSub(...params);
+                             }}
                              downloadSub={downloadSub}
                              showNote={showNote} />
              )}

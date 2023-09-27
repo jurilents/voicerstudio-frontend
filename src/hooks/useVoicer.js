@@ -100,7 +100,7 @@ export const useVoicer = () => {
         toast.warn(`Some subtitles of selected speaker was not voiced`);
       }
     });
-  }, [speakSub, dispatch, selectedSpeaker, selectedCredentials]);
+  }, [speakSub, selectedSpeaker, selectedCredentials]);
 
   const ensureExtension = useCallback((fileName, ext) => {
     const extension = '.' + ext.toLowerCase();
@@ -187,7 +187,7 @@ export const useVoicer = () => {
 
     const fileName = buildExportFileName(exportFormat);
     fetch(fileName);
-  }, [selectedSpeaker, selectedSpeaker.subs, exportFormat, exportCodec, buildExportFileName]);
+  }, [selectedSpeaker.subs, exportFormat, exportCodec, buildExportFileName]);
 
   return { speakSub, speakAll, buildExportFileName, generateAndExport };
 };
