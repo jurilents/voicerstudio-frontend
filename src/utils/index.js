@@ -33,11 +33,15 @@ export function downloadObjectAsJson(obj, exportName, exportExtension = 'json') 
 }
 
 export function getKeyCode(event) {
-  const tag = document.activeElement.tagName.toUpperCase();
   // const editable = document.activeElement.getAttribute('contenteditable');
-  if ((tag !== 'INPUT' && tag !== 'TEXTAREA') || document.activeElement.type === 'range') {
-    return event.code.toUpperCase();
-  }
+  // if () {
+  return event.code.toUpperCase();
+  // }
+}
+
+export function isInputFocused() {
+  const tag = document.activeElement.tagName.toUpperCase();
+  return (tag !== 'INPUT' && tag !== 'TEXTAREA') || document.activeElement.type === 'range';
 }
 
 export function isPlaying($video) {

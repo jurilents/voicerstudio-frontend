@@ -15,21 +15,26 @@ let resetCountdown = 5;
 
 const backupExtension = 'json';
 
-export default function ImportTab(props) {
+export default function ImportTab() {
   const dispatch = useDispatch();
+  const player = useSelector(store => store.player.videoPlayer);
   const session = useSelector(store => store.session);
   const { saveVideo } = useVideoStorage();
 
   const onVideoChange = useCallback((event) => {
+    if (!player) {
+      toast.warn('Player is not ready');
+      return;
+    }
     const file = event.target.files[0];
     if (file) {
       const ext = getExt(file.name);
-      const canPlayType = props.player.canPlayType(file.type);
+      const canPlayType = player.canPlayType(file.type);
       if (canPlayType === 'maybe' || canPlayType === 'probably') {
         toast.info('Video is uploading...');
         saveVideo('video1', file).then(() => {
           const url = URL.createObjectURL(new Blob([file]));
-          props.player.currentTime = 0;
+          player.currentTime = 0;
           dispatch(setVideo(url));
           toast.success('Video uploaded! Refreshing the page...');
           setTimeout(() => window.location.reload(), 1000);
@@ -38,7 +43,7 @@ export default function ImportTab(props) {
         toast.error(`${t('VIDEO_EXT_ERR')}: ${file.type || ext}`);
       }
     }
-  }, [dispatch, props.player, saveVideo]);
+  }, [dispatch, player, saveVideo]);
 
   const onInputClick = useCallback((event) => {
     event.target.value = '';

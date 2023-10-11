@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "BROWSER=none env-cmd -f .env react-scripts start",
-    "start:prod": "BROWSER=none env-cmd -f .env.production react-scripts start",
-    "start:windows": "set BROWSER=none && env-cmd -f .env react-scripts start",
-    "build:dev": "env-cmd -f .env react-scripts build",
-    "build:prod": "env-cmd -f .env.production react-scripts build"
+    "dev": "vite --port 3300",
+    "buid": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint --fix . --ext js,jsx",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@ffmpeg/core": "^0.8.5",
@@ -38,7 +38,6 @@
     "react-redux": "^8.1.0",
     "react-reflex": "^4.1.0",
     "react-router-dom": "^6.14.0",
-    "react-scripts": "^5.0.1",
     "react-textarea-autosize": "^8.3.3",
     "react-toastify": "^9.1.3",
     "react-virtualized": "^9.22.3",
@@ -52,7 +51,9 @@
   },
   "devDependencies": {
     "http-proxy-middleware": "^2.0.6",
-    "redux-devtools-extension": "^2.13.9"
+    "redux-devtools-extension": "^2.13.9",
+    "@vitejs/plugin-react": "^4.0.3",
+    "vite": "^4.4.5"
   },
   "overrides": {
     "react-error-overlay": "6.0.9"

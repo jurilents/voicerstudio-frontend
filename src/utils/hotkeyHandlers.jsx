@@ -49,6 +49,7 @@ export const ensureHotkeyHandlersRegistered = () => {
 ====== Subtitles Control ======
 [R]          Start/stop recording
 [Backspace]  Delete subtitle
+[⌘ ⇧ X]      Split subtitle by text selection
 [⌘ G]        Speak all subtitles
 [Tab]        Select next speaker
 [⇧ Tab]      Select prev speaker
@@ -257,6 +258,11 @@ function registerAllHotkeys() {
     } else {
       console.warn('No sub selected!');
     }
+  });
+
+  // ====== Split subtitle by text selection ====== //
+  hotkeys.add('X', { meta: true, shift: true }, ({ session, dispatch }) => {
+    console.log('split by selection', window.getSelection());
   });
 
   // ====== Select next speaker ====== //

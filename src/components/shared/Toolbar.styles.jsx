@@ -43,6 +43,8 @@ export const Style = styled.div`
   .tab-pane {
     height: 100%;
     padding: 10px 10px 20px 10px;
+    overflow-y: scroll;
+    overflow-x: hidden;
 
     &.compact-tab {
       padding: 0;

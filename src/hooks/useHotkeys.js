@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { getKeyCode } from '../utils';
+import { isInputFocused, getKeyCode } from '../utils';
 import { useDispatch, useSelector } from 'react-redux';
 import hotkeys from '../utils/HotkeyController';
 import { usePlayerControls } from './usePlayerControls';
@@ -38,8 +38,11 @@ export const useHotkeys = () => {
   const onKeyDown = useCallback(async (event) => {
     if (!window.timelineEngine) return;
 
+    //
+
     const key = getKeyCode(event);
-    if (!key) return;
+    const inputFocused = isInputFocused();
+    // if (!key) return;
 
     if ((key !== 'KEYF' && key !== 'KEYR') || !checkMetaKeys(event, { meta: true })) {
       event.preventDefault();
