@@ -1,4 +1,4 @@
 export const VoicingService = {
-  Azure: 'Azure',
-  // VoiceMaker: 'VoiceMaker',
+    Azure: 'Azure',
+    // VoiceMaker: 'VoiceMaker',
 };

@@ -6,65 +6,65 @@ const SET_TOTAL_TIME = 'SET_TOTAL_TIME';
 const SET_SCALE = 'SET_SCALE';
 
 const defaultState = {
-  playing: false,
-  recordingSub: null,
-  time: 0,
-  totalTime: 60,
-  scale: 5,
-  scaleWidth: 160,
+    playing: false,
+    recordingSub: null,
+    time: 0,
+    totalTime: 60,
+    scale: 5,
+    scaleWidth: 160,
 };
 
 window.currentTime = defaultState.time;
 
 export default function timelineReducer(state = defaultState, action) {
-  switch (action.type) {
-    case SET_PLAYING: {
-      return {
-        ...state,
-        playing: !!action.payload,
-      };
+    switch (action.type) {
+        case SET_PLAYING: {
+            return {
+                ...state,
+                playing: !!action.payload,
+            };
+        }
+        case SET_RECORDING_SUB: {
+            return {
+                ...state,
+                recordingSub: action.payload,
+            };
+        }
+        case RECORD_SUB: {
+            return {
+                ...state,
+                // recordingSub: action.payload.sub,
+            };
+        }
+        case SET_TIME: {
+            if (isNaN(action.payload)) {
+                throw new Error(`Invalid time provided: ${action.payload}`);
+            }
+            window.currentTime = action.payload;
+            return {
+                ...state,
+                time: action.payload,
+            };
+        }
+        case SET_TOTAL_TIME: {
+            if (isNaN(action.payload)) {
+                throw new Error(`Invalid time provided: ${action.payload}`);
+            }
+            return {
+                ...state,
+                totalTime: action.payload,
+            };
+        }
+        case SET_SCALE: {
+            return {
+                ...state,
+                scale: action.payload.scale,
+                scaleWidth: action.payload.scaleWidth,
+            };
+        }
+        default:
+            return state;
     }
-    case SET_RECORDING_SUB: {
-      return {
-        ...state,
-        recordingSub: action.payload,
-      };
-    }
-    case RECORD_SUB: {
-      return {
-        ...state,
-        // recordingSub: action.payload.sub,
-      };
-    }
-    case SET_TIME: {
-      if (isNaN(action.payload)) {
-        throw new Error(`Invalid time provided: ${action.payload}`);
-      }
-      window.currentTime = action.payload;
-      return {
-        ...state,
-        time: action.payload,
-      };
-    }
-    case SET_TOTAL_TIME: {
-      if (isNaN(action.payload)) {
-        throw new Error(`Invalid time provided: ${action.payload}`);
-      }
-      return {
-        ...state,
-        totalTime: action.payload,
-      };
-    }
-    case SET_SCALE: {
-      return {
-        ...state,
-        scale: action.payload.scale,
-        scaleWidth: action.payload.scaleWidth,
-      };
-    }
-    default:
-      return state;
-  }
 }
 
 export const setPlaying = (play) => ({ type: SET_PLAYING, payload: play });

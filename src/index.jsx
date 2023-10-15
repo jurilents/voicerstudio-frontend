@@ -18,11 +18,11 @@ const defaultLang = i18n[language] ? language : 'en';
 setLocale(defaultLang);
 
 ReactDOM.render(
-  <Provider store={store}>
-    <React.Fragment>
-      <GlobalStyle />
-      {isMobile ? <Mobile /> : <App defaultLang={defaultLang} />}
-    </React.Fragment>
-  </Provider>,
-  document.getElementById('root'),
+    <Provider store={store}>
+        <React.Fragment>
+            <GlobalStyle />
+            {isMobile ? <Mobile /> : <App defaultLang={defaultLang} />}
+        </React.Fragment>
+    </Provider>,
+    document.getElementById('root'),
 );

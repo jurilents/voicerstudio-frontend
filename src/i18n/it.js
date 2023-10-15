@@ -13,7 +13,7 @@ export const it = {
     DECODE_ERROR: 'Decodifica audio non riuscita',
     VIDEO_EXT_ERR: 'Impossibile aprire questo formato video',
     SUB_EXT_ERR: 'Impossibile aprire questo formato di sottotitoli',
-    MOBILE_TIP: 'Utilizza l\'accesso al computer',
+    MOBILE_TIP: "Utilizza l'accesso al computer",
     HOTKEY_01: 'Spazio: Riproduci / Pausa',
     HOTKEY_02: 'Ctrl + Z: Annulla',
     CLEAR: 'Pulisci',

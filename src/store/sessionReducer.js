@@ -43,235 +43,237 @@ const STORAGE_KEY = 'session';
 
 // Default state
 const defaultSpeaker = new Speaker({
-  id: 1,
-  displayName: 'Speaker 1',
-  color: colors.blue,
+    id: 1,
+    displayName: 'Speaker 1',
+    color: colors.blue,
 });
 const rootState = {
-  speakers: [defaultSpeaker],
-  selectedSpeaker: defaultSpeaker,
-  selectedSub: null,
-  credentials: [],
-  selectedCredentials: { Azure: null },
-  presets: [],
-  markers: [],
-  selectedMarker: null,
-  videoUrl: null,
-  videoDuration: 60,
+    speakers: [defaultSpeaker],
+    selectedSpeaker: defaultSpeaker,
+    selectedSub: null,
+    credentials: [],
+    selectedCredentials: { Azure: null },
+    presets: [],
+    markers: [],
+    selectedMarker: null,
+    videoUrl: null,
+    videoDuration: 60,
 };
 
 function parseSessionJson(json) {
-  const obj = JSON.parse(json);
-  if (obj.speakers && Array.isArray(obj.speakers)) {
-    obj.speakers = obj.speakers.map((speaker) => {
-      setGlobalSpeakerParams({
-        speakerId: speaker.id,
-        volume: speaker.volume + (speaker.preset?.volume || 0),
-        mute: speaker.mute,
-        speed: speaker.preset?.speed || 0,
-      });
+    const obj = JSON.parse(json);
+    if (obj.speakers && Array.isArray(obj.speakers)) {
+        obj.speakers = obj.speakers.map((speaker) => {
+            setGlobalSpeakerParams({
+                speakerId: speaker.id,
+                volume: speaker.volume + (speaker.preset?.volume || 0),
+                mute: speaker.mute,
+                speed: speaker.preset?.speed || 0,
+            });
 
-      if (speaker?.subs && Array.isArray(speaker.subs)) {
-        speaker.subs = speaker.subs.map(sub => {
-          if (sub.data === VoicedStatuses.processing) {
-            sub.data = null;
-          }
-          if (sub.data?.src) {
-            sub.data.src = VoicedStatuses.voiced;
-          }
-          return new Sub(sub);
+            if (speaker?.subs && Array.isArray(speaker.subs)) {
+                speaker.subs = speaker.subs.map((sub) => {
+                    if (sub.data === VoicedStatuses.processing) {
+                        sub.data = null;
+                    }
+                    if (sub.data?.src) {
+                        sub.data.src = VoicedStatuses.voiced;
+                    }
+                    return new Sub(sub);
+                });
+            }
+
+            return new Speaker(speaker);
         });
-      }
-
-      return new Speaker(speaker);
-    });
-  }
-  if (obj.selectedSpeaker?.id) {
-    obj.selectedSpeaker = obj.speakers.find(x => x.id === obj.selectedSpeaker.id);
-  }
-  if (!obj.selectedSpeaker && obj.speakers?.length) {
-    obj.selectedSpeaker = obj.speakers[0];
-  }
-  if (obj.selectedSpeaker) {
-    if (obj.selectedSub?.id) {
-      obj.selectedSub = obj.selectedSpeaker.subs.find(x => x.id === obj.selectedSub.id);
     }
-    if (!obj.selectedSub && obj.selectedSpeaker?.subs?.length) {
-      obj.selectedSub = obj.selectedSpeaker.subs[0];
+    if (obj.selectedSpeaker?.id) {
+        obj.selectedSpeaker = obj.speakers.find((x) => x.id === obj.selectedSpeaker.id);
     }
-  }
-  if (obj.videoUrl) {
-    obj.videoUrl = VoicedStatuses.processing;
-  }
-  if (!obj.markers) {
-    obj.markers = [];
-  }
-  return obj;
+    if (!obj.selectedSpeaker && obj.speakers?.length) {
+        obj.selectedSpeaker = obj.speakers[0];
+    }
+    if (obj.selectedSpeaker) {
+        if (obj.selectedSub?.id) {
+            obj.selectedSub = obj.selectedSpeaker.subs.find((x) => x.id === obj.selectedSub.id);
+        }
+        if (!obj.selectedSub && obj.selectedSpeaker?.subs?.length) {
+            obj.selectedSub = obj.selectedSpeaker.subs[0];
+        }
+    }
+    if (obj.videoUrl) {
+        obj.videoUrl = VoicedStatuses.processing;
+    }
+    if (!obj.markers) {
+        obj.markers = [];
+    }
+    return obj;
 }
 
 const storedState = localStorage.getItem(STORAGE_KEY);
 const defaultState = storedState ? { ...rootState, ...parseSessionJson(storedState) } : rootState;
 
 function saveToLocalStorage(session) {
-  const sessionCopy = { ...session };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionCopy));
-  return session;
+    const sessionCopy = { ...session };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionCopy));
+    return session;
 }
 
-
 function pushSpeakerPatchToHistory(state, action) {
-  const lastChange = timeMachine.getLast();
-  const speaker = state.speakers.find(x => x.id === action.payload.id);
-  if (lastChange?.undo.type === PATCH_SPEAKER
-    && lastChange.undo.payload.id === action.payload.id
-    && objectsHaveSameKeys(lastChange.undo.payload.patch, action.payload.patch)) {
-    lastChange.undo.patch = cloneByKeys(speaker, Object.keys(action.payload.patch));
-  } else {
-    const patch = cloneByKeys(speaker, Object.keys(action.payload.patch));
-    timeMachine.push(action, patchSpeaker(action.payload.id, patch));
-  }
+    const lastChange = timeMachine.getLast();
+    const speaker = state.speakers.find((x) => x.id === action.payload.id);
+    if (
+        lastChange?.undo.type === PATCH_SPEAKER &&
+        lastChange.undo.payload.id === action.payload.id &&
+        objectsHaveSameKeys(lastChange.undo.payload.patch, action.payload.patch)
+    ) {
+        lastChange.undo.patch = cloneByKeys(speaker, Object.keys(action.payload.patch));
+    } else {
+        const patch = cloneByKeys(speaker, Object.keys(action.payload.patch));
+        timeMachine.push(action, patchSpeaker(action.payload.id, patch));
+    }
 }
 
 function pushSubPatchToHistory(state, action) {
-  const lastChange = timeMachine.getLast();
-  if (lastChange?.undo.type === PATCH_SPEAKER_SUB
-    && lastChange.undo.payload.id === action.payload.id
-    && objectsHaveSameKeys(lastChange.undo.payload.patch, action.payload.patch)) {
-    lastChange.redo.payload.patch = action.payload.patch;
-  } else {
-    const patch = cloneByKeys(action.payload.sub, Object.keys(action.payload.patch));
-    const undoAction = patchSub(action.payload.sub, patch);
-    timeMachine.push(action, undoAction);
-  }
+    const lastChange = timeMachine.getLast();
+    if (
+        lastChange?.undo.type === PATCH_SPEAKER_SUB &&
+        lastChange.undo.payload.id === action.payload.id &&
+        objectsHaveSameKeys(lastChange.undo.payload.patch, action.payload.patch)
+    ) {
+        lastChange.redo.payload.patch = action.payload.patch;
+    } else {
+        const patch = cloneByKeys(action.payload.sub, Object.keys(action.payload.patch));
+        const undoAction = patchSub(action.payload.sub, patch);
+        timeMachine.push(action, undoAction);
+    }
 }
 
 export default function sessionReducer(state = defaultState, action) {
-  switch (action.type) {
-    /************************* BACKUP *************************/
-    case RESTORE_FROM_JSON: {
-      const session = parseSessionJson(action.payload.jsonText);
-      saveToLocalStorage(session);
-      window.location.reload();
-      return state;
-    }
+    switch (action.type) {
+        /************************* BACKUP *************************/
+        case RESTORE_FROM_JSON: {
+            const session = parseSessionJson(action.payload.jsonText);
+            saveToLocalStorage(session);
+            window.location.reload();
+            return state;
+        }
 
-    /************************* SPEAKERS *************************/
-    case ADD_SPEAKER: {
-      timeMachine.push(action, removeSpeaker(action.payload.speaker));
-      const session = speakersReducer.addSpeaker(state, action);
-      return saveToLocalStorage(session);
-    }
-    case REMOVE_SPEAKER: {
-      timeMachine.push(action, addSpeaker(action.payload.speaker));
-      const session = speakersReducer.removeSpeaker(state, action);
-      return saveToLocalStorage(session);
-    }
-    case PATCH_SPEAKER: {
-      pushSpeakerPatchToHistory(state, action);
-      const session = speakersReducer.patchSpeaker(state, action);
-      return saveToLocalStorage(session);
-    }
-    case SELECT_SPEAKER: {
-      // timeMachine.push(action, selectSpeaker(state.selectedSpeaker?.id));
-      const session = speakersReducer.selectSpeaker(state, action);
-      return saveToLocalStorage(session);
-    }
+        /************************* SPEAKERS *************************/
+        case ADD_SPEAKER: {
+            timeMachine.push(action, removeSpeaker(action.payload.speaker));
+            const session = speakersReducer.addSpeaker(state, action);
+            return saveToLocalStorage(session);
+        }
+        case REMOVE_SPEAKER: {
+            timeMachine.push(action, addSpeaker(action.payload.speaker));
+            const session = speakersReducer.removeSpeaker(state, action);
+            return saveToLocalStorage(session);
+        }
+        case PATCH_SPEAKER: {
+            pushSpeakerPatchToHistory(state, action);
+            const session = speakersReducer.patchSpeaker(state, action);
+            return saveToLocalStorage(session);
+        }
+        case SELECT_SPEAKER: {
+            // timeMachine.push(action, selectSpeaker(state.selectedSpeaker?.id));
+            const session = speakersReducer.selectSpeaker(state, action);
+            return saveToLocalStorage(session);
+        }
 
-    /************************* SPEAKER SUBS *************************/
-    case SET_ALL_SPEAKER_SUBS: {
-      const session = subsReducer.setAllSubs(state, action);
-      return saveToLocalStorage(session);
-    }
-    case ADD_SPEAKER_SUB: {
-      timeMachine.push(action, removeSub(action.payload.sub));
-      const session = subsReducer.addSub(state, action);
-      return saveToLocalStorage(session);
-    }
-    case REMOVE_SPEAKER_SUB: {
-      timeMachine.push(action, addSub(action.payload.sub));
-      const session = subsReducer.removeSub(state, action);
-      return saveToLocalStorage(session);
-    }
-    case PATCH_SPEAKER_SUB: {
-      pushSubPatchToHistory(state, action);
-      const session = subsReducer.patchSub(state, action);
-      return saveToLocalStorage(session);
-    }
-    case SELECT_SPEAKER_SUB: {
-      const session = subsReducer.selectSub(state, action);
-      return saveToLocalStorage(session);
-    }
+        /************************* SPEAKER SUBS *************************/
+        case SET_ALL_SPEAKER_SUBS: {
+            const session = subsReducer.setAllSubs(state, action);
+            return saveToLocalStorage(session);
+        }
+        case ADD_SPEAKER_SUB: {
+            timeMachine.push(action, removeSub(action.payload.sub));
+            const session = subsReducer.addSub(state, action);
+            return saveToLocalStorage(session);
+        }
+        case REMOVE_SPEAKER_SUB: {
+            timeMachine.push(action, addSub(action.payload.sub));
+            const session = subsReducer.removeSub(state, action);
+            return saveToLocalStorage(session);
+        }
+        case PATCH_SPEAKER_SUB: {
+            pushSubPatchToHistory(state, action);
+            const session = subsReducer.patchSub(state, action);
+            return saveToLocalStorage(session);
+        }
+        case SELECT_SPEAKER_SUB: {
+            const session = subsReducer.selectSub(state, action);
+            return saveToLocalStorage(session);
+        }
 
-    /************************* PRESETS *************************/
-    case ADD_PRESET: {
-      const session = presetsReducer.addPreset(state, action);
-      return saveToLocalStorage(session);
-    }
-    case REMOVE_PRESET: {
-      const session = presetsReducer.removePreset(state, action);
-      return saveToLocalStorage(session);
-    }
-    case PATCH_PRESET: {
-      const session = presetsReducer.patchPreset(state, action);
-      return saveToLocalStorage(session);
-    }
+        /************************* PRESETS *************************/
+        case ADD_PRESET: {
+            const session = presetsReducer.addPreset(state, action);
+            return saveToLocalStorage(session);
+        }
+        case REMOVE_PRESET: {
+            const session = presetsReducer.removePreset(state, action);
+            return saveToLocalStorage(session);
+        }
+        case PATCH_PRESET: {
+            const session = presetsReducer.patchPreset(state, action);
+            return saveToLocalStorage(session);
+        }
 
-    /************************* VIDEO *************************/
-    case SET_VIDEO: {
-      const session = {
-        ...state,
-        speakers: [...state.speakers],
-        videoUrl: action.payload.videoUrl,
-      };
-      return saveToLocalStorage(session);
-    }
-    case SET_VIDEO_DURATION: {
-      if (isNaN(+action.payload.videoDuration)) {
-        throw new Error(`Invalid duration provided: '${action.payload.videoDuration}'`);
-      }
-      const session = {
-        ...state,
-        videoDuration: +action.payload.videoDuration,
-      };
-      return saveToLocalStorage(session);
-    }
+        /************************* VIDEO *************************/
+        case SET_VIDEO: {
+            const session = {
+                ...state,
+                speakers: [...state.speakers],
+                videoUrl: action.payload.videoUrl,
+            };
+            return saveToLocalStorage(session);
+        }
+        case SET_VIDEO_DURATION: {
+            if (isNaN(+action.payload.videoDuration)) {
+                throw new Error(`Invalid duration provided: '${action.payload.videoDuration}'`);
+            }
+            const session = {
+                ...state,
+                videoDuration: +action.payload.videoDuration,
+            };
+            return saveToLocalStorage(session);
+        }
 
-    /************************* CREDENTIALS *************************/
-    case ADD_CREDS: {
-      const session = credsReducer.addCreds(state, action);
-      return saveToLocalStorage(session);
-    }
-    case REMOVE_CREDS: {
-      const session = credsReducer.removeCreds(state, action);
-      return saveToLocalStorage(session);
-    }
-    case PATCH_CREDS: {
-      const session = credsReducer.patchCreds(state, action);
-      return saveToLocalStorage(session);
-    }
-    case SELECT_CREDS: {
-      const session = credsReducer.selectCreds(state, action);
-      return saveToLocalStorage(session);
-    }
+        /************************* CREDENTIALS *************************/
+        case ADD_CREDS: {
+            const session = credsReducer.addCreds(state, action);
+            return saveToLocalStorage(session);
+        }
+        case REMOVE_CREDS: {
+            const session = credsReducer.removeCreds(state, action);
+            return saveToLocalStorage(session);
+        }
+        case PATCH_CREDS: {
+            const session = credsReducer.patchCreds(state, action);
+            return saveToLocalStorage(session);
+        }
+        case SELECT_CREDS: {
+            const session = credsReducer.selectCreds(state, action);
+            return saveToLocalStorage(session);
+        }
 
+        /************************* MARKERS *************************/
+        case SET_MARKER: {
+            const session = markersReducer.setMarker(state, action);
+            return saveToLocalStorage(session);
+        }
+        case PATCH_MARKER: {
+            const session = markersReducer.patchMarker(state, action);
+            return saveToLocalStorage(session);
+        }
+        case SELECT_MARKER: {
+            const session = markersReducer.selectMarker(state, action);
+            return saveToLocalStorage(session);
+        }
 
-    /************************* MARKERS *************************/
-    case SET_MARKER: {
-      const session = markersReducer.setMarker(state, action);
-      return saveToLocalStorage(session);
+        default:
+            return state;
     }
-    case PATCH_MARKER: {
-      const session = markersReducer.patchMarker(state, action);
-      return saveToLocalStorage(session);
-    }
-    case SELECT_MARKER: {
-      const session = markersReducer.selectMarker(state, action);
-      return saveToLocalStorage(session);
-    }
-
-    default:
-      return state;
-  }
 }
 
 export const restoreFromJson = (jsonText) => ({ type: RESTORE_FROM_JSON, payload: { jsonText } });

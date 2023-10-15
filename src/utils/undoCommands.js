@@ -1,11 +1,5 @@
-export function undoAddOperation(add) {
+export function undoAddOperation(add) {}
 
-}
+export function undoRemoveOperation(remove) {}
 
-export function undoRemoveOperation(remove) {
-
-}
-
-export function undoPatchOperation(patch) {
-
-}
+export function undoPatchOperation(patch) {}

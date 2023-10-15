@@ -10,13 +10,13 @@ import timelineSettingsReducer from './timelineSettingsReducer';
 import playerReducer from './playerReducer';
 
 const rootReducer = combineReducers({
-  audio: audioReducer,
-  languages: languagesReducer,
-  player: playerReducer,
-  session: sessionReducer,
-  settings: settingsReducer,
-  timeline: timelineReducer,
-  timelineSettings: timelineSettingsReducer,
+    audio: audioReducer,
+    languages: languagesReducer,
+    player: playerReducer,
+    session: sessionReducer,
+    settings: settingsReducer,
+    timeline: timelineReducer,
+    timelineSettings: timelineSettingsReducer,
 });
 
 export const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));
