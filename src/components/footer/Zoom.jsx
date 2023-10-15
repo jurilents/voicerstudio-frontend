@@ -7,7 +7,7 @@ const Style = styled.div`
   left: 0;
   right: 0;
   top: -8px;
-  z-index: 11;
+  z-index: 1100;
   width: 100%;
   height: 8px;
   user-select: none;

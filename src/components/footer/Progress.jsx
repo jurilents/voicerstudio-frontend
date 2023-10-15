@@ -1,16 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { setTime } from '../../store/timelineReducer';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faBars} from '@fortawesome/free-solid-svg-icons';
+import {useDispatch, useSelector} from 'react-redux';
+import {setTime} from '../../store/timelineReducer';
 
 const Style = styled.div`
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 120;
+  z-index: 1120;
   width: 100%;
   height: 35px;
   user-select: none;
@@ -131,14 +131,14 @@ const Progress = () => {
   const subHeight = 100 / speakers.length;
   const subHeightStyle = `${subHeight}%`;
 
-  if (!player?.duration || player.duration !== 0) return <></>;
-  const { duration } = player;
+  if (!player?.duration || player.duration === 0) return <></>;
+  const {duration} = player;
 
   return (
     <Style className='progress' onClick={onProgressClick}>
-      <div className='bar' style={{ width: `${(currentTime / duration) * 100}%` }}>
+      <div className='bar' style={{width: `${(currentTime / duration) * 100}%`}}>
         <div className='handle' onMouseDown={onGrabDown}>
-          <FontAwesomeIcon icon={faBars} />
+          <FontAwesomeIcon icon={faBars}/>
         </div>
       </div>
       <div className='subtitle-wrapper'>

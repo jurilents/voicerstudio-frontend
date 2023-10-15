@@ -1,8 +1,8 @@
-import React, { createRef } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import VideoWrap from './VideoWrap';
 import Actions from './Actions';
-import { borderRadius } from '../../styles/constants';
+import {borderRadius} from '../../styles/constants';
 
 const Style = styled.div`
   display: flex;
@@ -23,6 +23,7 @@ const Style = styled.div`
     height: 100%;
     //max-height: 100%;
     max-height: 60vh;
+    border-radius: ${borderRadius};
 
     video {
       position: relative;
@@ -33,6 +34,7 @@ const Style = styled.div`
       max-width: 100%;
       box-shadow: 0 5px 25px 5px rgb(0 0 0 / 80%);
       background-color: #000;
+      border-radius: ${borderRadius};
       cursor: pointer;
     }
 

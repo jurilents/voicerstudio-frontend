@@ -78,8 +78,8 @@ function Footer() {
       {/*      <Metronome {...props} render={render} headingWidth={headingWidth} />*/}
       {/*      <Timeline {...props} render={render} headingWidth={headingWidth} />*/}
 
-      <Zoom headingWidth={headingWidth} />
       <Progress headingWidth={headingWidth} />
+      <Zoom headingWidth={headingWidth} />
 
       {/*    </>*/}
       {/*  ) : null}*/}
