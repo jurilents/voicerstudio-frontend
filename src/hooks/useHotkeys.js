@@ -43,12 +43,9 @@ export const useHotkeys = () => {
     const onKeyDown = useCallback(
         async (event) => {
             if (!window.timelineEngine) return;
-
-            //
-
             const key = getKeyCode(event);
             const inputFocused = isInputFocused();
-            // if (!key) return;
+            if (!key || !inputFocused) return;
 
             if ((key !== 'KEYF' && key !== 'KEYR') || !checkMetaKeys(event, { meta: true })) {
                 event.preventDefault();
