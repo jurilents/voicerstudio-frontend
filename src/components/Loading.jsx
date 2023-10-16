@@ -38,12 +38,12 @@ const Style = styled.div`
 `;
 
 export default function Loading({ loading }) {
-  return (
-    <Style>
-      <div className='loading-inner'>
-        <img src='/loading.svg' alt='loading' />
-        <div>{loading || t('LOADING')}</div>
-      </div>
-    </Style>
-  );
+    return (
+        <Style>
+            <div className="loading-inner">
+                <img src="/loading.svg" alt="loading" />
+                <div>{loading || t('LOADING')}</div>
+            </div>
+        </Style>
+    );
 }
