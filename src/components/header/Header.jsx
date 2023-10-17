@@ -74,7 +74,7 @@ export default function Header() {
         <Style className="header noselect">
             <div className="logo">
                 <a href="https://creativesociety.com/" target="_blank">
-                    <img src="/images/logo-silver.png" alt="Creative Society" />
+                    <img src="/public/images/logo-silver.png" alt="Creative Society" />
                 </a>
                 <div className="logo-content">
                     <span className="logo-title">Voicer Studio</span>

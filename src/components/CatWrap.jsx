@@ -22,7 +22,7 @@ export default function CatWrap() {
     //
     //   return (
     //     <Style>
-    //       <img src='/images/cats/transparent.gif' alt='Тут был кот' />
+    //       <img src='/public/images/cats/transparent.gif' alt='Тут был кот' />
     //     </Style>
     //   );
     // } else {

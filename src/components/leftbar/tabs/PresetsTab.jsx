@@ -88,7 +88,7 @@ const PresetsTab = () => {
                         <ListGroup.Item key={cred.value} className={isCredSelected(cred) ? 'preset-selected' : ''}>
                             <img
                                 className="service-logo"
-                                src={`/images/${cred.service}-logo.png`}
+                                src={`/public/images/${cred.service}-logo.png`}
                                 alt={cred.service}
                                 title={cred.service}
                             />
@@ -122,7 +122,7 @@ const PresetsTab = () => {
                         <ListGroup.Item key={preset.id}>
                             <img
                                 className="service-logo"
-                                src={`/images/${preset.service}-logo.png`}
+                                src={`/public/images/${preset.service}-logo.png`}
                                 alt={preset.service}
                                 title={preset.service}
                             />
