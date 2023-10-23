@@ -1,18 +1,18 @@
 import styled from 'styled-components';
-import { Translate } from 'react-i18nify';
+import {Trans} from 'react-i18next';
 
 const Style = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
 `;
 
 export default function Mobile() {
-    return (
-        <Style>
-            <Translate value="MOBILE_TIP" />
-        </Style>
-    );
+  return (
+    <Style>
+      <Trans i18nKey="mobileIsNotSupported"/>
+    </Style>
+  );
 }

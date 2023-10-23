@@ -1,0 +1,68 @@
+export const en = {
+  header: {
+    telegramChat: 'Telegram Chat',
+    text2Speech: 'Text 2 Speech',
+    creativeSociety: 'Creative Society',
+  },
+  loading: 'Loading...',
+  mobileIsNotSupported: 'Mobile is not supported. Please use desktop browser instead.',
+  tabs: {
+    audioMixer: {
+      master: 'Master',
+      original: 'Original',
+      title: 'Audio Mixer',
+    },
+    export: {
+      codec: 'CODEC',
+      currentDate: 'Current Date',
+      currentTime: 'Current Time',
+      exportAs: 'Export',
+      exportFileFailed: 'Export file failed',
+      exportFileSucceeded: 'Export file "<bold>{{fileName}}</bold>" succeeded',
+      exportFormat: 'Export Format',
+      format: 'Format',
+      speaker: 'Speaker',
+      speakerLanguage: 'Speaker Language',
+      speakerName: 'Speaker Name',
+      title: 'Export',
+    },
+    general: {
+      autoTranslateNote: 'Auto-translate to note',
+      interfaceLanguage: 'Interface Language',
+      playbackSpeed: 'Playback Speed',
+      refreshTranslations: 'Refresh Translations',
+      showNote: 'Show subtitle note',
+      speakAll: 'Speak All',
+      title: 'Tools & Translation',
+      translateSourceLang: 'Translate source language',
+      translateTargetLang: 'Translate target language',
+    },
+    import: {
+      importVideo: 'Import Video',
+      resetAll: 'Reset All',
+      resetSubtitlesOnly: 'Reset Subtitles Only',
+      resetWarning: 'If you really want to reset all your progress forever, click {{resetCountdown}} times',
+      restoreFromBackupFile: 'Restore from backup file',
+      saveBackupFile: 'Save backup file',
+      title: 'Import',
+      videoImportError: 'Unable to open this video format',
+    },
+    markers: {
+      color: 'Color',
+      title: 'Markers',
+    },
+    presets: {
+      pressToAddCredentials: `Press '+' and add credentials`,
+      title: 'Presets',
+      voicingBots: 'Voicing Bots',
+    },
+    speakers: {
+      color: 'Color',
+      speakerPreset: 'Speaker Preset',
+      title: 'Speakers',
+    },
+  },
+  timeline: {
+    originalAudio: 'Original Audio',
+  },
+};

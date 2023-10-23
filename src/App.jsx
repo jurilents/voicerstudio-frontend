@@ -82,7 +82,7 @@ const Style = styled.div`
     }
 `;
 
-export default function App({ defaultLang }) {
+export default function App() {
     const dispatch = useDispatch();
     const { videoUrl, speakers } = useSelector((store) => store.session);
     const { loadVideo } = useVideoStorage();

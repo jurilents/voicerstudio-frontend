@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { t } from 'react-i18nify';
 import { borderRadius } from '../styles/constants';
+import {useTranslation} from 'react-i18next';
 
 const Style = styled.div`
   position: absolute;
@@ -17,7 +17,7 @@ const Style = styled.div`
   backdrop-filter: saturate(180%) blur(2px);
   background-color: rgba(0, 0, 0, 0.5);
 
-  .loading-inner {8
+  .loading-inner {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -38,11 +38,13 @@ const Style = styled.div`
 `;
 
 export default function Loading({ loading }) {
+  const { t } = useTranslation();
+
     return (
         <Style>
             <div className="loading-inner">
                 <img src="/loading.svg" alt="loading" />
-                <div>{loading || t('LOADING')}</div>
+                <div>{loading || t('loading')}</div>
             </div>
         </Style>
     );

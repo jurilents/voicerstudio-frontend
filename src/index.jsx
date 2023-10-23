@@ -3,26 +3,21 @@ import 'normalize.css';
 import './libs/contextmenu.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { isMobile } from './utils';
-import { setLocale, setTranslations } from 'react-i18nify';
-import i18n from './i18n';
+import {isMobile} from './utils';
 import App from './App';
 import Mobile from './Mobile';
 import GlobalStyle from './styles/GlobalStyle';
-import { Provider } from 'react-redux';
-import { store } from './store';
+import {Provider} from 'react-redux';
+import {store} from './store';
+import './i18n';
 
-setTranslations(i18n);
-const language = navigator.language.toLowerCase();
-const defaultLang = i18n[language] ? language : 'en';
-setLocale(defaultLang);
 
 ReactDOM.render(
-    <Provider store={store}>
-        <React.Fragment>
-            <GlobalStyle />
-            {isMobile ? <Mobile /> : <App defaultLang={defaultLang} />}
-        </React.Fragment>
-    </Provider>,
-    document.getElementById('root'),
+  <Provider store={store}>
+    <React.Fragment>
+      <GlobalStyle/>
+      {isMobile ? <Mobile/> : <App/>}
+    </React.Fragment>
+  </Provider>,
+  document.getElementById('root'),
 );

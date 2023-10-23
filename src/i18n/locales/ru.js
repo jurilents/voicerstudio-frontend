@@ -1,0 +1,68 @@
+export const ru = {
+  header: {
+    telegramChat: 'Telegram Чат',
+    text2Speech: 'Text 2 Speech',
+    creativeSociety: 'Созидательное Общество',
+  },
+  loading: 'Загрузка...',
+  mobileIsNotSupported: 'Мобильные устройства не поддерживаются. Пожалуйста, используйте компьютер.',
+  tabs: {
+    audioMixer: {
+      master: 'Мастер',
+      original: 'Оригинал',
+      title: 'Микшер звука',
+    },
+    export: {
+      codec: 'Кодек',
+      currentDate: 'Текущая дата',
+      currentTime: 'Текущее время',
+      exportAs: 'Экспортировать как',
+      exportFileFailed: 'Ошибка экспорта файла',
+      exportFileSucceeded: 'Файл "<bold>{{fileName}}</bold>" успешно экспортирован',
+      exportFormat: 'Формат экспорта',
+      format: 'Формат',
+      speaker: 'Cпикер',
+      speakerLanguage: 'Язык спикера',
+      speakerName: 'Имя спикера',
+      title: 'Экспорт',
+    },
+    general: {
+      title: 'Инструменты и перевод',
+      interfaceLanguage: 'Язык интерфейса',
+      playbackSpeed: 'Скорость воспроизведения',
+      showNote: 'Отображать заметки',
+      autoTranslateNote: 'Автоматически переводить субтитры в заметках',
+      translateSourceLang: 'Перводить с',
+      translateTargetLang: 'Переводить на',
+      refreshTranslations: 'Обновить переводы',
+      speakAll: 'Озвучить все субтитры для выделенного спикера',
+    },
+    import: {
+      importVideo: 'Импортировать видео',
+      resetAll: 'Сбросить всё',
+      resetSubtitlesOnly: 'Сбросить только субтитры',
+      resetWarning: 'Если вы действительно хотите сбросить весь свой прогресс навсегда, нажмите кнопку ещё {{resetCountdown}} раз(а)',
+      restoreFromBackupFile: 'Восстановить из бекап файла',
+      saveBackupFile: 'Сохранить бекап',
+      title: 'Импорт',
+      videoImportError: 'Не удалось открыть этот формат видео',
+    },
+    markers: {
+      color: 'Цвет',
+      title: 'Маркеры',
+    },
+    presets: {
+      pressToAddCredentials: `Нажмите '+' чтобы добавить ключи`,
+      title: 'Пресеты голосов',
+      voicingBots: 'Боты озвучки',
+    },
+    speakers: {
+      color: 'Цвет',
+      speakerPreset: 'Пресет голоса',
+      title: 'Спикеры',
+    },
+  },
+  timeline: {
+    originalAudio: 'Оригинальный звук',
+  },
+};

@@ -35,7 +35,7 @@ export default createGlobalStyle`
     display: flex;
     font-size: 14px;
     color: #ccc;
-    background-color: rgb(50 50 50);
+    background-color: rgb(58, 58, 58);
   }
 
   ::-webkit-scrollbar {
