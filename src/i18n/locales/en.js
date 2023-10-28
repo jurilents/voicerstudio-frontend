@@ -6,6 +6,25 @@ export const en = {
   },
   loading: 'Loading...',
   mobileIsNotSupported: 'Mobile is not supported. Please use desktop browser instead.',
+  modals: {
+    preset: {
+      addPreset: 'Add Preset',
+      addVoicePreset: 'Add Voice Preset',
+      addedInfo: 'Added: <s> {{lastAddedPreset}} </s>',
+      basePitch: 'Base pitch',
+      baseSpeed: 'Base speed',
+      baseVolume: 'Base volume',
+      credentials: 'Credentials',
+      extraAccInputs: 'Extra accuracy inputs',
+      generateSampleSpeech: 'Generate Sample Speech',
+      language: 'Language',
+      previewNotSupported: 'Preview is not supported',
+      style: 'Style',
+      styleDegree: 'Style degree',
+      voice: 'Voice',
+      voicingService: 'Voicing service',
+    },
+  },
   tabs: {
     audioMixer: {
       master: 'Master',

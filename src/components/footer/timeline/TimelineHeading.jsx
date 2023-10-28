@@ -137,8 +137,7 @@ export const TimelineHeading = ({innerRef}) => {
             <button
               className={'btn speaker-btn' + (settings.originalMute ? ' mute-active' : '')}
               title="Mute"
-              onClick={audioControls.toggleOriginalMute}
-            >
+              onClick={audioControls.toggleOriginalMute}>
               M
             </button>
             {/*<button className={'btn speaker-btn' + (settings.originalSolo ? ' solo-active' : '')}*/}
@@ -154,8 +153,7 @@ export const TimelineHeading = ({innerRef}) => {
             key={index}
             className={selectedSpeaker.id === speaker.id ? 'selected-speaker' : ''}
             style={{borderColor: speaker.color, height: timelineRowHeight}}
-            onClick={() => dispatch(selectSpeaker(speaker.id))}
-          >
+            onClick={() => dispatch(selectSpeaker(speaker.id))}>
             <div className="speaker-actions">
               <button
                 className={'btn speaker-btn' + (speaker.mute ? ' mute-active' : '')}
@@ -163,8 +161,7 @@ export const TimelineHeading = ({innerRef}) => {
                 onClick={() => {
                   audioControls.toggleSpeakerMute(speaker);
                   setState(!state);
-                }}
-              >
+                }}>
                 M
               </button>
               {/*<button className={'btn speaker-btn' + (speaker.solo ? ' solo-active' : '')}*/}

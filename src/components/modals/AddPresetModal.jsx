@@ -14,6 +14,7 @@ import {Preset} from '../../models';
 import {addPreset} from '../../store/sessionReducer';
 import {VoicingService} from '../../models/enums';
 import {useVoicer} from '../../hooks';
+import {Trans, useTranslation} from 'react-i18next';
 
 const Style = styled.div`
   .audio {
@@ -66,6 +67,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
   const [text, setText] = useState(
     `This priceless pearl of the primordial knowledge removes the cloak from all mysteries of the material world`,
   );
+  const {t} = useTranslation();
 
   const dispatch = useDispatch();
   const {speakSub} = useVoicer();
@@ -224,18 +226,17 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
         },
       }}
       onRequestClose={closeModal}
-      contentLabel="Add Credentials"
-    >
+      contentLabel="Add Credentials">
       <button className="btn-app-close" onClick={closeModal}>
         <FontAwesomeIcon icon={faXmark}/>
       </button>
 
-      <h2 className="my-4">Add Voice Preset</h2>
+      <h2 className="my-4">{t('modals.preset.addVoicePreset')}</h2>
 
       {langsFetchStatus !== Status.success && (
         <Style className="modal-container speaker-form container">
           <Row>
-            <Col xs={12}>Loading...</Col>
+            <Col xs={12}>{t('loading')}</Col>
           </Row>
         </Style>
       )}
@@ -245,14 +246,13 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           {/* ************ Voicing Service ************ */}
           <Row>
             <Col xs={4} className="label">
-              Voicing service
+              {t('modals.preset.voicingService')}
             </Col>
             <Col xs={8}>
               <Form.Select
                 className="app-select"
                 onChange={(event) => setVoicingService(event.target.value)}
-                value={voicingService}
-              >
+                value={voicingService}>
                 {Object.entries(VoicingService).map(([key, val], index) => (
                   <option key={index} value={val}>
                     {key}
@@ -265,7 +265,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           {/* ************ Credentials ************ */}
           <Row>
             <Col xs={4} className="label">
-              Credentials
+              {t('modals.preset.credentials')}
             </Col>
             <Col xs={8}>{selectedCred?.displayName}</Col>
           </Row>
@@ -273,14 +273,13 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           {/* ************ Language ************ */}
           <Row className="mt-4">
             <Col xs={4} className="label">
-              Language
+              {t('modals.preset.language')}
             </Col>
             <Col xs={8}>
               <Form.Select
                 className="app-select"
                 value={lang.locale}
-                onChange={(event) => handleLanguageChange(event.target.value)}
-              >
+                onChange={(event) => handleLanguageChange(event.target.value)}>
                 {languages.map((lang_, index) => (
                   <option key={index} value={lang_.locale}>
                     {lang_.displayName}
@@ -294,14 +293,13 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           {!!lang.voices && (
             <Row>
               <Col xs={4} className="label">
-                Voice
+                {t('modals.preset.voice')}
               </Col>
               <Col xs={8}>
                 <Form.Select
                   className="app-select"
                   value={voice?.key}
-                  onChange={(event) => handleVoiceChange(event.target.value)}
-                >
+                  onChange={(event) => handleVoiceChange(event.target.value)}>
                   {lang.voices.map((voice_) => (
                     <option key={voice_.key} value={voice_.key}>
                       {voice_.displayName} ({voice_.gender}){' '}
@@ -317,14 +315,13 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           {!!voice?.styles?.length && (
             <Row>
               <Col xs={4} className="label">
-                Style
+                {t('modals.preset.style')}
               </Col>
               <Col xs={8}>
                 <Form.Select
                   className="app-select"
                   value={style}
-                  onChange={(event) => handleStyleChange(event.target.value)}
-                >
+                  onChange={(event) => handleStyleChange(event.target.value)}>
                   <option value="">--- neutral ---</option>
                   {voice.styles.map((style, index) => (
                     <option key={index} value={style}>
@@ -340,7 +337,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           {!!style && (
             <Row>
               <Col xs={4} className="label">
-                Style degree
+                {t('modals.preset.styleDegree')}
               </Col>
               <Col xs={6}>
                 <input
@@ -366,7 +363,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           {/* ************ Baseline Pitch ************ */}
           <Row>
             <Col xs={4} className="label">
-              Base pitch
+              {t('modals.preset.basePitch')}
             </Col>
             <Col xs={6}>
               <input
@@ -375,8 +372,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
                 max={0.5}
                 step={extraAccuracy ? 0.001 : 0.01}
                 value={pitch}
-                onChange={(event) => setPitch(+event.target.value)}
-              />
+                onChange={(event) => setPitch(+event.target.value)}/>
             </Col>
             <Col xs={1} className="range-details">
               <button className="app-reset-btn" onClick={() => setPitch(0)}>
@@ -391,7 +387,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           {/* ************ Playback Speed ************ */}
           <Row>
             <Col xs={4} className="label">
-              Base speed
+              {t('modals.preset.baseSpeed')}
             </Col>
             <Col xs={6}>
               <input
@@ -416,7 +412,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           {/* ************ Volume ************ */}
           <Row>
             <Col xs={4} className="label">
-              Base volume
+              {t('modals.preset.baseVolume')}
             </Col>
             <Col xs={6}>
               <input
@@ -425,8 +421,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
                 max={0.5}
                 step={extraAccuracy ? 0.001 : 0.01}
                 value={volume}
-                onChange={(event) => setVolume(+event.target.value)}
-              />
+                onChange={(event) => setVolume(+event.target.value)}/>
             </Col>
             <Col xs={1}>
               <button className="app-reset-btn" onClick={() => setVolume(0)}>
@@ -441,13 +436,12 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           {/* ************ Extra Accuracy ************ */}
           <Row>
             <Col xs={11} className="label">
-              Extra accuracy inputs
+              {t('modals.preset.extraAccInputs')}
             </Col>
             <Col xs={1} className="custom-input-wrap">
               <Form.Check
                 checked={extraAccuracy}
-                onChange={(event) => setExtraAccuracy(event.target.checked)}
-              />
+                onChange={(event) => setExtraAccuracy(event.target.checked)}/>
             </Col>
           </Row>
 
@@ -468,7 +462,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
             <Row>
               <Col>
                 <audio ref={$audioPlayer} className="audio" src="" controls>
-                  Preview is not supported
+                  {t('modals.preset.previewNotSupported')}
                 </audio>
               </Col>
             </Row>
@@ -477,7 +471,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           <Row>
             <Col>
               <button className="btn btn-outline" onClick={speak}>
-                Generate Sample Speech
+                {t('modals.preset.generateSampleSpeech')}
               </button>
             </Col>
           </Row>
@@ -485,7 +479,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           <Row>
             <Col>
               <button className="btn btn-primary" onClick={onSavePreset}>
-                Add Preset
+                {t('modals.preset.addPreset')}
               </button>
             </Col>
           </Row>
@@ -493,7 +487,12 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
           {!!lastAddedPreset?.length && (
             <Row>
               <Col>
-                <p className='added-text'>Added: <span className='success'>{lastAddedPreset}</span></p>
+                <p className="added-text">
+                  <Trans
+                    i18nKey="modals.preset.addedInfo"
+                    values={{lastAddedPreset}}
+                    components={{s: <span className="success"/>}}/>
+                </p>
               </Col>
             </Row>
           )}

@@ -6,6 +6,25 @@ export const ru = {
   },
   loading: 'Загрузка...',
   mobileIsNotSupported: 'Мобильные устройства не поддерживаются. Пожалуйста, используйте компьютер.',
+  modals: {
+    preset: {
+      addPreset: 'Сохранить Пресет',
+      addVoicePreset: 'Пресет Голоса',
+      addedInfo: 'Добавлено: <s> {{lastAddedPreset}} </s>',
+      basePitch: 'Тон голоса',
+      baseSpeed: 'Скорость',
+      baseVolume: 'Громкость',
+      credentials: 'Ключи',
+      extraAccInputs: 'Доп. точность значений',
+      generateSampleSpeech: 'Сгенерировать образец',
+      language: 'Язык',
+      previewNotSupported: 'Предпросмотр недоступен',
+      style: 'Стилизация',
+      styleDegree: 'Интенсивность стилизации',
+      voice: 'Голос озвучки',
+      voicingService: 'Сервис озвучки',
+    },
+  },
   tabs: {
     audioMixer: {
       master: 'Мастер',
