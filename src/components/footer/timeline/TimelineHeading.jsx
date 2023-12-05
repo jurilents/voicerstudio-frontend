@@ -131,8 +131,7 @@ export const TimelineHeading = ({innerRef}) => {
             borderColor: '#5e5e5e',
             height: timelineRowHeight * 2,
             minHeight: timelineRowHeight * 2,
-          }}
-        >
+          }}>
           <div className="speaker-actions">
             <button
               className={'btn speaker-btn' + (settings.originalMute ? ' mute-active' : '')}

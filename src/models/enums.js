@@ -1,4 +1,5 @@
 export const VoicingService = {
-    Azure: 'Azure',
-    // VoiceMaker: 'VoiceMaker',
+  AuthorizerBot: {key: 'AuthorizerBot', name: 'Authorizer Telegram Bot'},
+  Azure: {key: 'Azure', name: 'Microsoft Azure'},
+  // VoiceMaker: 'VoiceMaker',
 };

@@ -71,24 +71,26 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
 
   const dispatch = useDispatch();
   const {speakSub} = useVoicer();
-  let languages =
-    useSelector((store) =>
-      voicingService === VoicingService.Azure ? store.languages.azure : store.languages.voiceMaker,
-    ) || [];
+  let languages = useSelector((store) =>
+    voicingService === VoicingService.Azure ? store.languages.azure : store.languages.voiceMaker,
+  ) || [];
   const allSelectedCredentials = useSelector((store) => store.session.selectedCredentials);
-  const selectedCred = allSelectedCredentials[voicingService];
+  console.log('voicingService', voicingService);
+  const selectedCred = allSelectedCredentials[voicingService?.key] ?? allSelectedCredentials[VoicingService.AuthorizerBot.key];
 
   useEffect(() => {
     async function fetchLanguages() {
       setLangsFetchStatus(Status.loading);
-      const newLanguages = await languagesApi.getAll(voicingService, selectedCred.value);
+      console.log('selectedCred.value', selectedCred.value);
+      console.log('voicingService', voicingService);
+      const newLanguages = await languagesApi.getAll(voicingService.key, selectedCred.value);
       if (newLanguages.length < 1) {
         toast.error('No languages fetched :(');
         setLangsFetchStatus(Status.failure);
         return;
       }
 
-      if (voicingService === VoicingService.Azure) {
+      if (voicingService === VoicingService.Azure || voicingService === VoicingService.AuthorizerBot) {
         dispatch(setAzureLanguages(newLanguages));
       } else if (voicingService === VoicingService.VoiceMaker) {
         dispatch(setVMLanguages(newLanguages));
@@ -121,7 +123,7 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
   const speak = () => {
     async function speakAsync() {
       const request = {
-        service: voicingService,
+        service: voicingService.key,
         locale: lang.locale,
         voice: voice.key,
         text: text,
@@ -253,11 +255,13 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
                 className="app-select"
                 onChange={(event) => setVoicingService(event.target.value)}
                 value={voicingService}>
-                {Object.entries(VoicingService).map(([key, val], index) => (
-                  <option key={index} value={val}>
-                    {key}
-                  </option>
-                ))}
+                {Object.entries(VoicingService)
+                  .filter(([key, _]) => key !== VoicingService.AuthorizerBot.key)
+                  .map(([key, val], index) => (
+                    <option key={index} value={val}>
+                      {key}
+                    </option>
+                  ))}
               </Form.Select>
             </Col>
           </Row>

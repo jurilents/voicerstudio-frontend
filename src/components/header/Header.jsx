@@ -81,7 +81,7 @@ export default function Header() {
         </a>
         <div className="logo-content">
           <span className="logo-title">Voicer Studio</span>
-          <span className="logo-version">v2.4.0 – 23/10/23</span>
+          <span className="logo-version">v2.4.1 – 6/12/23</span>
         </div>
       </div>
       <nav>

@@ -88,9 +88,9 @@ const PresetsTab = () => {
           {credentials.map((cred) => (
             <ListGroup.Item key={cred.value} className={isCredSelected(cred) ? 'preset-selected' : ''}>
               <img className="service-logo"
-                   src={`/public/images/${cred.service}-logo.png`}
-                   alt={cred.service}
-                   title={cred.service}/>
+                   src={`/public/images/${cred?.service}-logo.png`}
+                   alt={cred?.service}
+                   title={cred?.service}/>
               <input className="list-item-input"
                      type="text"
                      value={cred.displayName}
@@ -118,9 +118,9 @@ const PresetsTab = () => {
           {presets.map((preset) => (
             <ListGroup.Item key={preset.id}>
               <img className="service-logo"
-                   src={`/public/images/${preset.service}-logo.png`}
-                   alt={preset.service}
-                   title={preset.service}/>
+                   src={`/public/images/${preset.service?.key}-logo.png`}
+                   alt={preset.service?.value}
+                   title={preset.service?.value}/>
               <input className="list-item-input"
                      type="text"
                      value={preset.displayName}

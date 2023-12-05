@@ -72,12 +72,12 @@ export const ru = {
     },
     presets: {
       pressToAddCredentials: `Нажмите '+' чтобы добавить ключи`,
-      title: 'Пресеты голосов',
+      title: 'Мои голоса',
       voicingBots: 'Боты озвучки',
     },
     speakers: {
       color: 'Цвет',
-      speakerPreset: 'Пресет голоса',
+      speakerPreset: 'Голос',
       title: 'Спикеры',
     },
   },

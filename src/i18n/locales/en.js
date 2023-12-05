@@ -72,12 +72,12 @@ export const en = {
     },
     presets: {
       pressToAddCredentials: `Press '+' and add credentials`,
-      title: 'Presets',
+      title: 'My Voices',
       voicingBots: 'Voicing Bots',
     },
     speakers: {
       color: 'Color',
-      speakerPreset: 'Speaker Preset',
+      speakerPreset: 'Speaker Voice',
       title: 'Speakers',
     },
   },
