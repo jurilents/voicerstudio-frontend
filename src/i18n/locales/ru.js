@@ -3,6 +3,7 @@ export const ru = {
     telegramChat: 'Telegram Чат',
     text2Speech: 'Text 2 Speech',
     creativeSociety: 'Созидательное Общество',
+    welcomeTutor: 'Посмотреть туториал',
   },
   loading: 'Загрузка...',
   mobileIsNotSupported: 'Мобильные устройства не поддерживаются. Пожалуйста, используйте компьютер.',
@@ -57,7 +58,7 @@ export const ru = {
       speakAll: 'Озвучить все субтитры для выделенного спикера',
     },
     import: {
-      importVideo: 'Импортировать видео',
+      importVideo: 'Импортировать аудио или видео',
       resetAll: 'Сбросить всё',
       resetSubtitlesOnly: 'Сбросить только субтитры',
       resetWarning: 'Если вы действительно хотите сбросить весь свой прогресс навсегда, нажмите кнопку ещё {{resetCountdown}} раз(а)',
@@ -69,6 +70,7 @@ export const ru = {
     markers: {
       color: 'Цвет',
       title: 'Маркеры',
+      description: 'Нажмите \'M\' (\'Ь\') чтобы добавить или убрать маркер',
     },
     presets: {
       pressToAddCredentials: `Нажмите '+' чтобы добавить ключи`,

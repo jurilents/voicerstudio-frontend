@@ -38,6 +38,7 @@ const MarkersTab = () => {
     <Style className="tab-outlet">
       <div>
         <h3>{t('tabs.markers.title')}</h3>
+        <p className="text-center mb-3">{t('tabs.markers.description')}</p>
         <ListGroup className="app-list-group app-list-group-bottom">
           {markers?.map((marker) => (
             <ListGroup.Item

@@ -396,4 +396,13 @@ export default createGlobalStyle`
       border-color: var(--c-primary) !important;
     }
   }
+
+  .link-btn {
+    display: inline-block;
+    border: none;
+    outline: none;
+    color: inherit;
+    background-color: inherit;
+    opacity: 100%;
+  }
 `;

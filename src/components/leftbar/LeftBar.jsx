@@ -26,7 +26,7 @@ const tabs = [
     },
     {
         key: 'presets',
-        title: 'Voice Presets',
+        title: 'Voicing bots',
         icon: faRobot,
         component: PresetsTab,
     },

@@ -3,6 +3,7 @@ export const en = {
     telegramChat: 'Telegram Chat',
     text2Speech: 'Text 2 Speech',
     creativeSociety: 'Creative Society',
+    welcomeTutor: 'Welcome tour',
   },
   loading: 'Loading...',
   mobileIsNotSupported: 'Mobile is not supported. Please use desktop browser instead.',
@@ -57,7 +58,7 @@ export const en = {
       translateTargetLang: 'Translate target language',
     },
     import: {
-      importVideo: 'Import Video',
+      importVideo: 'Import audio or video',
       resetAll: 'Reset All',
       resetSubtitlesOnly: 'Reset Subtitles Only',
       resetWarning: 'If you really want to reset all your progress forever, click {{resetCountdown}} times',
@@ -69,6 +70,7 @@ export const en = {
     markers: {
       color: 'Color',
       title: 'Markers',
+      description: 'Press \'M\' to add or remove marker',
     },
     presets: {
       pressToAddCredentials: `Press '+' and add credentials`,
