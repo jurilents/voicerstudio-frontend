@@ -1,15 +1,15 @@
-import { patchSub } from '../store/sessionReducer';
-import { translateApi } from '../api/axios';
-import { toast } from 'react-toastify';
-import { useDispatch, useSelector } from 'react-redux';
-import { useCallback, useEffect, useState } from 'react';
-import { Status } from '../api/constants';
-import { setSettings } from '../store/settingsReducer';
+import {patchSub} from '../store/sessionReducer';
+import {translateApi} from '../api/axios';
+import {toast} from 'react-toastify';
+import {useDispatch, useSelector} from 'react-redux';
+import {useCallback, useEffect, useState} from 'react';
+import {Status} from '../api/constants';
+import {setSettings} from '../store/settingsReducer';
 
 export const useTranslator = () => {
     const dispatch = useDispatch();
     const selectedSpeaker = useSelector((store) => store.session.selectedSpeaker);
-    const { selectedTranslateSourceLang, selectedTranslateTargetLang, translateSourceLangs, translateTargetLangs } =
+    const {selectedTranslateSourceLang, selectedTranslateTargetLang, translateSourceLangs, translateTargetLangs} =
         useSelector((store) => store.settings);
     const [langsFetchStatus, setLangsFetchStatus] = useState(Status.none);
 
@@ -46,6 +46,10 @@ export const useTranslator = () => {
                 return true;
             }
 
+            if (!sub.text) {
+                return true;
+            }
+
             const request = {
                 texts: [sub.text],
                 sourceLang: selectedTranslateSourceLang,
@@ -70,7 +74,7 @@ export const useTranslator = () => {
         if (!selectedSpeaker?.subs?.length) return;
 
         const textsToVoice = selectedSpeaker.subs
-            .filter((sub) => sub.text?.length > 0 && sub.canBeVoiced)
+            .filter((sub) => sub.text && sub.text?.trim().length > 0)
             .map((sub) => sub.text);
         if (textsToVoice.length === 0) {
             toast.info('No subtitles to translate');
@@ -98,5 +102,5 @@ export const useTranslator = () => {
         toast.info(`${textsToVoice.length} subtitles translated  🈳`);
     }, [dispatch, selectedSpeaker, selectedTranslateSourceLang, selectedTranslateTargetLang]);
 
-    return { translateSub, translateAll, langsFetchStatus };
+    return {translateSub, translateAll, langsFetchStatus};
 };
