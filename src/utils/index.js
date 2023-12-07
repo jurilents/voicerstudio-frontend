@@ -41,7 +41,7 @@ export function getKeyCode(event) {
 
 export function isInputFocused() {
   const tag = document.activeElement.tagName.toUpperCase();
-  return (tag !== 'INPUT' && tag !== 'TEXTAREA') || document.activeElement.type === 'range';
+  return (tag === 'INPUT' || tag === 'TEXTAREA') && document.activeElement.type !== 'range';
 }
 
 export function isPlaying($video) {

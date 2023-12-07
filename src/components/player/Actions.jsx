@@ -119,13 +119,13 @@ const Actions = () => {
         <Style className="actions-wrapper">
             <div className="actions-container">
                 <div
-                    className={'btn btn-icon magnet-btn focus' + (settings.magnetMode ? ' active' : '')}
+                    className="btn btn-icon magnet-btn focus"
                     onClick={() => translateAll()}
                     title={t('tabs.general.refreshTranslations')}>
                     <FontAwesomeIcon icon={faEarthAmericas}/>
                 </div>
                 <div
-                    className={'btn btn-icon magnet-btn focus' + (settings.magnetMode ? ' active' : '')}
+                    className="btn btn-icon magnet-btn focus"
                     onClick={() => speakAll({speed: 0})}
                     title={t('tabs.general.speakAll')}>
                     <FontAwesomeIcon icon={faWandMagicSparkles}/>

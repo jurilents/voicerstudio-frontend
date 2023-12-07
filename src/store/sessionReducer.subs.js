@@ -1,96 +1,96 @@
-import { sortSubs, Sub, validateSubs } from '../models';
+import {sortSubs, Sub, validateSubs} from '../models';
 
 const subsReducer = {
-    setAllSubs: (state, action) => {
-        const speaker = state.speakers[action.payload.speakerId];
-        speaker.subs = action.payload.subs;
-        return { ...state };
-    },
+  setAllSubs: (state, action) => {
+    const speaker = state.speakers[action.payload.speakerId];
+    speaker.subs = action.payload.subs;
+    return {...state};
+  },
 
-    addSub: (state, action) => {
-        if (!action.payload.sub) {
-            console.warn('Sub add invocation unexpected');
-            return state;
-        }
-        const speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
-        if (!speaker) {
-            console.error('Cannot add sub to undefined speaker.');
-            return state;
-        }
-        speaker.subs = [...(speaker.subs || []), action.payload.sub];
-        sortSubs(speaker.subs);
-        validateSubs(speaker.subs);
+  addSub: (state, action) => {
+    if (!action.payload.sub) {
+      console.warn('Sub add invocation unexpected');
+      return state;
+    }
+    const speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
+    if (!speaker) {
+      console.error('Cannot add sub to undefined speaker.');
+      return state;
+    }
+    speaker.subs = [...(speaker.subs || []), action.payload.sub];
+    sortSubs(speaker.subs);
+    validateSubs(speaker.subs);
 
-        const session = { ...state };
-        session.selectedSub = action.payload.sub;
-        return session;
-    },
+    const session = {...state};
+    session.selectedSub = action.payload.sub;
+    return session;
+  },
 
-    removeSub: (state, action) => {
-        const speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
-        if (!speaker) {
-            console.error('Cannot remove sub of undefined speaker.');
-            return state;
-        }
-        const index = speaker.subs.findIndex((x) => x.id === action.payload.sub.id);
-        if (index < 0) return state;
-        speaker.subs.splice(index, 1);
-        validateSubs(speaker.subs);
+  removeSub: (state, action) => {
+    const speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
+    if (!speaker) {
+      console.error('Cannot remove sub of undefined speaker.');
+      return state;
+    }
+    const index = speaker.subs.findIndex((x) => x.id === action.payload.sub.id);
+    if (index < 0) return state;
+    speaker.subs.splice(index, 1);
+    validateSubs(speaker.subs);
 
-        return {
-            ...state,
-            selectedSpeaker: speaker,
-            selectedSub:
-                speaker.subs.length > index
-                    ? speaker.subs[index]
-                    : speaker.subs.length > 0
-                    ? speaker.subs[speaker.subs.length - 1]
-                    : null,
-        };
-    },
+    return {
+      ...state,
+      selectedSpeaker: speaker,
+      selectedSub:
+        speaker.subs.length > index
+          ? speaker.subs[index]
+          : speaker.subs.length > 0
+            ? speaker.subs[speaker.subs.length - 1]
+            : null,
+    };
+  },
 
-    patchSub: (state, action) => {
-        const speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
-        if (!speaker) {
-            console.error('Cannot patch sub of undefined speaker.');
-            return state;
-        }
-        // speaker.subs = [...(speaker.subs || [])];
-        const subIndex = speaker.subs.findIndex((x) => x.id === action.payload.sub.id);
-        if (subIndex === -1) return state;
-        const sub = speaker.subs[subIndex];
-        speaker.subs[subIndex] = new Sub({ ...sub, ...action.payload.patch });
+  patchSub: (state, action) => {
+    const speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
+    if (!speaker) {
+      console.error('Cannot patch sub of undefined speaker.');
+      return state;
+    }
+    // speaker.subs = [...(speaker.subs || [])];
+    const subIndex = speaker.subs.findIndex((x) => x.id === action.payload.sub.id);
+    if (subIndex === -1) return state;
+    const sub = speaker.subs[subIndex];
+    speaker.subs[subIndex] = new Sub({...sub, ...action.payload.patch});
 
-        if (action.payload.patch.start) {
-            sortSubs(speaker.subs);
-        }
-        if (action.payload.patch.start || action.payload.patch.end) {
-            validateSubs(speaker.subs);
-        }
+    if (action.payload.patch.start) {
+      sortSubs(speaker.subs);
+    }
+    if (action.payload.patch.start || action.payload.patch.end) {
+      validateSubs(speaker.subs);
+    }
 
-        return {
-            ...state,
-            speakers: [...state.speakers],
-            selectedSpeaker: speaker,
-            selectedSub: speaker.subs[subIndex],
-        };
-    },
+    return {
+      ...state,
+      speakers: [...state.speakers],
+      selectedSpeaker: speaker,
+      selectedSub: speaker.subs[subIndex],
+    };
+  },
 
-    selectSub: (state, action) => {
-        let speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
-        if (!speaker) {
-            console.error('Cannot select sub of undefined speaker.');
-            return state;
-        }
-        if (!state.selectedSpeaker || state.selectedSpeaker.id !== action.payload.sub.speakerId) {
-            speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
-        }
-        return {
-            ...state,
-            selectedSpeaker: speaker,
-            selectedSub: action.payload.sub,
-        };
-    },
+  selectSub: (state, action) => {
+    let speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
+    if (!speaker) {
+      console.error('Cannot select sub of undefined speaker.');
+      return state;
+    }
+    if (!state.selectedSpeaker || state.selectedSpeaker.id !== action.payload.sub.speakerId) {
+      speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
+    }
+    return {
+      ...state,
+      selectedSpeaker: speaker,
+      selectedSub: action.payload.sub,
+    };
+  },
 };
 
 /*

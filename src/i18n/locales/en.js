@@ -38,7 +38,7 @@ export const en = {
       currentDate: 'Current Date',
       currentTime: 'Current Time',
       exportAs: 'Export',
-      exportFileFailed: 'Export file failed',
+      playbackRate: 'Export file failed',
       exportFileSucceeded: 'Export file "<bold>{{fileName}}</bold>" succeeded',
       exportFormat: 'Export Format',
       format: 'Format',
@@ -71,10 +71,10 @@ export const en = {
     markers: {
       color: 'Color',
       title: 'Markers',
-      description: 'Press \'M\' to add or remove marker',
+      description: 'Press "M" to add or remove marker',
     },
     presets: {
-      pressToAddCredentials: `Press '+' and add credentials`,
+      pressToAddCredentials: `Press "+" and add credentials`,
       title: 'My Voices',
       voicingBots: 'Voicing Bots',
     },

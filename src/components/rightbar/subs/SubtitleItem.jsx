@@ -63,6 +63,17 @@ const SubtitleItem = (params) => {
     [dispatch, sub],
   );
 
+  const handleSubSplit = useCallback(
+    (event) => {
+      if (event.code === 'Enter') {
+        console.log('split!', event.target.selectionStart);
+        // Patch current
+        // Create new
+      }
+    },
+    [dispatch, sub],
+  );
+
   const resetDuration = () => {
     dispatch(
       patchSub(sub, {
@@ -114,6 +125,7 @@ const SubtitleItem = (params) => {
           className={'textarea textarea-left' + (showNote ? '' : ' textarea-right')}
           value={unescape(sub.text)}
           onChange={handleSubTextChange}
+          onKeyUp={handleSubSplit}
           onBlur={(e) => handleSubTextChange(e, true)}
         />
 

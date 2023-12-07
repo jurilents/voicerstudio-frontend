@@ -13,7 +13,7 @@ const Style = styled.div``;
 
 let resetCountdown = 5;
 
-const backupExtension = 'voicerbak.json';
+const backupExtension = 'voicerbak';
 
 export default function ImportTab() {
   const dispatch = useDispatch();
