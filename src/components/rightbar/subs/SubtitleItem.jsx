@@ -4,7 +4,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faDownload, faRocket, faStopwatch, faUndo} from '@fortawesome/free-solid-svg-icons';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
-import {patchSub, selectSub} from '../../../store/sessionReducer';
+import {patchSub, selectSub, splitSub} from '../../../store/sessionReducer';
 import {settings} from '../../../settings';
 import {usePlayPause} from '../../../hooks';
 import _ from 'lodash';
@@ -67,8 +67,7 @@ const SubtitleItem = (params) => {
     (event) => {
       if (event.code === 'Enter') {
         console.log('split!', event.target.selectionStart);
-        // Patch current
-        // Create new
+        dispatch(splitSub(sub, event.target.selectionStart));
       }
     },
     [dispatch, sub],

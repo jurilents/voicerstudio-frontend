@@ -20,6 +20,8 @@ const SET_ALL_SPEAKER_SUBS = 'SET_ALL_SPEAKER_SUBS';
 const ADD_SPEAKER_SUB = 'ADD_SPEAKER_SUB';
 const REMOVE_SPEAKER_SUB = 'REMOVE_SPEAKER_SUB';
 const PATCH_SPEAKER_SUB = 'PATCH_SPEAKER_SUB';
+const SPLIT_SPEAKER_SUB = 'SPLIT_SPEAKER_SUB';
+const MERGE_SPEAKER_SUB = 'MERGE_SPEAKER_SUB';
 const SELECT_SPEAKER_SUB = 'SELECT_SPEAKER_SUB';
 
 const ADD_PRESET = 'ADD_PRESET';
@@ -200,6 +202,16 @@ export default function sessionReducer(state = defaultState, action) {
       const session = subsReducer.patchSub(state, action);
       return saveToLocalStorage(session);
     }
+    case SPLIT_SPEAKER_SUB: {
+      // pushSubPatchToHistory(state, action);
+      const session = subsReducer.splitSub(state, action, timeMachine);
+      return saveToLocalStorage(session);
+    }
+    case MERGE_SPEAKER_SUB: {
+      // pushSubPatchToHistory(state, action);
+      const session = subsReducer.mergeSub(state, action, timeMachine);
+      return saveToLocalStorage(session);
+    }
     case SELECT_SPEAKER_SUB: {
       const session = subsReducer.selectSub(state, action);
       return saveToLocalStorage(session);
@@ -287,6 +299,8 @@ export const setAllSubs = (speakerId, subs) => ({type: ADD_SPEAKER_SUB, payload:
 export const addSub = (sub) => ({type: ADD_SPEAKER_SUB, payload: {sub}});
 export const removeSub = (sub) => ({type: REMOVE_SPEAKER_SUB, payload: {sub}});
 export const patchSub = (sub, patch) => ({type: PATCH_SPEAKER_SUB, payload: {sub, patch}});
+export const splitSub = (sub, index) => ({type: SPLIT_SPEAKER_SUB, payload: {sub, index}});
+export const mergeSub = (sub, nextSub) => ({type: MERGE_SPEAKER_SUB, payload: {sub, nextSub}});
 export const selectSub = (sub) => ({type: SELECT_SPEAKER_SUB, payload: {sub}});
 
 export const addPreset = (preset) => ({type: ADD_PRESET, payload: {preset}});

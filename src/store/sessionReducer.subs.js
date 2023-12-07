@@ -1,4 +1,6 @@
 import {sortSubs, Sub, validateSubs} from '../models';
+import {toast} from 'react-toastify';
+import {mergeSub} from './sessionReducer';
 
 const subsReducer = {
   setAllSubs: (state, action) => {
@@ -14,7 +16,7 @@ const subsReducer = {
     }
     const speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
     if (!speaker) {
-      console.error('Cannot add sub to undefined speaker.');
+      toast.error('Cannot add sub to undefined speaker.');
       return state;
     }
     speaker.subs = [...(speaker.subs || []), action.payload.sub];
@@ -29,11 +31,11 @@ const subsReducer = {
   removeSub: (state, action) => {
     const speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
     if (!speaker) {
-      console.error('Cannot remove sub of undefined speaker.');
+      toast.error('Cannot remove sub of undefined speaker.');
       return state;
     }
     const index = speaker.subs.findIndex((x) => x.id === action.payload.sub.id);
-    if (index < 0) return state;
+    if (index === -1) return state;
     speaker.subs.splice(index, 1);
     validateSubs(speaker.subs);
 
@@ -52,7 +54,7 @@ const subsReducer = {
   patchSub: (state, action) => {
     const speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
     if (!speaker) {
-      console.error('Cannot patch sub of undefined speaker.');
+      toast.error('Cannot patch sub of undefined speaker.');
       return state;
     }
     // speaker.subs = [...(speaker.subs || [])];
@@ -76,10 +78,99 @@ const subsReducer = {
     };
   },
 
+  splitSub: (state, action, timeMachine) => {
+    if (!action.payload.index) {
+      return state;
+    }
+    const speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
+    if (!speaker) {
+      toast.error('Cannot split sub of undefined speaker.');
+      return state;
+    }
+
+    const subIndex = speaker.subs.findIndex((x) => x.id === action.payload.sub.id);
+    if (subIndex === -1) return state;
+    const sub = speaker.subs[subIndex];
+    // If one of the fragments will left empty string, do not split the sub
+    if (!sub.text.substring(0, action.payload.index).trim().length
+      || !sub.text.substring(action.payload.index, sub.text.length).trim().length) {
+      return state;
+    }
+
+    const splitDeltaTime = action.payload.index * sub.duration / sub.text.length;
+    const splitTime = +(sub.start + splitDeltaTime).toFixed(3);
+    console.log('splitTime', splitDeltaTime);
+
+    // Patch previous sub
+    speaker.subs[subIndex] = new Sub({
+      ...sub,
+      text: sub.text.substring(0, action.payload.index - 1),
+      end: splitTime,
+      data: null,
+      invalidEnd: false,
+    });
+
+    // Create next sub
+    const nextSub = new Sub({
+      ...sub,
+      id: null, // force constructor to generate a new ID
+      data: null,
+      invalidStart: false,
+      text: sub.text.substring(action.payload.index, sub.text.length),
+      start: splitTime,
+      end: sub.end,
+    });
+    speaker.subs.push(nextSub);
+
+    sortSubs(speaker.subs);
+    timeMachine.push(action, mergeSub(action.payload.sub, nextSub));
+
+    return {
+      ...state,
+      speakers: [...state.speakers],
+      selectedSpeaker: speaker,
+      selectedSub: speaker.subs[subIndex],
+    };
+  },
+
+  mergeSub: (state, action) => {
+    const speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
+    if (!speaker) {
+      toast.error('Cannot merge subs of undefined speaker.');
+      return state;
+    }
+
+    const subIndex = speaker.subs.findIndex((x) => x.id === action.payload.sub.id);
+    const nextSubIndex = speaker.subs.findIndex((x) => x.id === action.payload.nextSub.id);
+    if (subIndex === -1 || nextSubIndex === -1) return state;
+    const sub = speaker.subs[subIndex];
+
+    // Patch previous sub
+    speaker.subs[subIndex] = new Sub({
+      ...sub,
+      // data: null,
+      invalidEnd: action.payload.nextSub.invalidEnd,
+      text: sub.text + action.payload.nextSub.text,
+      end: action.payload.nextSub.end,
+    });
+
+    // Delete next sub
+    speaker.subs.splice(nextSubIndex, 1);
+
+    sortSubs(speaker.subs);
+
+    return {
+      ...state,
+      speakers: [...state.speakers],
+      selectedSpeaker: speaker,
+      selectedSub: speaker.subs[subIndex],
+    };
+  },
+
   selectSub: (state, action) => {
     let speaker = state.speakers.find((x) => x.id === action.payload.sub.speakerId);
     if (!speaker) {
-      console.error('Cannot select sub of undefined speaker.');
+      toast.error('Cannot select sub of undefined speaker.');
       return state;
     }
     if (!state.selectedSpeaker || state.selectedSpeaker.id !== action.payload.sub.speakerId) {
