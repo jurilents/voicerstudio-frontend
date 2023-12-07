@@ -75,14 +75,11 @@ const AddPresetModal = ({isOpen, setIsOpen}) => {
     voicingService === VoicingService.Azure ? store.languages.azure : store.languages.voiceMaker,
   ) || [];
   const allSelectedCredentials = useSelector((store) => store.session.selectedCredentials);
-  console.log('voicingService', voicingService);
   const selectedCred = allSelectedCredentials[voicingService?.key] ?? allSelectedCredentials[VoicingService.AuthorizerBot.key];
 
   useEffect(() => {
     async function fetchLanguages() {
       setLangsFetchStatus(Status.loading);
-      console.log('selectedCred.value', selectedCred.value);
-      console.log('voicingService', voicingService);
       const newLanguages = await languagesApi.getAll(voicingService.key, selectedCred.value);
       if (newLanguages.length < 1) {
         toast.error('No languages fetched :(');

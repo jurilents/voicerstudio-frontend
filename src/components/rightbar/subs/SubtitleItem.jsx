@@ -66,7 +66,7 @@ const SubtitleItem = (params) => {
   const resetDuration = () => {
     dispatch(
       patchSub(sub, {
-        end: sub.start + sub.data.baseDuration,
+        end: +(sub.start + sub.data.baseDuration).toFixed(3),
       }),
     );
   };
@@ -89,7 +89,8 @@ const SubtitleItem = (params) => {
     if (val < -rateLimit || val > rateLimit) return;
     const speed = _.clamp(val, -rateLimit, rateLimit) / 100;
 
-    dispatch(patchSub(sub, {end: sub.start + sub.data.baseDuration * (1 + speed)}));
+    const end = sub.start + sub.data.baseDuration * (1 + speed);
+    dispatch(patchSub(sub, {end: +end.toFixed(3)}));
     setSpeedRate(event.target.value);
   };
 

@@ -103,22 +103,22 @@ const Actions = () => {
     <Style className="actions-wrapper">
       <div className="actions-container">
         <div
-          className={'btn btn-icon focus' + (settings.magnetMode ? ' active' : '')}
+          className={'btn btn-icon magnet-btn focus' + (settings.magnetMode ? ' active' : '')}
           onClick={() => patchSettings({magnetMode: !settings.magnetMode})}
           title="Navigation lines"
         >
           <FontAwesomeIcon icon={faMagnet}/>
         </div>
-        <div
-          className={'btn btn-icon focus' + (settings.scrollableMode ? ' active' : '')}
-          onClick={() => patchSettings({scrollableMode: !settings.scrollableMode})}
-          title="Move by fixed timesteps"
-        >
-          <FontAwesomeIcon icon={faLocationCrosshairs}/>
-        </div>
+        {/*<div*/}
+        {/*  className={'btn btn-icon fixed-timestamps-btn focus' + (settings.scrollableMode ? ' active' : '')}*/}
+        {/*  onClick={() => patchSettings({scrollableMode: !settings.scrollableMode})}*/}
+        {/*  title="Move by fixed timesteps"*/}
+        {/*>*/}
+        {/*  <FontAwesomeIcon icon={faLocationCrosshairs}/>*/}
+        {/*</div>*/}
         <div className="separator"></div>
         <div
-          className={'btn btn-icon'}
+          className="btn btn-icon play-pause-btn"
           onClick={() => togglePlay()}
           title="Play/Pause (SPASE)"
         >
@@ -126,7 +126,7 @@ const Actions = () => {
         </div>
         <div className="separator"></div>
         <div
-          className={'btn btn-icon btn-text focus' + (recording ? ' record' : '')}
+          className={'btn btn-icon btn-text record-btn focus' + (recording ? ' record' : '')}
           onMouseDown={() => startRecording(window.currentTime)}
           title="Hold to record subtitle"
         >

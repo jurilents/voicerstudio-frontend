@@ -37,8 +37,8 @@ const TimelineWrap = (props) => {
             scaleWidth={props.zoom.scaleWidth}
             autoScroll={true}
             autoReRender={false}
-            dragLine={settings.scrollableMode}
-            gridSnap={settings.magnetMode}
+            dragLine={settings.magnetMode}
+            // gridSnap={settings.magnetMode}
             rowHeight={50}
             editorData={props.data}
             effects={timelineEffects}

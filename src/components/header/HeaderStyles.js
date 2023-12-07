@@ -90,7 +90,7 @@ export const Style = styled.div`
     display: block;
     position: absolute;
     right: 55px;
-    bottom: -88px;
+    bottom: -130px;
     z-index: 2000;
 
     &.hidden {

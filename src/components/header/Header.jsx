@@ -1,4 +1,4 @@
-import React, {createRef, useEffect, useState} from 'react';
+import React, {createRef, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import WelcomeTutorial from '../tutorials/WelcomeTutorial';
 import {Steps} from 'intro.js-react';
@@ -21,6 +21,8 @@ export default function Header() {
   const headerRef = createRef();
   const [width, setWidth] = useState(1);
   const [showCollapsed, setShowCollapsed] = useState(false);
+  const tutorSteps = useMemo(() => WelcomeTutorial.steps(t), [t]);
+
   useEffect(() => {
     if (!headerRef.current) return;
     const resizeObserver = new ResizeObserver(throttle(() => {
@@ -65,7 +67,12 @@ export default function Header() {
                 {t('header.welcomeTutor')}
               </button>
             </li>
-            <li className="tutor-chat">
+            <li className="bot-link">
+              <a href="https://t.me/voicerstudio_bot" target="_blank">
+                {t('header.authorizerBot')}
+              </a>
+            </li>
+            <li className="chat-link">
               <a href="https://t.me/voicerstudio" target="_blank">
                 {t('header.telegramChat')}
               </a>
@@ -81,7 +88,7 @@ export default function Header() {
       <Steps
         enabled={tutorEnabled}
         initialStep={0}
-        steps={WelcomeTutorial.steps}
+        steps={tutorSteps}
         onExit={() => {
         }}
       />

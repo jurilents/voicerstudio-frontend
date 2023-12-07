@@ -4,29 +4,37 @@ import 'intro.js/introjs.css';
 
 export default createGlobalStyle`
   .introjs-tooltip {
-    background-color: #333;
+    --tooltip-bg: var(--c-primary);
+    background-color: var(--tooltip-bg);
     border-radius: ${borderRadius};
     color: #fff;
     transition: all 0.2s ease 0s;
     -webkit-user-select: text;
     -ms-user-select: text;
     user-select: text;
+    min-width: 300px;
+    max-width: 400px;
+
+    a {
+      color: white;
+      text-decoration: underline;
+    }
   }
 
-  .introjs-arrow.top {
-    border-bottom-color: #333;
+  .introjs-arrow.top, .introjs-arrow.top-middle {
+    border-bottom-color: var(--tooltip-bg);
   }
 
-  .introjs-arrow.bottom {
-    border-top-color: #333;
+  .introjs-arrow.bottom, .introjs-arrow.bottom-middle {
+    border-top-color: var(--tooltip-bg);
   }
 
-  .introjs-arrow.left {
-    border-right-color: #333;
+  .introjs-arrow.left, .introjs-arrow.left-middle {
+    border-right-color: var(--tooltip-bg);
   }
 
-  .introjs-arrow.right {
-    border-left-color: #333;
+  .introjs-arrow.right, .introjs-arrow.right-middle {
+    border-left-color: var(--tooltip-bg);
   }
 
   .introjs-tooltipbuttons {
@@ -34,19 +42,19 @@ export default createGlobalStyle`
   }
 
   .introjs-skipbutton {
-    color: #999 !important;
-    opacity: 85%;
+    color: #fff !important;
+    opacity: 40%;
 
     &:hover {
-      opacity: 40%;
+      opacity: 90%;
     }
   }
 
   .introjs-button {
     --bg-color: var(--c-primary-light);
-    --bg-color-active: var(--c-primary);
+    --bg-color-active: var(--c-danger);
     --text-color: #fff;
-    opacity: 0.85;
+    opacity: 85%;
     border-radius: ${borderRadius};
     color: var(--text-color);
     cursor: pointer;
@@ -68,5 +76,9 @@ export default createGlobalStyle`
       background-color: var(--bg-color);
       box-shadow: none;
     }
+  }
+
+  .tutor-highlight {
+    box-shadow: rgb(174 174 174 / 80%) 0 0 1px 2px, rgb(0 0 0 / 50%) 0 0 0 5000px !important;
   }
 `;

@@ -5,7 +5,6 @@ const SET_TIMELINE_SETTINGS = 'SET_TIMELINE_SETTINGS';
 const STORAGE_KEY = 'timeline_settings';
 
 const rootState = {
-  scrollableMode: false,
   magnetMode: true,
   timelineZoom: 1,
   waveZoom: 1,
