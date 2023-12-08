@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 import {
-    faCircle,
-    faEarthAmericas,
-    faMagnet,
-    faPause,
-    faPlay,
-    faWandMagicSparkles,
+  faCircle,
+  faEarthAmericas,
+  faMagnet,
+  faPause,
+  faPlay,
+  faWandMagicSparkles,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -93,78 +93,78 @@ const Style = styled.div`
 `;
 
 const Actions = () => {
-    const dispatch = useDispatch();
-    const player = useSelector((store) => store.player.videoPlayer);
-    const settings = useSelector((store) => store.timelineSettings);
-    const {playing, recording} = useSelector((store) => store.timeline);
-    const {startRecording, completeRecording, togglePlay, pause} = usePlayerControls(player);
-    const {speakAll} = useVoicer();
-    const {translateAll} = useTranslator();
-    const {t} = useTranslation();
+  const dispatch = useDispatch();
+  const player = useSelector((store) => store.player.videoPlayer);
+  const settings = useSelector((store) => store.timelineSettings);
+  const {playing, recording} = useSelector((store) => store.timeline);
+  const {startRecording, completeRecording, togglePlay, pause} = usePlayerControls(player);
+  const {speakAll} = useVoicer();
+  const {translateAll} = useTranslator();
+  const {t} = useTranslation();
 
-    useEffect(() => {
-        document.addEventListener('mouseup', completeRecording);
-        return () => document.removeEventListener('mouseup', completeRecording);
-    }, [completeRecording]);
+  useEffect(() => {
+    document.addEventListener('mouseup', completeRecording);
+    return () => document.removeEventListener('mouseup', completeRecording);
+  }, [completeRecording]);
 
-    const patchSettings = useCallback(
-        (patch) => {
-            pause();
-            dispatch(setTimelineSettings(patch));
-        },
-        [pause, dispatch],
-    );
+  const patchSettings = useCallback(
+    (patch) => {
+      pause();
+      dispatch(setTimelineSettings(patch));
+    },
+    [pause, dispatch],
+  );
 
-    return (
-        <Style className="actions-wrapper">
-            <div className="actions-container">
-                <div
-                    className="btn btn-icon magnet-btn focus"
-                    onClick={() => translateAll()}
-                    title={t('tabs.general.refreshTranslations')}>
-                    <FontAwesomeIcon icon={faEarthAmericas}/>
-                </div>
-                <div
-                    className="btn btn-icon magnet-btn focus"
-                    onClick={() => speakAll({speed: 0})}
-                    title={t('tabs.general.speakAll')}>
-                    <FontAwesomeIcon icon={faWandMagicSparkles}/>
-                </div>
-                <div
-                    className={'btn btn-icon magnet-btn focus' + (settings.magnetMode ? ' active' : '')}
-                    onClick={() => patchSettings({magnetMode: !settings.magnetMode})}
-                    title="Navigation lines">
-                    <FontAwesomeIcon icon={faMagnet}/>
-                </div>
-                {/*<div*/}
-                {/*  className={'btn btn-icon fixed-timestamps-btn focus' + (settings.scrollableMode ? ' active' : '')}*/}
-                {/*  onClick={() => patchSettings({scrollableMode: !settings.scrollableMode})}*/}
-                {/*  title="Move by fixed timesteps"*/}
-                {/*>*/}
-                {/*  <FontAwesomeIcon icon={faLocationCrosshairs}/>*/}
-                {/*</div>*/}
-                <div className="separator"></div>
-                <div
-                    className="btn btn-icon play-pause-btn"
-                    onClick={() => togglePlay()}
-                    title="Play/Pause (SPASE)">
-                    <FontAwesomeIcon icon={playing ? faPause : faPlay}/>
-                </div>
-                <div className="separator"></div>
-                <div
-                    className={'btn btn-icon btn-text record-btn focus' + (recording ? ' record' : '')}
-                    onMouseDown={() => startRecording(window.currentTime)}
-                    title="Hold to record subtitle">
-                    <FontAwesomeIcon icon={faCircle} style={{fontSize: '16px'}}/>
-                    <span className="label">REC</span>
-                </div>
-                <div className="filler"></div>
-            </div>
-            <div className="duration-container">
-                <TimeIndicator player={player}/>
-            </div>
-        </Style>
-    );
+  return (
+    <Style className="actions-wrapper">
+      <div className="actions-container">
+        <div
+          className="btn btn-icon refresh-translations-btn focus"
+          onClick={() => translateAll()}
+          title={t('tabs.general.refreshTranslations')}>
+          <FontAwesomeIcon icon={faEarthAmericas}/>
+        </div>
+        <div
+          className="btn btn-icon speak-all-btn focus"
+          onClick={() => speakAll({speed: 0})}
+          title={t('tabs.general.speakAll')}>
+          <FontAwesomeIcon icon={faWandMagicSparkles}/>
+        </div>
+        <div
+          className={'btn btn-icon magnet-btn focus' + (settings.magnetMode ? ' active' : '')}
+          onClick={() => patchSettings({magnetMode: !settings.magnetMode})}
+          title="Navigation lines">
+          <FontAwesomeIcon icon={faMagnet}/>
+        </div>
+        {/*<div*/}
+        {/*  className={'btn btn-icon fixed-timestamps-btn focus' + (settings.scrollableMode ? ' active' : '')}*/}
+        {/*  onClick={() => patchSettings({scrollableMode: !settings.scrollableMode})}*/}
+        {/*  title="Move by fixed timesteps"*/}
+        {/*>*/}
+        {/*  <FontAwesomeIcon icon={faLocationCrosshairs}/>*/}
+        {/*</div>*/}
+        <div className="separator"></div>
+        <div
+          className="btn btn-icon play-pause-btn"
+          onClick={() => togglePlay()}
+          title="Play/Pause (SPASE)">
+          <FontAwesomeIcon icon={playing ? faPause : faPlay}/>
+        </div>
+        <div className="separator"></div>
+        <div
+          className={'btn btn-icon btn-text record-btn focus' + (recording ? ' record' : '')}
+          onMouseDown={() => startRecording(window.currentTime)}
+          title="Hold to record subtitle">
+          <FontAwesomeIcon icon={faCircle} style={{fontSize: '16px'}}/>
+          <span className="label">REC</span>
+        </div>
+        <div className="filler"></div>
+      </div>
+      <div className="duration-container">
+        <TimeIndicator player={player}/>
+      </div>
+    </Style>
+  );
 };
 
 export default Actions;

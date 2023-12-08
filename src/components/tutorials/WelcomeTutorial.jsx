@@ -1,4 +1,5 @@
 const highlightClass = 'tutor-highlight';
+
 const steps = (t) => {
   return [
     {
@@ -10,6 +11,36 @@ const steps = (t) => {
     {
       element: '.tab-btn-presets',
       intro: t('tutors.welcome.steps.authorizerBotNext'),
+      position: 'top',
+      highlightClass: highlightClass,
+    },
+    {
+      element: '.tab-btn-speakers',
+      intro: t('tutors.welcome.steps.speakersTab'),
+      position: 'top',
+      highlightClass: highlightClass,
+    },
+    {
+      element: '.tab-btn-mixer',
+      intro: t('tutors.welcome.steps.mixerTab'),
+      position: 'top',
+      highlightClass: highlightClass,
+    },
+    {
+      element: '.tab-btn-markers',
+      intro: t('tutors.welcome.steps.markersTab'),
+      position: 'top',
+      highlightClass: highlightClass,
+    },
+    {
+      element: '.tab-btn-import',
+      intro: t('tutors.welcome.steps.importAndBackupTab'),
+      position: 'top',
+      highlightClass: highlightClass,
+    },
+    {
+      element: '.tab-btn-export',
+      intro: t('tutors.welcome.steps.exportTab'),
       position: 'top',
       highlightClass: highlightClass,
     },
@@ -68,7 +99,6 @@ const steps = (t) => {
       highlightClass: highlightClass,
     },
     {
-      element: '.tab-btn-presets',
       intro: t('tutors.welcome.steps.nextSteps'),
       position: 'top',
       highlightClass: highlightClass,

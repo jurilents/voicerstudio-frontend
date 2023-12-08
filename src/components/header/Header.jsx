@@ -4,7 +4,7 @@ import WelcomeTutorial from '../tutorials/WelcomeTutorial';
 import {Steps} from 'intro.js-react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faNavicon} from '@fortawesome/free-solid-svg-icons';
-import {Style} from './HeaderStyles';
+import {Style} from './Header.styles';
 
 
 function throttle(f, delay) {
@@ -47,7 +47,7 @@ export default function Header() {
         </a>
         <div className="logo-content">
           <span className="logo-title">Voicer Studio</span>
-          <span className="logo-version">v2.5.0 – 6/12/23</span>
+          <span className="logo-version">v2.5.0 – 8/12/23</span>
         </div>
       </div>
       <div className="nav-wrapper">
@@ -85,6 +85,7 @@ export default function Header() {
           </ul>
         </nav>
       </div>
+      {/* Tutorial Steps */}
       <Steps
         enabled={tutorEnabled}
         initialStep={0}

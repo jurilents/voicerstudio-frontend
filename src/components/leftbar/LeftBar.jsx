@@ -50,7 +50,7 @@ const tabs = [
     },
     {
         key: 'import',
-        title: 'Import and backup',
+        title: 'Import and Backup',
         icon: faCloudArrowUp,
         component: ImportTab,
     },

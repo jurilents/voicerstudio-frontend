@@ -121,7 +121,7 @@ const SubtitleItem = (params) => {
         <textarea
           maxLength={settings.subtitleTextLimit}
           spellCheck={false}
-          className={'textarea textarea-left' + (showNote ? '' : ' textarea-right')}
+          className={'sub-text textarea textarea-left' + (showNote ? '' : ' textarea-right')}
           value={unescape(sub.text)}
           onChange={handleSubTextChange}
           onKeyUp={handleSubSplit}
@@ -133,7 +133,7 @@ const SubtitleItem = (params) => {
           <textarea
             maxLength={settings.subtitleTextLimit}
             spellCheck={false}
-            className="textarea textarea-right"
+            className="sub-note textarea textarea-right"
             value={unescape(sub.note)}
             onChange={handleSubNoteTextChange}
             onBlur={(e) => handleSubNoteTextChange(e, true)}
@@ -142,7 +142,7 @@ const SubtitleItem = (params) => {
 
         {/* ************ Start and End Time ************ */}
         <div className="item-bar item-info">
-          <div className="item-bar-center-row">
+          <div className="item-bar-center-row sub-time">
             <input
               type="time"
               step={0.001}
@@ -168,7 +168,7 @@ const SubtitleItem = (params) => {
           {/* ************ Duration ************ */}
           <div className="item-bar-center-row item-timing" title="Duration">
             <input
-              className="dimmed"
+              className="dimmed sub-duration"
               type="text"
               value={`${d2t(sub.end - sub.start, true)}s`}
               disabled={true}
@@ -178,7 +178,7 @@ const SubtitleItem = (params) => {
             </div>
             {/*<span><FontAwesomeIcon icon={faGaugeSimpleHigh} /></span>*/}
             <NumericInput
-              className="nofocus"
+              className="nofocus sub-acceleration"
               style={{color: getDurationStatusColor(sub.speedRate - 1)}}
               accuracy={2}
               minValue={-rateLimit}
@@ -192,7 +192,7 @@ const SubtitleItem = (params) => {
           {/* ************ Action Buttons ************ */}
           <div className="item-bar-row item-actions">
             <button
-              className="icon-btn"
+              className="icon-btn sub-download"
               title="Download speech from this subtitle"
               onClick={() => downloadSub(sub, props.index + 1)}
               disabled={!sub?.data?.baseDuration}
@@ -206,7 +206,7 @@ const SubtitleItem = (params) => {
             {/*  <FontAwesomeIcon icon={faPlay} />*/}
             {/*</button>*/}
             <button
-              className="icon-btn highlight"
+              className="icon-btn highlight sub-speak"
               style={{color: sub.voicedStatusColor}}
               title="Speak this subtitle"
               onClick={() => speakSub(sub, {speed: 0})}
@@ -214,7 +214,7 @@ const SubtitleItem = (params) => {
               <FontAwesomeIcon icon={faRocket}/>
             </button>
             <button
-              className="icon-btn"
+              className="icon-btn sub-reset-speed"
               title="Reset subtitle speed to default"
               onClick={resetDuration}
               disabled={!sub?.data?.baseDuration}

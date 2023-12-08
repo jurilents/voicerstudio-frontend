@@ -1,5 +1,5 @@
 import {createGlobalStyle} from 'styled-components';
-import {borderRadius} from './constants';
+import {borderRadius} from '../../styles/constants';
 import 'intro.js/introjs.css';
 
 export default createGlobalStyle`
@@ -12,16 +12,30 @@ export default createGlobalStyle`
     -webkit-user-select: text;
     -ms-user-select: text;
     user-select: text;
-    min-width: 300px;
+    min-width: 350px;
     max-width: 400px;
 
-    a {
-      color: white;
-      text-decoration: underline;
+    .introjs-tooltiptext {
+      a {
+        color: white;
+        text-decoration: underline;
+      }
+
+      code {
+        color: var(--c-text);
+        font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      br {
+        display: block;
+        margin-top: 10px;
+        content: " ";
+      }
     }
   }
 
-  .introjs-arrow.top, .introjs-arrow.top-middle {
+  .introjs-arrow.top, .introjs-arrow.top-middle, .introjs-arrow.top-right, .introjs-arrow.top-left {
     border-bottom-color: var(--tooltip-bg);
   }
 

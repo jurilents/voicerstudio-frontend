@@ -80,7 +80,7 @@ export default function GeneralTab() {
       <div>
         <h3>{t('tabs.general.title')}</h3>
         <Container>
-          <Row className="mb-4 pb-2">
+          <Row className="mb-4">
             <Col className="label">{t('tabs.general.interfaceLanguage')}</Col>
             <Col>
               <Form.Select
@@ -95,26 +95,6 @@ export default function GeneralTab() {
               </Form.Select>
             </Col>
           </Row>
-          {/* ************ Playback speed ************ */}
-          <Row>
-            <Col className="label">{t('tabs.general.playbackSpeed')}</Col>
-            <Col className="speed-wrapper">
-              <button
-                className="speed-btn"
-                onClick={() => setPlaybackSpeed(settings.playbackSpeed - 0.25)}>
-                <FontAwesomeIcon icon={faMinus}/>
-              </button>
-              <span className="speed-text">{Math.round(settings.playbackSpeed * 100)}%</span>
-              <button
-                className="speed-btn"
-                onClick={() => setPlaybackSpeed(settings.playbackSpeed + 0.25)}>
-                <FontAwesomeIcon icon={faAdd}/>
-              </button>
-              <button className="speed-btn app-reset-btn" onClick={() => setPlaybackSpeed(1)}>
-                <FontAwesomeIcon icon={faRedoAlt}/>
-              </button>
-            </Col>
-          </Row>
           {/* ************ Wave Zoom ************ */}
           {/*<Row>*/}
           {/*  <Col className='label'>Wave zoom</Col>*/}
@@ -126,7 +106,7 @@ export default function GeneralTab() {
           {/*    <span>{toPercentsDelta(settings.waveZoom)}</span>*/}
           {/*  </Col>*/}
           {/*</Row>*/}
-          <Row className="mt-3 mb-0">
+          <Row className="mb-0">
             <Col xs={6} className="label">
               {t('tabs.general.showNote')}
             </Col>
@@ -185,7 +165,7 @@ export default function GeneralTab() {
                   </Form.Select>
                 </Col>
               </Row>
-              <Row>
+              <Row className="pb-2">
                 <Col className="label">{t('tabs.general.translateTargetLang')}</Col>
                 <Col>
                   <Form.Select
@@ -202,19 +182,39 @@ export default function GeneralTab() {
                   </Form.Select>
                 </Col>
               </Row>
-              <Row className="mt-4">
-                <Col>
-                  <button className="btn btn-outline" onClick={() => translateAll()}>
-                    {t('tabs.general.refreshTranslations')}
-                  </button>
-                </Col>
-              </Row>
+              {/*<Row className="mt-4">*/}
+              {/*  <Col>*/}
+              {/*    <button className="btn btn-outline" onClick={() => translateAll()}>*/}
+              {/*      {t('tabs.general.refreshTranslations')}*/}
+              {/*    </button>*/}
+              {/*  </Col>*/}
+              {/*</Row>*/}
             </>
           )}
+          {/*<Row className="mt-4">*/}
+          {/*  <Col>*/}
+          {/*    <button className="btn btn-primary" onClick={() => speakAll({speed: 0})}>*/}
+          {/*      {t('tabs.general.speakAll')}*/}
+          {/*    </button>*/}
+          {/*  </Col>*/}
+          {/*</Row>*/}
+          {/* ************ Playback speed ************ */}
           <Row className="mt-4">
-            <Col>
-              <button className="btn btn-primary" onClick={() => speakAll({speed: 0})}>
-                {t('tabs.general.speakAll')}
+            <Col className="label">{t('tabs.general.playbackSpeed')}</Col>
+            <Col className="speed-wrapper">
+              <button
+                className="speed-btn"
+                onClick={() => setPlaybackSpeed(settings.playbackSpeed - 0.25)}>
+                <FontAwesomeIcon icon={faMinus}/>
+              </button>
+              <span className="speed-text">{Math.round(settings.playbackSpeed * 100)}%</span>
+              <button
+                className="speed-btn"
+                onClick={() => setPlaybackSpeed(settings.playbackSpeed + 0.25)}>
+                <FontAwesomeIcon icon={faAdd}/>
+              </button>
+              <button className="speed-btn app-reset-btn" onClick={() => setPlaybackSpeed(1)}>
+                <FontAwesomeIcon icon={faRedoAlt}/>
               </button>
             </Col>
           </Row>
