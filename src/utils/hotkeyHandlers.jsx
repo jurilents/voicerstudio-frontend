@@ -252,7 +252,7 @@ function registerAllHotkeys() {
 
   // ====== Speak all ====== //
   hotkeys.add('G', {meta: true}, ({voicer}) => {
-    voicer.speakAll();
+    voicer.speakAll({speed: 0});
   });
 
   // // ====== Translate all ====== //

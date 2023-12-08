@@ -8,6 +8,7 @@ import React, {useCallback} from 'react';
 import {settings} from '../settings';
 import {download} from '../utils';
 import {VoicingService} from '../models/enums';
+import audioController from '../utils/AudioController';
 
 export const useVoicer = () => {
   const dispatch = useDispatch();
@@ -67,6 +68,7 @@ export const useVoicer = () => {
         sub.endTime = sub.start + audio.duration;
       }
       await saveSubAudio(sub.id, audio.blob);
+      audioController.addFromSub(sub, window.timelineEngine);
 
       dispatch(
         patchSub(sub, {
