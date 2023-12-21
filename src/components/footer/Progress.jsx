@@ -70,53 +70,38 @@ const Style = styled.div`
   }
 `;
 
-const Progress = () => {
+function Progress() {
   let player = useSelector((store) => store.player.videoPlayer);
   const [grabbing, setGrabbing] = useState(false);
   const dispatch = useDispatch();
-  const speakers = useSelector((store) => store.session.speakers);
+  let {speakers, videoDuration} = useSelector((store) => store.session);
   const currentTime = useSelector((store) => store.timeline.time);
 
-  const setProgress = useCallback(
-    (pageX) => {
-      if (!player?.duration || !window.timelineEngine) return;
-      // const engine = window.timelineEngine;
-      // const totalWidth = engine.target.clientWidth;
+  const setProgress = useCallback((pageX) => {
+    if (!player?.duration || !window.timelineEngine) return;
 
-      const screenDelta = pageX / document.body.clientWidth;
-      const newTime = screenDelta * player.duration;
-      player.currentTime = newTime;
-      dispatch(setTime(newTime));
-      window.timelineEngine.setTime(newTime);
-    },
-    [dispatch, player],
-  );
+    const screenDelta = pageX / document.body.clientWidth;
+    const newTime = screenDelta * player.duration;
+    player.currentTime = newTime;
+    dispatch(setTime(newTime));
+    window.timelineEngine.setTime(newTime);
+  }, [dispatch, player, videoDuration]);
 
-  const onProgressClick = useCallback(
-    (event) => {
-      if (event.button !== 0) return;
+  const onProgressClick = useCallback((event) => {
+    if (event.button !== 0) return;
+    setProgress(event.pageX);
+  }, [setProgress]);
+
+  const onGrabDown = useCallback((event) => {
+    if (event.button !== 0) return;
+    setGrabbing(true);
+  }, [setGrabbing]);
+
+  const onGrabMove = useCallback((event) => {
+    if (grabbing) {
       setProgress(event.pageX);
-      // props.waveform.seek(currentTime);
-    },
-    [dispatch],
-  );
-
-  const onGrabDown = useCallback(
-    (event) => {
-      if (event.button !== 0) return;
-      setGrabbing(true);
-    },
-    [setGrabbing],
-  );
-
-  const onGrabMove = useCallback(
-    (event) => {
-      if (grabbing) {
-        setProgress(event.pageX);
-      }
-    },
-    [grabbing],
-  );
+    }
+  }, [grabbing, setProgress]);
 
   const onDocumentMouseUp = useCallback(() => {
     if (grabbing) {
@@ -124,7 +109,7 @@ const Progress = () => {
       // TODO
       // waveform.seek(player.currentTime);
     }
-  }, [grabbing]);
+  }, [grabbing, setGrabbing]);
 
   useEffect(() => {
     document.addEventListener('mouseup', onDocumentMouseUp);
@@ -138,12 +123,11 @@ const Progress = () => {
   const subHeight = 100 / speakers.length;
   const subHeightStyle = `${subHeight}%`;
 
-  if (!player?.duration || player.duration === 0) player = {duration: 0};
-  const {duration} = player;
+  videoDuration ??= player?.duration ?? 0;
 
   return (
     <Style className="progress timeline-progress-bar" onClick={onProgressClick}>
-      <div className="bar" style={{width: `${(currentTime / duration) * 100}%`}}>
+      <div className="bar" style={{width: `${(currentTime / videoDuration) * 100}%`}}>
         <div className="handle" onMouseDown={onGrabDown}>
           <FontAwesomeIcon icon={faBars}/>
         </div>
@@ -155,9 +139,9 @@ const Progress = () => {
               <span
                 key={index}
                 style={{
-                  left: `${(sub.start / duration) * 100}%`,
+                  left: `${(sub.start / videoDuration) * 100}%`,
                   top: `${subHeight * speakerIndex}%`,
-                  width: `${(sub.duration / duration) * 100}%`,
+                  width: `${(sub.duration / videoDuration) * 100}%`,
                   height: subHeightStyle,
                   backgroundColor: speaker.color,
                 }}
