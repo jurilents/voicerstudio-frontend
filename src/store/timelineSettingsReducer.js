@@ -7,6 +7,8 @@ const STORAGE_KEY = 'timeline_settings';
 const rootState = {
   magnetMode: true,
   timelineZoom: 1,
+  zoomFrom: 0,
+  zoomTo: 1,
   waveZoom: 1,
   playbackSpeed: 1,
 };

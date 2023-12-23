@@ -32,7 +32,6 @@ const Style = styled.div`
 
     .handle {
       position: absolute;
-      right: -5px;
       top: 0;
       bottom: 0;
       width: 10px;
@@ -42,6 +41,14 @@ const Style = styled.div`
       display: flex;
       padding: 1px;
       z-index: 111;
+
+      &.handle-start {
+        left: -5px;
+      }
+
+      &.handle-end {
+        right: -5px;
+      }
 
       svg {
         display: inline-block;
@@ -72,12 +79,23 @@ const Style = styled.div`
 
 function Progress() {
   let player = useSelector((store) => store.player.videoPlayer);
-  const [grabbing, setGrabbing] = useState(false);
+  const [grabbing, setGrabbing] = useState(null);
   const dispatch = useDispatch();
   let {speakers, videoDuration} = useSelector((store) => store.session);
   const currentTime = useSelector((store) => store.timeline.time);
+  const {zoomFrom, zoomTo} = useSelector((store) => store.timelineSettings);
 
   const setProgress = useCallback((pageX) => {
+    if (!player?.duration || !window.timelineEngine) return;
+
+    const screenDelta = pageX / document.body.clientWidth;
+    const newTime = screenDelta * player.duration;
+    player.currentTime = newTime;
+    dispatch(setTime(newTime));
+    window.timelineEngine.setTime(newTime);
+  }, [dispatch, player, videoDuration]);
+
+  const setZoomRange = useCallback((from, to) => {
     if (!player?.duration || !window.timelineEngine) return;
 
     const screenDelta = pageX / document.body.clientWidth;
@@ -92,20 +110,27 @@ function Progress() {
     setProgress(event.pageX);
   }, [setProgress]);
 
-  const onGrabDown = useCallback((event) => {
+  const onGrabFromDown = useCallback((event) => {
     if (event.button !== 0) return;
-    setGrabbing(true);
+    setGrabbing('from');
+  }, [setGrabbing]);
+
+  const onGrabToDown = useCallback((event) => {
+    if (event.button !== 0) return;
+    setGrabbing('to');
   }, [setGrabbing]);
 
   const onGrabMove = useCallback((event) => {
-    if (grabbing) {
-      setProgress(event.pageX);
+    if (grabbing === 'from') {
+      // setProgress(event.pageX);
+    } else if (grabbing === 'to') {
+
     }
   }, [grabbing, setProgress]);
 
   const onDocumentMouseUp = useCallback(() => {
     if (grabbing) {
-      setGrabbing(false);
+      setGrabbing(null);
       // TODO
       // waveform.seek(player.currentTime);
     }
@@ -128,7 +153,10 @@ function Progress() {
   return (
     <Style className="progress timeline-progress-bar" onClick={onProgressClick}>
       <div className="bar" style={{width: `${(currentTime / videoDuration) * 100}%`}}>
-        <div className="handle" onMouseDown={onGrabDown}>
+        <div className="handle handle-start" onMouseDown={onGrabFromDown}>
+          <FontAwesomeIcon icon={faBars}/>
+        </div>
+        <div className="handle handle-end" onMouseDown={onGrabToDown}>
           <FontAwesomeIcon icon={faBars}/>
         </div>
       </div>

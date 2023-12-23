@@ -3,7 +3,6 @@ import React, {createRef, memo, useState} from 'react';
 import TimelineEditor from './timeline/TimelineEditor';
 import {TimelineHeading} from './timeline/TimelineHeading';
 import Progress from './Progress';
-import Zoom from './Zoom';
 
 const Style = styled.div`
   height: 100%;
@@ -69,21 +68,8 @@ function Footer() {
   return (
     <Style className="footer" ref={$footer}>
       <TimelineHeading innerRef={$heading}/>
-      {/*<div className='timeline-outlet'>*/}
       <TimelineEditor headingRef={$heading} headingWidth={headingWidth}/>
-      {/*  {props.player ? (*/}
-      {/*    <>*/}
-      {/*      <Waveform {...props} setRender={setRender} />*/}
-      {/*      <Grab {...props} render={render} headingWidth={headingWidth} />*/}
-      {/*      <Metronome {...props} render={render} headingWidth={headingWidth} />*/}
-      {/*      <Timeline {...props} render={render} headingWidth={headingWidth} />*/}
-
       <Progress/>
-      <Zoom/>
-
-      {/*    </>*/}
-      {/*  ) : null}*/}
-      {/*</div>*/}
     </Style>
   );
 }
